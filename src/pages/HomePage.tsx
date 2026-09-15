@@ -13,7 +13,7 @@ import { ProductDetailModal } from '../components/ProductDetailModal';
 import { PagePreloader } from '../components/PagePreloader';
 import { HONEY_PRODUCTS } from '../data/honeyProducts';
 import { getEnrichedProduct } from '../utils/honeyHelpers';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowUp } from 'lucide-react';
 
 interface HomePageProps {
   onAddToCart: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
@@ -39,6 +39,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [detailProduct, setDetailProduct] = useState<HoneyProduct | null>(null);
   const [localQuizOpen, setLocalQuizOpen] = useState(false);
   const [preloaderDoneLocally, setPreloaderDoneLocally] = useState(false);
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const handleOpenQuiz = onOpenQuiz || (() => setLocalQuizOpen(true));
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -241,20 +242,96 @@ export const HomePage: React.FC<HomePageProps> = ({
             />
           </div>
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onAddToCart={onAddToCart}
-                  onOpenDetails={(p) => setDetailProduct(p)}
-                  onToggleCompare={toggleCompare}
-                  isCompared={compareList.some(p => p.id === product.id)}
-                  onSelectFlavorNote={handleSelectFlavorNote}
-                  activeFlavorNote={filters.flavorNote}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
+                {filteredProducts.map((product, idx) => (
+                  <div
+                    key={product.id}
+                    className={idx >= 6 && !isMobileExpanded ? 'hidden sm:block' : 'block'}
+                  >
+                    <ProductCard
+                      product={product}
+                      onAddToCart={onAddToCart}
+                      onOpenDetails={(p) => setDetailProduct(p)}
+                      onToggleCompare={toggleCompare}
+                      isCompared={compareList.some(p => p.id === product.id)}
+                      onSelectFlavorNote={handleSelectFlavorNote}
+                      activeFlavorNote={filters.flavorNote}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile Load More & Back to Top Controller */}
+              {filteredProducts.length > 6 && (
+                <div className="sm:hidden mt-8 p-4 bg-[#FAF6EE] rounded-2xl border border-[#D9821E]/20 text-center space-y-3">
+                  {!isMobileExpanded ? (
+                    <>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-semibold text-[#594D42]">
+                          <span>Wyświetlasz 6 z {filteredProducts.length} miodów</span>
+                          <span className="text-[#945209] font-bold">
+                            {Math.round((6 / filteredProducts.length) * 100)}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-[#EADCCB] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-[#D9821E] to-[#1B4332] rounded-full transition-all duration-300"
+                            style={{ width: `${(6 / filteredProducts.length) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsMobileExpanded(true)}
+                        className="w-full py-3.5 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                        id="btn-pokaz-wszystkie-miody-mobile"
+                      >
+                        <span>🍯 Pokaż wszystkie miody ({filteredProducts.length})</span>
+                      </button>
+                    </>
+                  ) : (
+                    <div className="space-y-2.5">
+                      <p className="text-xs font-semibold text-[#1B4332] flex items-center justify-center gap-1.5">
+                        <span>✓ Wyświetlasz pełną ofertę {filteredProducts.length} miodów</span>
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const catalogElem = document.getElementById('katalog');
+                            if (catalogElem) {
+                              catalogElem.scrollIntoView({ behavior: 'smooth' });
+                            }
+                          }}
+                          className="flex-1 py-3 px-3 rounded-xl bg-[#2D2821] hover:bg-[#433B31] text-[#FAF5ED] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                          id="btn-wroc-do-gory-katalogu-mobile"
+                        >
+                          <ArrowUp className="w-4 h-4 text-[#E6C065]" />
+                          <span>Wróć do góry katalogu</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsMobileExpanded(false);
+                            const catalogElem = document.getElementById('katalog');
+                            if (catalogElem) {
+                              catalogElem.scrollIntoView({ behavior: 'smooth' });
+                            }
+                          }}
+                          className="py-3 px-3 rounded-xl bg-white border border-[#DFCBB5] text-[#594D42] text-xs font-bold hover:bg-[#F5EDE0] transition-colors cursor-pointer shrink-0"
+                          title="Zwiń listę do 6 miodów"
+                          id="btn-zwin-miody-mobile"
+                        >
+                          <span>Zwiń listę</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-16 bg-[#FAF8F5] rounded-3xl border border-[#E7DCCE] space-y-3">
               <span className="text-3xl">🔍</span>
