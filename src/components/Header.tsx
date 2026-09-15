@@ -212,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => navigateToCatalog(undefined, 'odpornosc')}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🛡️ Apiterapia
+                        🛡️ Zdrowie i Odporność
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
@@ -442,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>🛡️</span>
-                  <span>Apiterapia</span>
+                  <span>Zdrowie i Odporność</span>
                 </button>
                 <button 
                   type="button"
