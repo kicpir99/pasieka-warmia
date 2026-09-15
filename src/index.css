@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", Georgia, Cambria, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --breakpoint-3xl: 110rem;
+  --breakpoint-4xl: 130rem;
+}
+
+body, html, #root {
+  overflow-anchor: none;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-serif);
+}
+
+/* Responsywne kontenery zoptymalizowane pod ekrany 16:9 oraz 21:9 (34 cale) */
+.adaptive-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80rem; /* Domyślnie 1280px (Standard) */
+  transition: max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s ease;
+}
+
+/* Monitory 27" 1440p / 4K (Standard 16:9) */
+@media (min-width: 1536px) {
+  .adaptive-container {
+    max-width: 92rem; /* 1472px */
+  }
+}
+
+/* Monitory 34" Ultrawide (21:9, np. 2560x1080, 3440x1440) oraz szerokie ekrany */
+@media (min-width: 1760px), ((min-aspect-ratio: 19/10) and (min-width: 1360px)) {
+  .adaptive-container {
+    max-width: 108rem; /* 1728px */
+  }
+}
+
+@keyframes honeyBreathe {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.008);
+  }
+}
+
+.animate-honey-breathe {
+  animation: honeyBreathe 7s ease-in-out infinite;
+}
+
+/* Custom smooth modal scrolling & aesthetic scrollbar */
+.custom-modal-scroll {
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.custom-modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-modal-scroll::-webkit-scrollbar-track {
+  background: #FAF6EE;
+  border-radius: 9999px;
+}
+
+.custom-modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(217, 130, 30, 0.28);
+  border-radius: 9999px;
+}
+
+.custom-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 130, 30, 0.55);
+}
+
+
