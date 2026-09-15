@@ -426,7 +426,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>🍯</span>
-                  <span>Wszystkie Odmianowe</span>
+                  <span>Odmianowe</span>
                 </button>
                 <button 
                   type="button"
@@ -442,7 +442,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>🛡️</span>
-                  <span>Na Odporność</span>
+                  <span>Apiterapia</span>
                 </button>
                 <button 
                   type="button"
