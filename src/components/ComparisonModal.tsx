@@ -199,183 +199,183 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-1.5 sm:p-4 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div 
         data-lenis-prevent
-        className="bg-white w-full max-w-7xl h-[94vh] max-h-[94vh] rounded-3xl shadow-2xl flex flex-col border border-[#D9821E]/30 overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-white w-full max-w-7xl h-[90dvh] sm:h-[94vh] max-h-[90dvh] sm:max-h-[94vh] rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col border border-[#D9821E]/30 overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
         id="modal-porownywarka-miodow"
       >
         {/* Modal Top Header Bar */}
-        <div className="px-5 py-3.5 border-b border-[#D9821E]/20 bg-[#FAF6EE] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#1B4332] text-white flex items-center justify-center shadow-xs shrink-0">
-              <Scale className="w-5 h-5 text-[#E6C065]" />
+        <div className="px-3 sm:px-5 py-2.5 sm:py-3.5 border-b border-[#D9821E]/20 bg-[#FAF6EE] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#1B4332] text-white flex items-center justify-center shadow-xs shrink-0">
+              <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-[#E6C065]" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-serif font-bold text-[#241D17] leading-tight">
+                <h2 className="text-sm sm:text-lg font-serif font-bold text-[#241D17] leading-tight truncate">
                   Porównywarka Odmian Miodów
                 </h2>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332]">
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] shrink-0">
                   {hasThreeProducts ? 'Zestawienie 3 odmian' : 'Zestawienie 2 odmian'}
                 </span>
               </div>
-              <p className="text-xs text-[#7A6A5A]">
+              <p className="text-[10px] sm:text-xs text-[#7A6A5A] truncate">
                 Zestaw nuty sensoryczne, parametry laboratoryjne, ceny oraz werdykt pszczelarza
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={handleSwap}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#594D42] hover:text-[#1B4332] bg-white border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer shadow-2xs"
+              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold text-[#594D42] hover:text-[#1B4332] bg-white border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer shadow-2xs"
               title={hasThreeProducts ? "Rotuj kolejność miodów (A → B → C)" : "Zamień kolejność miodów (A ↔ B)"}
               id="btn-zamien-miody"
             >
-              <ArrowLeftRight className="w-3.5 h-3.5 text-[#D9821E]" />
+              <ArrowLeftRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D9821E]" />
               <span className="hidden sm:inline">{hasThreeProducts ? 'Rotuj pozycje' : 'Zamień miejscami'}</span>
             </button>
 
             <button 
               type="button"
               onClick={onClose}
-              className="p-2 text-[#7A6A5A] hover:text-[#241D17] hover:bg-white rounded-full transition-colors cursor-pointer"
+              className="p-1.5 sm:p-2 text-[#7A6A5A] hover:text-[#241D17] hover:bg-white rounded-full transition-colors cursor-pointer"
               title="Zamknij porównywarkę"
               id="btn-zamknij-porownywarke"
               aria-label="Zamknij porównywarkę"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Persistent Honey Pickers Header */}
-        <div className="bg-[#FAF8F5] border-b border-[#D9821E]/20 p-3 sm:p-4 shrink-0">
-          <div className={`grid grid-cols-1 ${hasThreeProducts ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'} gap-3 sm:gap-4`}>
+        <div className="bg-[#FAF8F5] border-b border-[#D9821E]/20 p-2 sm:p-4 shrink-0">
+          <div className={`grid ${hasThreeProducts ? 'grid-cols-3 gap-1.5' : 'grid-cols-2 lg:grid-cols-3 gap-2'} sm:gap-4`}>
             
             {/* COLUMN A HEADER */}
-            <div className="bg-white p-3 rounded-2xl border border-[#1B4332]/30 shadow-2xs space-y-2 relative">
+            <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#1B4332]/30 shadow-2xs space-y-1.5 sm:space-y-2 relative">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-[#1B4332] uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[10px] font-mono">A</span>
-                  <span>Miód A:</span>
+                <label className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                  <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">A</span>
+                  <span className="hidden xs:inline">Miód A:</span>
                 </label>
                 <button
                   onClick={() => handleOpenDetail(rawA)}
-                  className="text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[10px] sm:text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-0.5 sm:gap-1 cursor-pointer"
                 >
-                  <span>Karta miodu</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <span className="hidden xs:inline">Karta</span>
+                  <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </button>
               </div>
 
               <select
                 value={currentAId}
                 onChange={(e) => setCurrentAId(e.target.value)}
-                className="w-full bg-[#FAF6EE] text-xs font-bold text-[#241D17] py-2 px-2.5 rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer"
+                className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                 id="select-porownaj-a"
               >
                 {HONEY_PRODUCTS.map((p) => (
                   <option key={p.id} value={p.id} disabled={p.id === currentBId || p.id === currentCId}>
-                    {p.name} ({p.sizes[0]?.pricePln} zł/{p.sizes[0]?.label})
+                    {p.name} ({p.sizes[0]?.pricePln} zł)
                   </option>
                 ))}
               </select>
 
-              <div className="flex gap-3 items-center pt-1">
+              <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
                 <img 
                   src={currentA.images?.[0] || currentA.imageUrl} 
                   alt={currentA.name}
-                  className="w-11 h-11 object-cover rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = currentA.imageUrl;
                   }}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
                       {currentA.name}
                     </h3>
                     {currentA.badge && (
-                      <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#D9821E] text-white shrink-0">
+                      <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#D9821E] text-white shrink-0">
                         {currentA.badge}
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-[#7A6A5A] italic truncate">
+                  <p className="hidden sm:block text-[10px] text-[#7A6A5A] italic truncate">
                     {currentA.botanicalSource}
                   </p>
-                  <div className="flex items-center gap-1 text-xs text-amber-500 mt-0.5">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span className="font-bold text-[#241D17] text-[10px]">{currentA.rating.toFixed(1)}</span>
-                    <span className="text-[9px] text-[#7A6A5A]">({currentA.reviewsCount})</span>
+                  <div className="flex items-center gap-1 text-[10px] sm:text-xs text-amber-500 mt-0.5">
+                    <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
+                    <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentA.rating.toFixed(1)}</span>
+                    <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentA.reviewsCount})</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* COLUMN B HEADER */}
-            <div className="bg-white p-3 rounded-2xl border border-[#D9821E]/40 shadow-2xs space-y-2 relative">
+            <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#D9821E]/40 shadow-2xs space-y-1.5 sm:space-y-2 relative">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-[#D9821E] uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-[#D9821E] text-white flex items-center justify-center text-[10px] font-mono">B</span>
-                  <span>Miód B:</span>
+                <label className="text-[10px] sm:text-[11px] font-bold text-[#D9821E] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                  <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#D9821E] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">B</span>
+                  <span className="hidden xs:inline">Miód B:</span>
                 </label>
                 <button
                   onClick={() => handleOpenDetail(rawB)}
-                  className="text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[10px] sm:text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-0.5 sm:gap-1 cursor-pointer"
                 >
-                  <span>Karta miodu</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <span className="hidden xs:inline">Karta</span>
+                  <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </button>
               </div>
 
               <select
                 value={currentBId}
                 onChange={(e) => setCurrentBId(e.target.value)}
-                className="w-full bg-[#FAF6EE] text-xs font-bold text-[#241D17] py-2 px-2.5 rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer"
+                className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                 id="select-porownaj-b"
               >
                 {HONEY_PRODUCTS.map((p) => (
                   <option key={p.id} value={p.id} disabled={p.id === currentAId || p.id === currentCId}>
-                    {p.name} ({p.sizes[0]?.pricePln} zł/{p.sizes[0]?.label})
+                    {p.name} ({p.sizes[0]?.pricePln} zł)
                   </option>
                 ))}
               </select>
 
-              <div className="flex gap-3 items-center pt-1">
+              <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
                 <img 
                   src={currentB.images?.[0] || currentB.imageUrl} 
                   alt={currentB.name}
-                  className="w-11 h-11 object-cover rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = currentB.imageUrl;
                   }}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
                       {currentB.name}
                     </h3>
                     {currentB.badge && (
-                      <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#D9821E] text-white shrink-0">
+                      <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#D9821E] text-white shrink-0">
                         {currentB.badge}
                       </span>
                     )}
                   </div>
-                  <p className="text-[10px] text-[#7A6A5A] italic truncate">
+                  <p className="hidden sm:block text-[10px] text-[#7A6A5A] italic truncate">
                     {currentB.botanicalSource}
                   </p>
-                  <div className="flex items-center gap-1 text-xs text-amber-500 mt-0.5">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span className="font-bold text-[#241D17] text-[10px]">{currentB.rating.toFixed(1)}</span>
-                    <span className="text-[9px] text-[#7A6A5A]">({currentB.reviewsCount})</span>
+                  <div className="flex items-center gap-1 text-[10px] sm:text-xs text-amber-500 mt-0.5">
+                    <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
+                    <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentB.rating.toFixed(1)}</span>
+                    <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentB.reviewsCount})</span>
                   </div>
                 </div>
               </div>
@@ -383,27 +383,27 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
             {/* COLUMN C HEADER (IF PRESENT) OR ADD THIRD BUTTON */}
             {hasThreeProducts && currentC && rawC ? (
-              <div className="bg-white p-3 rounded-2xl border border-[#2D6A4F]/40 shadow-2xs space-y-2 relative">
+              <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#2D6A4F]/40 shadow-2xs space-y-1.5 sm:space-y-2 relative">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-bold text-[#2D6A4F] uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center text-[10px] font-mono">C</span>
-                    <span>Miód C:</span>
+                  <label className="text-[10px] sm:text-[11px] font-bold text-[#2D6A4F] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                    <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">C</span>
+                    <span className="hidden xs:inline">Miód C:</span>
                   </label>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <button
                       onClick={() => handleOpenDetail(rawC)}
-                      className="text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-[10px] sm:text-[11px] font-bold text-[#D9821E] hover:underline flex items-center gap-0.5 sm:gap-1 cursor-pointer"
                     >
-                      <span>Karta miodu</span>
-                      <ExternalLink className="w-3 h-3" />
+                      <span className="hidden xs:inline">Karta</span>
+                      <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     </button>
                     <button
                       type="button"
                       onClick={handleRemoveThird}
-                      className="text-[11px] font-bold text-[#8C7A6B] hover:text-red-600 cursor-pointer p-0.5"
+                      className="text-[10px] sm:text-[11px] font-bold text-[#8C7A6B] hover:text-red-600 cursor-pointer p-0.5"
                       title="Usuń 3. miód z porównania"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -411,43 +411,43 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 <select
                   value={currentCId || ''}
                   onChange={(e) => setCurrentCId(e.target.value)}
-                  className="w-full bg-[#FAF6EE] text-xs font-bold text-[#241D17] py-2 px-2.5 rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer"
+                  className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                   id="select-porownaj-c"
                 >
                   {HONEY_PRODUCTS.map((p) => (
                     <option key={p.id} value={p.id} disabled={p.id === currentAId || p.id === currentBId}>
-                      {p.name} ({p.sizes[0]?.pricePln} zł/{p.sizes[0]?.label})
+                      {p.name} ({p.sizes[0]?.pricePln} zł)
                     </option>
                   ))}
                 </select>
 
-                <div className="flex gap-3 items-center pt-1">
+                <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
                   <img 
                     src={currentC.images?.[0] || currentC.imageUrl} 
                     alt={currentC.name}
-                    className="w-11 h-11 object-cover rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                    className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = currentC.imageUrl;
                     }}
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="text-xs sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                    <div className="flex items-center gap-1 sm:gap-1.5">
+                      <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
                         {currentC.name}
                       </h3>
                       {currentC.badge && (
-                        <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#2D6A4F] text-white shrink-0">
+                        <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#2D6A4F] text-white shrink-0">
                           {currentC.badge}
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-[#7A6A5A] italic truncate">
+                    <p className="hidden sm:block text-[10px] text-[#7A6A5A] italic truncate">
                       {currentC.botanicalSource}
                     </p>
-                    <div className="flex items-center gap-1 text-xs text-amber-500 mt-0.5">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <span className="font-bold text-[#241D17] text-[10px]">{currentC.rating.toFixed(1)}</span>
-                      <span className="text-[9px] text-[#7A6A5A]">({currentC.reviewsCount})</span>
+                    <div className="flex items-center gap-1 text-[10px] sm:text-xs text-amber-500 mt-0.5">
+                      <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
+                      <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentC.rating.toFixed(1)}</span>
+                      <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentC.reviewsCount})</span>
                     </div>
                   </div>
                 </div>
@@ -471,8 +471,8 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
           </div>
 
           {/* TAB BAR NAVIGATION */}
-          <div className="flex items-center justify-between gap-2 pt-3">
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center justify-between gap-2 pt-2 sm:pt-3">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none pb-0.5">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -481,14 +481,14 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 py-2 px-3.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    className={`flex items-center gap-1.5 sm:gap-2 py-1.5 sm:py-2 px-2.5 sm:px-3.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       isActive
                         ? 'bg-[#1B4332] text-white shadow-xs ring-2 ring-[#1B4332]/20'
                         : 'bg-white text-[#594D42] border border-[#D9821E]/25 hover:border-[#D9821E] hover:bg-[#FAF6EE]'
                     }`}
                     id={`tab-porownaj-${tab.id}`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#E6C065]' : 'text-[#D9821E]'}`} />
+                    <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isActive ? 'text-[#E6C065]' : 'text-[#D9821E]'}`} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -499,13 +499,22 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleAddThird()}
-                className="lg:hidden shrink-0 px-2.5 py-1.5 rounded-xl bg-[#FAF6EE] text-[#1B4332] border border-[#1B4332]/30 text-xs font-bold flex items-center gap-1 hover:bg-[#1B4332] hover:text-white transition-colors cursor-pointer"
+                className="lg:hidden shrink-0 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#FAF6EE] text-[#1B4332] border border-[#1B4332]/30 text-[11px] sm:text-xs font-bold flex items-center gap-1 hover:bg-[#1B4332] hover:text-white transition-colors cursor-pointer"
                 title="Dodaj 3. miód do porównania"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>+ 3. miód</span>
               </button>
             )}
+          </div>
+
+          {/* Mobile Swipe Hint */}
+          <div className="sm:hidden flex items-center justify-between text-[10px] text-[#8C7A6B] bg-[#F5EDE0]/80 px-2.5 py-1 rounded-lg mt-2 border border-[#DFCBB5]/50">
+            <span className="flex items-center gap-1 font-medium">
+              <span>⇄</span>
+              <span>Przesuwaj w bok, aby porównać parametry</span>
+            </span>
+            <span className="font-semibold text-[#945209]">Kolumna cech przypięta</span>
           </div>
         </div>
 
@@ -514,11 +523,11 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
           ref={scrollContainerRef}
           data-lenis-prevent
           onWheel={(e) => e.stopPropagation()}
-          className="flex-1 min-h-0 overflow-y-auto overflow-x-auto overscroll-contain custom-modal-scroll p-4 sm:p-6 space-y-6"
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-auto overscroll-contain custom-modal-scroll p-2.5 sm:p-4 md:p-6 space-y-4 sm:space-y-6"
         >
           
           {/* COMPARISON TABLE */}
-          <div className={`${hasThreeProducts ? 'min-w-[840px]' : 'min-w-[660px]'} border border-[#D9821E]/20 rounded-2xl overflow-hidden shadow-xs bg-white`}>
+          <div className={`${hasThreeProducts ? 'min-w-[560px] sm:min-w-[840px]' : 'min-w-[420px] sm:min-w-[660px]'} border border-[#D9821E]/20 rounded-xl sm:rounded-2xl overflow-hidden shadow-xs bg-white`}>
             <table className="w-full border-collapse text-left">
               <thead>
                 <tr className="bg-[#FAF6EE] border-b border-[#D9821E]/20 text-xs font-bold text-[#7A6A5A] uppercase tracking-wider">
@@ -552,7 +561,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 {(activeTab === 'sensory' || activeTab === 'all') && (
                   <>
                     <tr className="bg-[#FAF3E5]/80">
-                      <td colSpan={colSpanVal} className="p-2.5 px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[11px] flex items-center gap-2">
+                      <td colSpan={colSpanVal} className="p-2 sm:p-2.5 px-3 sm:px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[10px] sm:text-[11px] sticky left-0 z-10 bg-[#FAF3E5] flex items-center gap-1.5 sm:gap-2">
                         <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
                         <span>1. Profil Smakowy i Sensoryczny</span>
                       </td>
@@ -560,10 +569,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Słodycz */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Poziom Słodyczy (1–5)
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -580,7 +589,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           {currentA.tasteProfile.sweetness}/5 ({currentA.tasteProfile.sweetness >= 4 ? 'Bardzo słodki' : currentA.tasteProfile.sweetness === 3 ? 'Umiarkowanie słodki' : 'Delikatny / wytrawny'})
                         </span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -598,7 +607,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="flex items-center gap-1.5 mb-1">
                             {[1, 2, 3, 4, 5].map((lvl) => (
                               <div 
@@ -620,10 +629,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Kwasowość */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Kwasowość & Przełamanie
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -640,7 +649,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           {currentA.tasteProfile.acidity}/5 ({currentA.tasteProfile.acidity >= 3 ? 'Wyrazista / odświeżająca' : 'Gładka / aksamitna'})
                         </span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -658,7 +667,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="flex items-center gap-1.5 mb-1">
                             {[1, 2, 3, 4, 5].map((lvl) => (
                               <div 
@@ -680,10 +689,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Intensywność Aromatu */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Intensywność Bukietu & Aromatu
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -700,7 +709,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           {currentA.tasteProfile.aroma}/5 ({currentA.tasteProfile.aroma >= 4 ? 'Mocny, głęboki, żywiczny' : 'Subtelny, kwiatowy'})
                         </span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1">
                           {[1, 2, 3, 4, 5].map((lvl) => (
                             <div 
@@ -718,7 +727,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="flex items-center gap-1.5 mb-1">
                             {[1, 2, 3, 4, 5].map((lvl) => (
                               <div 
@@ -740,13 +749,13 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Dominujące Nuty Smakowe */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         <div>
                           <span>Dominujące Nuty Smakowe</span>
                           <span className="block text-[10px] font-normal text-[#7A6A5A]">Kliknij nutę, aby filtrować</span>
                         </div>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex flex-wrap gap-1.5">
                           {(currentA.flavorNotes || currentA.tastingNotes || []).map((n, i) => (
                             <button
@@ -765,7 +774,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           ))}
                         </div>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="flex flex-wrap gap-1.5">
                           {(currentB.flavorNotes || currentB.tastingNotes || []).map((n, i) => (
                             <button
@@ -785,7 +794,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </div>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="flex flex-wrap gap-1.5">
                             {(currentC.flavorNotes || currentC.tastingNotes || []).map((n, i) => (
                               <button
@@ -809,19 +818,19 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Krystalizacja i Barwa */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Struktura & Barwa
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15 space-y-1">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 space-y-1 text-[11px] sm:text-xs">
                         <p><strong className="text-[#241D17]">Krystalizacja:</strong> {currentA.tasteProfile.crystallization}</p>
                         <p><strong className="text-[#241D17]">Barwa:</strong> {currentA.tasteProfile.color}</p>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15 space-y-1">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 space-y-1 text-[11px] sm:text-xs">
                         <p><strong className="text-[#241D17]">Krystalizacja:</strong> {currentB.tasteProfile.crystallization}</p>
                         <p><strong className="text-[#241D17]">Barwa:</strong> {currentB.tasteProfile.color}</p>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15 space-y-1">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 space-y-1 text-[11px] sm:text-xs">
                           <p><strong className="text-[#241D17]">Krystalizacja:</strong> {currentC.tasteProfile.crystallization}</p>
                           <p><strong className="text-[#241D17]">Barwa:</strong> {currentC.tasteProfile.color}</p>
                         </td>
@@ -834,7 +843,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 {(activeTab === 'pricing' || activeTab === 'all') && (
                   <>
                     <tr className="bg-[#FAF3E5]/80">
-                      <td colSpan={colSpanVal} className="p-2.5 px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[11px] flex items-center gap-2">
+                      <td colSpan={colSpanVal} className="p-2 sm:p-2.5 px-3 sm:px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[10px] sm:text-[11px] sticky left-0 z-10 bg-[#FAF3E5] flex items-center gap-1.5 sm:gap-2">
                         <ShoppingBag className="w-3.5 h-3.5 text-[#D9821E]" />
                         <span>2. Ceny i Gramatury Słoików</span>
                       </td>
@@ -842,10 +851,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Sizes breakdown */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Dostępne Warianty & Cena / kg
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="space-y-1.5">
                           {currentA.sizesList.map((s, idx) => (
                             <div key={idx} className="flex items-baseline justify-between bg-[#FAF6EE] px-2.5 py-1.5 rounded-lg border border-[#D9821E]/10">
@@ -855,7 +864,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           ))}
                         </div>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="space-y-1.5">
                           {currentB.sizesList.map((s, idx) => (
                             <div key={idx} className="flex items-baseline justify-between bg-[#FAF6EE] px-2.5 py-1.5 rounded-lg border border-[#D9821E]/10">
@@ -866,7 +875,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </div>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="space-y-1.5">
                             {currentC.sizesList.map((s, idx) => (
                               <div key={idx} className="flex items-baseline justify-between bg-[#FAF6EE] px-2.5 py-1.5 rounded-lg border border-[#D9821E]/10">
@@ -881,10 +890,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Szybki Zakup */}
                     <tr className="bg-white">
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Szybki Zakup z Porównywarki
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="space-y-2">
                           <div className="flex gap-1.5">
                             {currentA.sizesList.map((g, i) => (
@@ -922,7 +931,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </div>
                       </td>
 
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <div className="space-y-2">
                           <div className="flex gap-1.5">
                             {currentB.sizesList.map((g, i) => (
@@ -961,7 +970,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       </td>
 
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <div className="space-y-2">
                             <div className="flex gap-1.5">
                               {currentC.sizesList.map((g, i) => (
@@ -1007,7 +1016,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 {(activeTab === 'health_lab' || activeTab === 'all') && (
                   <>
                     <tr className="bg-[#FAF3E5]/80">
-                      <td colSpan={colSpanVal} className="p-2.5 px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[11px] flex items-center gap-2">
+                      <td colSpan={colSpanVal} className="p-2 sm:p-2.5 px-3 sm:px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[10px] sm:text-[11px] sticky left-0 z-10 bg-[#FAF3E5] flex items-center gap-1.5 sm:gap-2">
                         <Heart className="w-3.5 h-3.5 text-[#D9821E]" />
                         <span>3. Właściwości Zdrowotne & Badania PIW</span>
                       </td>
@@ -1015,10 +1024,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Zdrowie */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Działanie Prozdrowotne
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <ul className="space-y-1.5">
                           {currentA.healthBenefits.map((benefit, i) => (
                             <li key={i} className="flex items-start gap-1.5 leading-tight">
@@ -1028,7 +1037,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           ))}
                         </ul>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <ul className="space-y-1.5">
                           {currentB.healthBenefits.map((benefit, i) => (
                             <li key={i} className="flex items-start gap-1.5 leading-tight">
@@ -1039,7 +1048,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </ul>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <ul className="space-y-1.5">
                             {currentC.healthBenefits.map((benefit, i) => (
                               <li key={i} className="flex items-start gap-1.5 leading-tight">
@@ -1054,19 +1063,19 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Wilgotność */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Zawartość Wody (Wilgotność)
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#1B4332] text-sm">{currentA.labAnalysis.waterContent}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.waterContent}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.waterContent}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                         </td>
@@ -1075,19 +1084,19 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Liczba Diastazowa */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Liczba Diastazowa (Enzymy)
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#1B4332] text-sm">{currentA.labAnalysis.diastaseNumber}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.diastaseNumber}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.diastaseNumber}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                         </td>
@@ -1096,19 +1105,19 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* HMF */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Wskaźnik HMF (Świeżość)
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#1B4332] text-sm">{currentA.labAnalysis.hmf}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.hmf}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.hmf}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
                         </td>
@@ -1117,19 +1126,19 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Region */}
                     <tr>
-                      <td className="p-3.5 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40">
+                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
                         Pochodzenie & Zbiory
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <p className="font-bold text-[#241D17]">{currentA.region}</p>
                         <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentA.harvestYear} • 100% Pasieka Warmia</p>
                       </td>
-                      <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <p className="font-bold text-[#241D17]">{currentB.region}</p>
                         <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentB.harvestYear} • 100% Pasieka Warmia</p>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-3.5 px-4 border-l border-[#D9821E]/15">
+                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <p className="font-bold text-[#241D17]">{currentC.region}</p>
                           <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentC.harvestYear} • 100% Pasieka Warmia</p>
                         </td>
@@ -1142,7 +1151,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 {(activeTab === 'culinary_verdict' || activeTab === 'all') && (
                   <>
                     <tr className="bg-[#FAF3E5]/90">
-                      <td colSpan={colSpanVal} className="p-3 px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[11px] flex items-center gap-2">
+                      <td colSpan={colSpanVal} className="p-2 sm:p-2.5 px-3 sm:px-4 font-bold text-[#1B4332] uppercase tracking-wider text-[10px] sm:text-[11px] sticky left-0 z-10 bg-[#FAF3E5] flex items-center gap-1.5 sm:gap-2">
                         <Award className="w-4 h-4 text-[#D9821E]" />
                         <span>4. Zastosowania Kulinarne, Pairing & Werdykt Doradcy</span>
                       </td>
@@ -1150,14 +1159,14 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* Food Pairing */}
                     <tr>
-                      <td className="p-4 px-4 font-semibold text-[#241D17] bg-[#FAF6EE]/40 align-top">
+                      <td className="p-2.5 sm:p-4 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] align-top text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1 text-[#1B4332]">
                           <Utensils className="w-3.5 h-3.5 text-[#D9821E]" />
                           <span className="font-bold text-xs">Rekomendowany Food-Pairing</span>
                         </div>
                         <span className="text-[11px] text-[#7A6A5A]">Do czego najlepiej pasuje?</span>
                       </td>
-                      <td className="p-4 px-4 border-l border-[#D9821E]/15 bg-white align-top">
+                      <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
                         <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
                           „{currentA.pairing}”
                         </div>
@@ -1165,7 +1174,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           <strong className="text-[#241D17]">Wskazówka mistrza:</strong> Idealnie komponuje się z białymi serami, chrupiącym żytnim pieczywem oraz naparami ziołowymi.
                         </div>
                       </td>
-                      <td className="p-4 px-4 border-l border-[#D9821E]/15 bg-white align-top">
+                      <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
                         <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
                           „{currentB.pairing}”
                         </div>
@@ -1174,7 +1183,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         </div>
                       </td>
                       {hasThreeProducts && currentC && (
-                        <td className="p-4 px-4 border-l border-[#D9821E]/15 bg-white align-top">
+                        <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
                           <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
                             „{currentC.pairing}”
                           </div>
@@ -1187,7 +1196,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                     {/* WERDYKT DORADCY */}
                     <tr className="bg-[#FAF6EE]/70">
-                      <td className="p-4 px-4 font-bold text-[#1B4332] bg-[#FAF6EE] align-top">
+                      <td className="p-2.5 sm:p-4 px-2 sm:px-4 font-bold text-[#1B4332] sticky left-0 bg-[#FAF6EE] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] align-top text-[11px] sm:text-xs">
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <Award className="w-4 h-4 text-[#D9821E]" />
                           <span className="uppercase tracking-wider text-xs font-bold">Werdykt Doradcy</span>
@@ -1198,7 +1207,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       </td>
 
                       {/* Werdykt Miód A */}
-                      <td className="p-4 px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-3">
+                      <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-2.5 sm:space-y-3">
                         <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#D9821E]/25 shadow-2xs">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-[#1B4332]">
@@ -1223,7 +1232,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       </td>
 
                       {/* Werdykt Miód B */}
-                      <td className="p-4 px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-3">
+                      <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-2.5 sm:space-y-3">
                         <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#D9821E]/25 shadow-2xs">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-[#D9821E]">
@@ -1249,7 +1258,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                       {/* Werdykt Miód C (if present) */}
                       {hasThreeProducts && currentC && rawC && (
-                        <td className="p-4 px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-3">
+                        <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-2.5 sm:space-y-3">
                           <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#2D6A4F]/30 shadow-2xs">
                             <div className="flex items-center justify-between mb-1.5">
                               <span className="text-[11px] font-bold uppercase tracking-wider text-[#2D6A4F]">
@@ -1282,7 +1291,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
           </div>
 
           {/* Bottom Quality Note */}
-          <div className="p-4 bg-[#FAF6EE] rounded-2xl border border-[#D9821E]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#594D42]">
+          <div className="p-3 sm:p-4 bg-[#FAF6EE] rounded-xl sm:rounded-2xl border border-[#D9821E]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] sm:text-xs text-[#594D42]">
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-[#1B4332] shrink-0" />
               <span>
