@@ -129,38 +129,37 @@ export const HERO_VARIETIES: VarietyItem[] = [
     cardTastingTip: 'Wypróbuj z mocną czarną herbatą z plastrem imbiru — genialnie rozgrzewa po jesiennym spacerze.'
   },
   {
-    id: 'spadziowy',
-    product: HONEY_PRODUCTS[3],
-    defaultVideoUrl: '/videos/spadziowy.mp4',
-    tagline: 'Szlachetny, gęsty miód z mazurskich borów świerkowych i jodłowych. Żywiczny zapach lasu i naturalne wsparcie odporności.',
-    vintageYear: 'Zbiór Leśny 2026',
-    terroirLocation: 'Puszcza Piska • Mazurskie Bory',
-    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
-    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
-    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
-    ambientToneHex: '#4D6B35',
-    badge: 'Skarb Mazurskich Borów',
-    cardCategorySubtitle: 'PUSZCZA PISKA • BORY MAZURSKIE',
-    cardMainTitle: 'Skarb Borów & Minerały',
-    cardBadgeIcon: 'trees',
+    id: 'akacja',
+    product: HONEY_PRODUCTS[2],
+    tagline: 'Złocisto-jasny, wyjątkowo łagodny nektar z białej akacji. Długo płynny, aksamitny – słodzi zioła bez zmiany ich naturalnego smaku.',
+    vintageYear: 'Zbiór Czerwcowy 2026',
+    terroirLocation: 'Dolina rzeki Łyny • Czysta Warmia',
+    pollenNote: 'Nektar z robinii akacjowej • Wyjątkowo łagodny dla żołądka',
+    flavorTastingNotes: 'Niezwykle subtelny, z nutą wanilii i wiosennych kwiatów, aksamitnie gładki na języku.',
+    teaPairingNote: 'Wspaniale słodzi herbatę rumiankową, miętę, melisę i zieloną herbatę.',
+    ambientToneHex: '#DDA83B',
+    badge: 'Delikatny i Łagodny',
+    cardCategorySubtitle: 'DOLINA RZEKI ŁYNY • MAZURSKIE ROBINIE',
+    cardMainTitle: 'Aksamitny Nektar & Żołądek',
+    cardBadgeIcon: 'feather',
     cardFeatures: [
       {
-        title: '9x więcej biopierwiastków',
-        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
-        iconName: 'trees'
+        title: 'Najłagodniejszy dla żołądka',
+        description: 'Wyjątkowo niska kwasowość i aksamitna delikatność. Polecany przy kłopotach trawiennych, zgadze i dla dzieci.',
+        iconName: 'feather'
       },
       {
-        title: 'Żywiczny aromat lasu',
-        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
+        title: 'Miesiącami płynny (patoka)',
+        description: 'Wysoka zawartość naturalnej fruktozy sprawia, że krystalizuje najwolniej ze wszystkich polskich miodów.',
         iconName: 'droplets'
       },
       {
-        title: 'Królewska tarcza odporności',
-        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
-        iconName: 'shield'
+        title: 'Czysty słodzik niepsujący ziół',
+        description: 'Subtelny, waniliowy bukiet nie zmienia smaku delikatnych ziół, mięty, rumianku, melisy czy herbaty zielonej.',
+        iconName: 'coffee'
       }
     ],
-    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
+    cardTastingTip: 'Znakomity do słodzenia wieczornych ziół wyciszających i letnich domowych lemoniad.'
   },
   {
     id: 'malina',
@@ -229,37 +228,38 @@ export const HERO_VARIETIES: VarietyItem[] = [
     cardTastingTip: 'Niezrównany rano na chrupiącą bułkę z wiejskim masłem do kubka kawy zbożowej lub mleka.'
   },
   {
-    id: 'akacja',
-    product: HONEY_PRODUCTS[2],
-    tagline: 'Złocisto-jasny, wyjątkowo łagodny nektar z białej akacji. Długo płynny, aksamitny – słodzi zioła bez zmiany ich naturalnego smaku.',
-    vintageYear: 'Zbiór Czerwcowy 2026',
-    terroirLocation: 'Dolina rzeki Łyny • Czysta Warmia',
-    pollenNote: 'Nektar z robinii akacjowej • Wyjątkowo łagodny dla żołądka',
-    flavorTastingNotes: 'Niezwykle subtelny, z nutą wanilii i wiosennych kwiatów, aksamitnie gładki na języku.',
-    teaPairingNote: 'Wspaniale słodzi herbatę rumiankową, miętę, melisę i zieloną herbatę.',
-    ambientToneHex: '#DDA83B',
-    badge: 'Delikatny i Łagodny',
-    cardCategorySubtitle: 'DOLINA RZEKI ŁYNY • MAZURSKIE ROBINIE',
-    cardMainTitle: 'Aksamitny Nektar & Żołądek',
-    cardBadgeIcon: 'feather',
+    id: 'spadziowy',
+    product: HONEY_PRODUCTS[3],
+    defaultVideoUrl: '/videos/spadziowy.mp4',
+    tagline: 'Szlachetny, gęsty miód z mazurskich borów świerkowych i jodłowych. Żywiczny zapach lasu i naturalne wsparcie odporności.',
+    vintageYear: 'Zbiór Leśny 2026',
+    terroirLocation: 'Puszcza Piska • Mazurskie Bory',
+    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
+    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
+    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
+    ambientToneHex: '#4D6B35',
+    badge: 'Skarb Mazurskich Borów',
+    cardCategorySubtitle: 'PUSZCZA PISKA • BORY MAZURSKIE',
+    cardMainTitle: 'Skarb Borów & Minerały',
+    cardBadgeIcon: 'trees',
     cardFeatures: [
       {
-        title: 'Najłagodniejszy dla żołądka',
-        description: 'Wyjątkowo niska kwasowość i aksamitna delikatność. Polecany przy kłopotach trawiennych, zgadze i dla dzieci.',
-        iconName: 'feather'
+        title: '9x więcej biopierwiastków',
+        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
+        iconName: 'trees'
       },
       {
-        title: 'Miesiącami płynny (patoka)',
-        description: 'Wysoka zawartość naturalnej fruktozy sprawia, że krystalizuje najwolniej ze wszystkich polskich miodów.',
+        title: 'Żywiczny aromat lasu',
+        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
         iconName: 'droplets'
       },
       {
-        title: 'Czysty słodzik niepsujący ziół',
-        description: 'Subtelny, waniliowy bukiet nie zmienia smaku delikatnych ziół, mięty, rumianku, melisy czy herbaty zielonej.',
-        iconName: 'coffee'
+        title: 'Królewska tarcza odporności',
+        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
+        iconName: 'shield'
       }
     ],
-    cardTastingTip: 'Znakomity do słodzenia wieczornych ziół wyciszających i letnich domowych lemoniad.'
+    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
   },
 ];
 
