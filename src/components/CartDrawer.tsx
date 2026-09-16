@@ -44,7 +44,7 @@ const CART_UPSELL_ITEMS: {
       colorHex: '#D4A373',
       colorName: 'Naturalne drewno',
       sizes: [{ weightGrams: 20, label: '10 cm', pricePln: 8, inStock: true }],
-      imageUrl: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=400&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=400&q=80',
       rating: 5.0,
       reviewsCount: 84,
     },

@@ -84,10 +84,12 @@ export function getEnrichedProduct(product: HoneyProduct): HoneyProduct & Enrich
     ? 'Świeży Zbiór 2026'
     : undefined;
 
-  const images = GALLERY_MAP[product.id] || [
-    product.imageUrl,
-    ...DEFAULT_GALLERY.filter(img => img !== product.imageUrl).slice(0, 3),
-  ];
+  const images = (product.images && product.images.length > 0)
+    ? product.images
+    : (GALLERY_MAP[product.id] || [
+        product.imageUrl,
+        ...DEFAULT_GALLERY.filter(img => img !== product.imageUrl).slice(0, 3),
+      ]);
 
   // Mapowanie właściwości zdrowotnych wg specyfiki miodu
   let healthBenefits: string[] = [];
