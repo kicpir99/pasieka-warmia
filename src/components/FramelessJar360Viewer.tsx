@@ -1032,8 +1032,8 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
           </div>
         )}
 
-        {/* FRAME EXTRACTION PROGRESS */}
-        {isExtracting && (
+        {/* FRAME EXTRACTION PROGRESS (Admin tools only, never shown to regular visitors) */}
+        {showAdminTools && isExtracting && (
           <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 z-30 p-4 rounded-2xl bg-black/90 backdrop-blur-md border border-[#E5983A]/40 shadow-2xl space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-[#E5983A] font-semibold flex items-center gap-2">

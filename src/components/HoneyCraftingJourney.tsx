@@ -86,30 +86,47 @@ export const HoneyCraftingJourney: React.FC = () => {
     }
   }, []);
 
-  // Find the nearest loaded frame
+  // Find the nearest loaded frame with cached fast lookup
+  const lastFoundFrameRef = useRef<{ index: number; img: HTMLImageElement } | null>(null);
+
   const getNearestLoadedFrame = useCallback((targetIndex: number): HTMLImageElement | null => {
     const images = loadedImagesRef.current;
-    if (images[targetIndex]) return images[targetIndex];
+    if (images[targetIndex]) {
+      lastFoundFrameRef.current = { index: targetIndex, img: images[targetIndex]! };
+      return images[targetIndex];
+    }
+
+    if (lastFoundFrameRef.current && Math.abs(lastFoundFrameRef.current.index - targetIndex) <= 2) {
+      return lastFoundFrameRef.current.img;
+    }
 
     for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
       if (targetIndex - offset >= 0 && images[targetIndex - offset]) {
-        return images[targetIndex - offset];
+        const found = images[targetIndex - offset]!;
+        lastFoundFrameRef.current = { index: targetIndex - offset, img: found };
+        return found;
       }
       if (targetIndex + offset < TOTAL_FRAMES && images[targetIndex + offset]) {
-        return images[targetIndex + offset];
+        const found = images[targetIndex + offset]!;
+        lastFoundFrameRef.current = { index: targetIndex + offset, img: found };
+        return found;
       }
     }
     return null;
   }, []);
 
   const isSectionVisibleRef = useRef<boolean>(true);
+  const lastDrawnImageRef = useRef<HTMLImageElement | null>(null);
 
   const renderFrame = useCallback((targetIndex: number) => {
     currentFrameRef.current = targetIndex;
     if (!isSectionVisibleRef.current) return;
     const img = getNearestLoadedFrame(targetIndex);
     if (img && img.complete) {
-      drawImageToCanvas(img);
+      if (lastDrawnImageRef.current !== img) {
+        lastDrawnImageRef.current = img;
+        drawImageToCanvas(img);
+      }
     }
   }, [getNearestLoadedFrame, drawImageToCanvas]);
 
@@ -139,7 +156,7 @@ export const HoneyCraftingJourney: React.FC = () => {
     });
   };
 
-  // Preload frames progressively: milestone pass first, then all frames smoothly in the background
+  // Preload frames progressively: start immediately in the background so frames are ready before user reaches section 2
   useEffect(() => {
     let isCancelled = false;
 
@@ -156,9 +173,9 @@ export const HoneyCraftingJourney: React.FC = () => {
       if (hasStartedFullPreload || isCancelled) return;
       hasStartedFullPreload = true;
 
-      // 2. Priority pass: milestone frames every 5 frames for instant response across the full timeline
+      // 2. Priority pass: milestone frames every 4 frames for instant coverage across the whole timeline
       const priorityIndices: number[] = [];
-      for (let i = 0; i < TOTAL_FRAMES; i += 5) {
+      for (let i = 0; i < TOTAL_FRAMES; i += 4) {
         priorityIndices.push(i);
       }
 
@@ -173,7 +190,7 @@ export const HoneyCraftingJourney: React.FC = () => {
         }
       }
 
-      // 3. Background pass: load ALL remaining frames for 100% frame-perfect smoothness and zero jumping during slow deceleration
+      // 3. Background pass: load ALL remaining frames so there are never missing frames during slow stopping
       const remainingIndices: number[] = [];
       for (let i = 0; i < TOTAL_FRAMES; i++) {
         if (!loadedImagesRef.current[i]) {
@@ -193,7 +210,12 @@ export const HoneyCraftingJourney: React.FC = () => {
       }
     };
 
-    // Use IntersectionObserver with generous rootMargin (600px) so preloading starts smoothly
+    // Start background preloading after a tiny 200ms delay so Hero renders instantly first
+    const autoTimer = setTimeout(() => {
+      startFullPreload();
+    }, 200);
+
+    // Also observe intersection to ensure section visibility flag is accurate
     let observer: IntersectionObserver | null = null;
     if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
       observer = new IntersectionObserver(
@@ -208,12 +230,11 @@ export const HoneyCraftingJourney: React.FC = () => {
         { rootMargin: '600px 0px 600px 0px', threshold: 0.01 }
       );
       observer.observe(containerRef.current);
-    } else {
-      startFullPreload();
     }
 
     return () => {
       isCancelled = true;
+      clearTimeout(autoTimer);
       if (observer) {
         observer.disconnect();
       }
@@ -238,6 +259,8 @@ export const HoneyCraftingJourney: React.FC = () => {
         ctxRef.current.imageSmoothingEnabled = true;
         ctxRef.current.imageSmoothingQuality = 'medium';
       }
+      // Force repaint with new canvas size
+      lastDrawnImageRef.current = null;
       renderFrame(currentFrameRef.current);
     };
 
@@ -247,23 +270,20 @@ export const HoneyCraftingJourney: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [renderFrame]);
 
-  // GSAP ScrollTrigger Setup with Smooth Interpolated Frame Scrubbing
+  // GSAP ScrollTrigger Setup with Direct 1:1 Scrubbing (no artificial lagging or hesitation on stopping)
   useEffect(() => {
     if (!containerRef.current) return;
 
     const ctx = gsap.context(() => {
       const frameState = { frame: 0 };
-      const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-      // 0.35s on touch devices eliminates lagging deceleration stutter while preserving silky momentum
-      const scrubDamping = isTouch ? 0.35 : 0.6;
 
-      // Main scrubbing timeline with smooth GSAP scrub
+      // scrub: true binds directly to scroll position without artificial secondary deceleration
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: scrubDamping,
+          scrub: true,
         }
       });
 
@@ -285,51 +305,52 @@ export const HoneyCraftingJourney: React.FC = () => {
 
       const isMobile = window.innerWidth < 640;
       const moveX = isMobile ? 20 : 140;
-      const moveY = isMobile ? 0 : 80; // Na mobile brak pionowego przesunięcia, aby tekst nie wylatywał za górną krawędź
+      const moveY = isMobile ? 0 : 80;
       const exitX = isMobile ? 16 : 90;
-      const exitY = isMobile ? 0 : 40; // Na mobile brak ucieczki w górę ekranu
+      const exitY = isMobile ? 0 : 40;
 
-      // --- KROK 1: 0% - 24% (Lewa góra - wjeżdża z boku w górne pole) ---
+      // Pure GPU hardware-accelerated transforms (autoAlpha, translate3d, scale) without expensive CSS blur
+      // --- KROK 1: 0% - 24% ---
       tl.fromTo(step1Ref.current, 
-        { autoAlpha: 0, x: -moveX, y: -moveY, scale: 0.94, filter: 'blur(8px)' }, 
-        { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.08, ease: 'power3.out' }, 
+        { autoAlpha: 0, x: -moveX, y: -moveY, scale: 0.94 }, 
+        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.08, ease: 'power2.out' }, 
         0.02
       )
       .to(step1Ref.current, 
-        { autoAlpha: 0, x: -exitX, y: -exitY, scale: 0.96, filter: 'blur(8px)', duration: 0.06, ease: 'power2.in' }, 
+        { autoAlpha: 0, x: -exitX, y: -exitY, scale: 0.96, duration: 0.06, ease: 'power2.in' }, 
         0.18
       );
 
-      // --- KROK 2: 25% - 49% (Prawy dół - wjeżdża w dolne pole) ---
+      // --- KROK 2: 25% - 49% ---
       tl.fromTo(step2Ref.current, 
-        { autoAlpha: 0, x: moveX, y: moveY, scale: 0.94, filter: 'blur(8px)' }, 
-        { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.08, ease: 'power3.out' }, 
+        { autoAlpha: 0, x: moveX, y: moveY, scale: 0.94 }, 
+        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.08, ease: 'power2.out' }, 
         0.26
       )
       .to(step2Ref.current, 
-        { autoAlpha: 0, x: exitX, y: exitY, scale: 0.96, filter: 'blur(8px)', duration: 0.06, ease: 'power2.in' }, 
+        { autoAlpha: 0, x: exitX, y: exitY, scale: 0.96, duration: 0.06, ease: 'power2.in' }, 
         0.43
       );
 
-      // --- KROK 3: 50% - 74% (Prawa góra - wjeżdża w górne pole) ---
+      // --- KROK 3: 50% - 74% ---
       tl.fromTo(step3Ref.current, 
-        { autoAlpha: 0, x: moveX, y: -moveY, scale: 0.94, filter: 'blur(8px)' }, 
-        { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.08, ease: 'power3.out' }, 
+        { autoAlpha: 0, x: moveX, y: -moveY, scale: 0.94 }, 
+        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.08, ease: 'power2.out' }, 
         0.51
       )
       .to(step3Ref.current, 
-        { autoAlpha: 0, x: exitX, y: -exitY, scale: 0.96, filter: 'blur(8px)', duration: 0.06, ease: 'power2.in' }, 
+        { autoAlpha: 0, x: exitX, y: -exitY, scale: 0.96, duration: 0.06, ease: 'power2.in' }, 
         0.68
       );
 
-      // --- KROK 4: 75% - 100% (Lewy dół - wjeżdża w dolne pole) ---
+      // --- KROK 4: 75% - 100% ---
       tl.fromTo(step4Ref.current, 
-        { autoAlpha: 0, x: -moveX, y: moveY, scale: 0.94, filter: 'blur(8px)' }, 
-        { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.08, ease: 'power3.out' }, 
+        { autoAlpha: 0, x: -moveX, y: moveY, scale: 0.94 }, 
+        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.08, ease: 'power2.out' }, 
         0.75
       )
       .to(step4Ref.current, 
-        { autoAlpha: 0, x: -exitX, y: exitY, scale: 0.96, filter: 'blur(8px)', duration: 0.06, ease: 'power2.in' }, 
+        { autoAlpha: 0, x: -exitX, y: exitY, scale: 0.96, duration: 0.06, ease: 'power2.in' }, 
         0.94
       );
 

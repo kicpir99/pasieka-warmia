@@ -20,63 +20,127 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
   useEffect(() => {
     let isMounted = true;
     const startTime = performance.now();
-    const minDisplayTimeMs = 1700; // Płynny, aksamitny czas powitania
-    let spriteDone = false;
-    let imagesDone = false;
+    const minDisplayTimeMs = 1200; // Minimalny czas dla zachowania płynnej estetyki powitania
     let finished = false;
 
-    // 1. Preload kluczowych zasobów startowych w tle przeglądarki dla 3 widocznych słoików i wstęg
-    const preloadAssets = () => {
-      const criticalUrls = [
-        getAssetUrl('sprites/lipowy.webp'),
-        getAssetUrl('sprites/gryczany.webp'),
-        getAssetUrl('sprites/spadziowy.webp'),
-        getAssetUrl('assets/honey-ribbon-front.png'),
-        getAssetUrl('assets/honey-ribbon-back.png'),
-      ];
-      criticalUrls.forEach((url) => {
-        const img = new Image();
-        img.src = url;
-      });
+    let spritePct = 0;
+    let spriteDone = false;
+    let ribbonsDone = false;
+    let sec2Pct = 0;
+    let sec2Done = false;
+    let targetP = 5;
+
+    const checkProgress = () => {
+      if (!isMounted || finished) return;
+      const computed = Math.min(
+        100,
+        Math.round((spritePct * 0.55) + (ribbonsDone ? 15 : 0) + (sec2Pct * 0.30))
+      );
+      targetP = Math.max(targetP, computed);
     };
-    preloadAssets();
 
-    const durationMs = 1900; // Płynny, aksamitny czas powitania (~1.9s)
-    let lastP = 0;
+    // 1. Prawdziwe ładowanie i rozcinanie sprajtów 360° dla głównego miodu lipowego w pamięci
+    const spriteInfo = BUNDLED_VARIETY_SPRITES['lipowy'];
+    if (spriteInfo) {
+      loadFramesFromSpriteSheet({
+        varietyId: 'lipowy',
+        spriteInfo,
+        onProgress: (pct) => {
+          spritePct = pct;
+          checkProgress();
+        }
+      }).then(() => {
+        spriteDone = true;
+        spritePct = 100;
+        checkProgress();
+      }).catch(() => {
+        spriteDone = true;
+        spritePct = 100;
+        checkProgress();
+      });
+    } else {
+      spriteDone = true;
+      spritePct = 100;
+    }
 
-    // Ciągła, aksamitna pętla przyrostu procentowego od 0% do 100% bez jakichkolwiek przestojów
+    // 2. Prawdziwe ładowanie i dekodowanie wstęg miodowych
+    const ribbonUrls = [
+      getAssetUrl('assets/honey-ribbon-front.png'),
+      getAssetUrl('assets/honey-ribbon-back.png'),
+    ];
+    Promise.all(ribbonUrls.map(url => new Promise(res => {
+      const img = new Image();
+      img.src = url;
+      img.onload = async () => {
+        try {
+          if ('decode' in img) await img.decode();
+        } catch {}
+        res(true);
+      };
+      img.onerror = () => res(false);
+    }))).then(() => {
+      ribbonsDone = true;
+      checkProgress();
+    });
+
+    // 3. Prawdziwe ładowanie pierwszych 25 klatek sekcji 2 (3D scrolling wideo)
+    const initialSection2Indices = Array.from({ length: 25 }, (_, i) => i);
+    let sec2Count = 0;
+    Promise.all(initialSection2Indices.map(idx => new Promise(res => {
+      const frameNum = (idx + 1).toString().padStart(3, '0');
+      const img = new Image();
+      img.src = getAssetUrl(`frames/wyrob/${frameNum}.webp`);
+      img.onload = async () => {
+        try {
+          if ('decode' in img) await img.decode();
+        } catch {}
+        sec2Count++;
+        sec2Pct = Math.round((sec2Count / 25) * 100);
+        checkProgress();
+        res(true);
+      };
+      img.onerror = () => res(false);
+    }))).then(() => {
+      sec2Done = true;
+      sec2Pct = 100;
+      checkProgress();
+    });
+
+    let currentVisualP = 0;
+
     const interval = setInterval(() => {
       if (!isMounted || finished) return;
 
       const elapsed = performance.now() - startTime;
-      const t = Math.min(1, elapsed / durationMs);
+      const isReadyToComplete = (spriteDone && ribbonsDone && sec2Done && elapsed >= minDisplayTimeMs) || elapsed > 3600;
 
-      // Aksamitny, naturalny easing (płynny start, jednostajny bieg, miękki finisz)
-      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      const currentP = Math.min(100, Math.round(eased * 100));
-
-      if (currentP !== lastP) {
-        lastP = currentP;
-        setProgress(currentP);
-
-        // Naturalna narracja rzemieślnicza w pasiece Święta Lipka
-        if (currentP < 16) {
-          setStatusText('Inicjalizacja pasieki Święta Lipka...');
-        } else if (currentP < 38) {
-          setStatusText('Budzenie uli i zbiór nektaru przez pszczoły...');
-        } else if (currentP < 60) {
-          setStatusText('Wyciąganie i odsklepianie ramek miodowych...');
-        } else if (currentP < 80) {
-          setStatusText('Wirowanie miodu na zimno i filtracja...');
-        } else if (currentP < 98) {
-          setStatusText('Napełnianie słoików i kalibracja modeli 3D...');
-        } else {
-          setStatusText('Świeży miód gotowy do degustacji!');
-        }
+      if (isReadyToComplete) {
+        targetP = 100;
       }
 
-      // Po osiągnięciu 100% zainicjuj aksamitne odsłonięcie strony
-      if (currentP >= 100 && !finished) {
+      // Płynny lerp w stronę targetP
+      const diff = targetP - currentVisualP;
+      if (diff > 0) {
+        currentVisualP += Math.max(1, Math.ceil(diff * 0.14));
+      }
+      currentVisualP = Math.min(100, currentVisualP);
+
+      setProgress(currentVisualP);
+
+      // Aktualizacja statusu
+      if (currentVisualP < 25) {
+        setStatusText('Inicjalizacja pasieki Święta Lipka...');
+      } else if (currentVisualP < 55) {
+        setStatusText('Kalibracja modeli 3D i obrotów słoików...');
+      } else if (currentVisualP < 85) {
+        setStatusText('Przygotowywanie widoku 3D miodobrania...');
+      } else if (currentVisualP < 100) {
+        setStatusText('Napełnianie słoików świeżym miodem...');
+      } else {
+        setStatusText('Świeży miód gotowy do degustacji!');
+      }
+
+      if (currentVisualP >= 100 && isReadyToComplete && !finished) {
         finished = true;
         clearInterval(interval);
         setTimeout(() => {
@@ -87,7 +151,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
               if (isMounted) setIsRemoved(true);
             }, 750);
           }
-        }, 220);
+        }, 180);
       }
     }, 20);
 
