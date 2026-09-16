@@ -89,10 +89,18 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
   }, [navigateToIndex, selectedIndex]);
 
   // Touch Swipe Navigation on Carousel Stage
+  // IMPORTANT: Must NOT fire when the user is dragging the active center jar to rotate it 360°.
+  // The 360° viewer uses pointer events (separate from touch events), so we detect the touch target.
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const touchStartedOnActiveJarRef = useRef<boolean>(false);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Check if this touch started on the active jar's 360° drag stage
+    const target = e.target as HTMLElement;
+    const isOnActiveStage = target.closest?.('[data-frameless-360-stage]') !== null;
+    touchStartedOnActiveJarRef.current = isOnActiveStage;
+
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
   };
@@ -101,8 +109,13 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
     if (touchStartXRef.current === null || touchStartYRef.current === null) return;
     const dx = e.changedTouches[0].clientX - touchStartXRef.current;
     const dy = e.changedTouches[0].clientY - touchStartYRef.current;
+    const wasOnActiveJar = touchStartedOnActiveJarRef.current;
     touchStartXRef.current = null;
     touchStartYRef.current = null;
+    touchStartedOnActiveJarRef.current = false;
+
+    // If the touch originated on the active jar's 360° rotation area, do NOT treat it as a carousel swipe
+    if (wasOnActiveJar) return;
 
     if (Math.abs(dx) > 38 && Math.abs(dx) > Math.abs(dy) * 1.2) {
       if (dx < 0) {

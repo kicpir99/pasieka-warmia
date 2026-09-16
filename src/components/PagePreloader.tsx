@@ -39,29 +39,44 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
       targetP = Math.max(targetP, computed);
     };
 
-    // 1. Prawdziwe ładowanie i rozcinanie sprajtów 360° dla głównego miodu lipowego w pamięci
-    const spriteInfo = BUNDLED_VARIETY_SPRITES['lipowy'];
-    if (spriteInfo) {
-      loadFramesFromSpriteSheet({
-        varietyId: 'lipowy',
+    // 1. Prawdziwe ładowanie i rozcinanie sprajtów 360° dla WSZYSTKICH odmian karuzeli w pamięci
+    // Gwarantuje, że po zakończeniu preloadera żadna karuzela nie wyświetli pustych slotów
+    const carouselVarietyIds = ['lipowy', 'gryczany', 'spadziowy'];
+    let totalSpritesPct = 0;
+    const spritesCount = carouselVarietyIds.filter(id => BUNDLED_VARIETY_SPRITES[id]).length;
+    let spritesCompleted = 0;
+
+    const spritePromises = carouselVarietyIds.map(id => {
+      const spriteInfo = BUNDLED_VARIETY_SPRITES[id];
+      if (!spriteInfo) {
+        spritesCompleted++;
+        return Promise.resolve();
+      }
+      return loadFramesFromSpriteSheet({
+        varietyId: id,
         spriteInfo,
         onProgress: (pct) => {
-          spritePct = pct;
+          // Uśredniamy postęp wszystkich sprajtów
+          totalSpritesPct = Math.round(((spritesCompleted * 100 + pct) / spritesCount));
+          spritePct = Math.min(100, totalSpritesPct);
           checkProgress();
         }
       }).then(() => {
-        spriteDone = true;
-        spritePct = 100;
+        spritesCompleted++;
+        spritePct = Math.round((spritesCompleted / spritesCount) * 100);
         checkProgress();
       }).catch(() => {
-        spriteDone = true;
-        spritePct = 100;
+        spritesCompleted++;
+        spritePct = Math.round((spritesCompleted / spritesCount) * 100);
         checkProgress();
       });
-    } else {
+    });
+
+    Promise.all(spritePromises).then(() => {
       spriteDone = true;
       spritePct = 100;
-    }
+      checkProgress();
+    });
 
     // 2. Prawdziwe ładowanie i dekodowanie wstęg miodowych
     const ribbonUrls = [
@@ -112,7 +127,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
       if (!isMounted || finished) return;
 
       const elapsed = performance.now() - startTime;
-      const isReadyToComplete = (spriteDone && ribbonsDone && sec2Done && elapsed >= minDisplayTimeMs) || elapsed > 3600;
+      const isReadyToComplete = (spriteDone && ribbonsDone && sec2Done && elapsed >= minDisplayTimeMs) || elapsed > 6000;
 
       if (isReadyToComplete) {
         targetP = 100;

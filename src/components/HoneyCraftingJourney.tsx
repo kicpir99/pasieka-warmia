@@ -277,13 +277,15 @@ export const HoneyCraftingJourney: React.FC = () => {
     const ctx = gsap.context(() => {
       const frameState = { frame: 0 };
 
-      // scrub: true binds directly to scroll position without artificial secondary deceleration
+      // scrub: 2.5 provides ~2.5s of GSAP-side interpolation for silky smooth deceleration
+      // This masks Lenis's micro-position updates during momentum decay and creates
+      // a cinematic ease-out when the user lifts their finger or stops the scroll wheel
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: true,
+          scrub: 2.5,
         }
       });
 

@@ -445,6 +445,15 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
             framesRef.current = defaultFrames;
             setFrameDimensions({ width: 640, height: 640 });
             currentRenderedFrameIdx.current = -1;
+            // Cache procedural frames so they survive React re-mounts (navigation back from subpage)
+            setCachedFrames(varietyId, {
+              varietyId,
+              bitmaps: defaultFrames,
+              dimensions: { width: 640, height: 640 },
+              detectedAspect: '1:1',
+              fileName: `${varietyId}_procedural`,
+              url: `procedural://${varietyId}`,
+            });
           }
         } catch (e) {
           console.warn('Could not generate procedural fallback frames:', e);
@@ -884,6 +893,15 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
     framesRef.current = defaultFrames;
     setFrameDimensions({ width: 640, height: 640 });
     currentRenderedFrameIdx.current = -1;
+    // Cache procedural frames so they survive React re-mounts
+    setCachedFrames(varietyId, {
+      varietyId,
+      bitmaps: defaultFrames,
+      dimensions: { width: 640, height: 640 },
+      detectedAspect: '1:1',
+      fileName: `${varietyId}_procedural`,
+      url: `procedural://${varietyId}`,
+    });
   };
 
   // Re-extract using current settings without re-uploading
@@ -974,6 +992,9 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
         onPointerMove={isActive ? handlePointerMove : undefined}
         onPointerUp={isActive ? handlePointerUp : undefined}
         onPointerCancel={isActive ? handlePointerUp : undefined}
+        onTouchStart={isActive ? (e) => e.stopPropagation() : undefined}
+        onTouchMove={isActive ? (e) => e.stopPropagation() : undefined}
+        onTouchEnd={isActive ? (e) => e.stopPropagation() : undefined}
         onDragOver={isActive ? handleDragOver : undefined}
         onDragLeave={isActive ? handleDragLeave : undefined}
         onDrop={isActive ? handleDrop : undefined}
