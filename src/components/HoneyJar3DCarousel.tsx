@@ -88,6 +88,31 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
     navigateToIndex(selectedIndex + 1);
   }, [navigateToIndex, selectedIndex]);
 
+  // Touch Swipe Navigation on Carousel Stage
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    const dy = e.changedTouches[0].clientY - touchStartYRef.current;
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+
+    if (Math.abs(dx) > 38 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+      if (dx < 0) {
+        handleNext();
+      } else {
+        handlePrev();
+      }
+    }
+  };
+
   // Main 60 FPS requestAnimationFrame loop with Linear/Exponential Lerp
   useEffect(() => {
     let lastTime = performance.now();
@@ -263,7 +288,11 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
   const nextIndex = (selectedIndex + 1) % total;
 
   return (
-    <div className="relative w-full flex items-center justify-center py-1 sm:py-2 px-1 select-none overflow-hidden sm:overflow-visible">
+    <div 
+      className="relative w-full flex items-center justify-center py-1 sm:py-2 px-1 select-none overflow-hidden sm:overflow-visible"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* 3D ORBITAL STAGE CONTAINER WITH HARDWARE-ACCELERATED PERSPECTIVE */}
       <div 
         ref={stageRef}
@@ -293,6 +322,7 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
           const isActive = idx === selectedIndex;
           const isLeft = idx === prevIndex;
           const isRight = idx === nextIndex;
+          const isCarouselVisible = isActive || isLeft || isRight;
 
           return (
             <div
@@ -360,6 +390,7 @@ export const HoneyJar3DCarousel: React.FC<HoneyJar3DCarouselProps> = ({
                     onAddToCart={isActive ? onAddToCart : undefined}
                     onOpenDetails={isActive ? onOpenDetails : undefined}
                     isActive={isActive}
+                    isCarouselVisible={isCarouselVisible}
                   />
                 </div>
               </div>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -132,6 +136,18 @@ function App() {
   };
 
   const lenis = useLenis();
+
+  // Synchronize Lenis smooth scroll with GSAP ScrollTrigger ticker
+  useEffect(() => {
+    if (!lenis) return;
+    const handleScroll = () => {
+      ScrollTrigger.update();
+    };
+    lenis.on('scroll', handleScroll);
+    return () => {
+      lenis.off('scroll', handleScroll);
+    };
+  }, [lenis]);
 
   const scrollToProducts = () => {
     if (lenis) {

@@ -408,6 +408,10 @@ export async function loadFramesFromSpriteSheet({
         if (onProgress && idx % 10 === 0) {
           onProgress(Math.round(((idx + 1) / totalFrames) * 100));
         }
+
+        if (idx % 20 === 0 && idx > 0) {
+          await new Promise((r) => setTimeout(r, 0));
+        }
       }
 
       if (bitmaps.length > 0) {

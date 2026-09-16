@@ -33,11 +33,20 @@ export const HoneyCraftingJourney: React.FC = () => {
     return getAssetUrl(`frames/wyrob/${frameNum}.webp`);
   };
 
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+
   // Draw a frame onto canvas: full cover on desktop, crisp uncropped 1080p presentation on mobile
   const drawImageToCanvas = useCallback((img: HTMLImageElement) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    if (!ctxRef.current) {
+      ctxRef.current = canvas.getContext('2d', { alpha: false, desynchronized: true }) || canvas.getContext('2d');
+      if (ctxRef.current) {
+        ctxRef.current.imageSmoothingEnabled = true;
+        ctxRef.current.imageSmoothingQuality = 'medium';
+      }
+    }
+    const ctx = ctxRef.current;
     if (!ctx) return;
 
     const canvasWidth = canvas.width;
@@ -46,12 +55,6 @@ export const HoneyCraftingJourney: React.FC = () => {
     const imgHeight = img.naturalHeight || img.height;
 
     if (!imgWidth || !imgHeight) return;
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    // Fill full canvas with clean theme background (#141B14)
-    ctx.fillStyle = '#141B14';
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // Check if viewport is in mobile / portrait orientation
     const isMobilePortrait = canvasWidth / canvasHeight < 1.2 || window.innerWidth < 640;
@@ -67,12 +70,17 @@ export const HoneyCraftingJourney: React.FC = () => {
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     } else {
       // MOBILE PORTRAIT: 100% UNCROPPED 16:9 FRAME
-      // Width fits exactly 100% of the mobile screen - absolutely ZERO side cropping!
-      // Height scales proportionally in native 16:9, leaving natural dark letterbox bands at top and bottom
       const drawWidth = canvasWidth;
       const drawHeight = (imgHeight / imgWidth) * canvasWidth;
       const offsetX = 0;
       const offsetY = (canvasHeight - drawHeight) / 2;
+
+      // Fill letterbox bands only if needed
+      ctx.fillStyle = '#141B14';
+      if (offsetY > 0) {
+        ctx.fillRect(0, 0, canvasWidth, offsetY);
+        ctx.fillRect(0, offsetY + drawHeight, canvasWidth, canvasHeight - (offsetY + drawHeight));
+      }
 
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     }
@@ -105,7 +113,7 @@ export const HoneyCraftingJourney: React.FC = () => {
     }
   }, [getNearestLoadedFrame, drawImageToCanvas]);
 
-  // Load image helper
+  // Load image helper with off-thread asynchronous decoding
   const loadImage = (index: number): Promise<HTMLImageElement> => {
     return new Promise((resolve) => {
       if (loadedImagesRef.current[index]) {
@@ -114,7 +122,14 @@ export const HoneyCraftingJourney: React.FC = () => {
       }
       const img = new Image();
       img.src = getFramePath(index);
-      img.onload = () => {
+      img.onload = async () => {
+        try {
+          if ('decode' in img) {
+            await img.decode();
+          }
+        } catch {
+          // ignore decode errors on older engines
+        }
         loadedImagesRef.current[index] = img;
         resolve(img);
       };
@@ -124,7 +139,7 @@ export const HoneyCraftingJourney: React.FC = () => {
     });
   };
 
-  // Preload frames progressively: only frame 0 on mount, full sequence triggered via IntersectionObserver
+  // Preload frames progressively: milestone pass first, then all frames smoothly in the background
   useEffect(() => {
     let isCancelled = false;
 
@@ -141,12 +156,9 @@ export const HoneyCraftingJourney: React.FC = () => {
       if (hasStartedFullPreload || isCancelled) return;
       hasStartedFullPreload = true;
 
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-      const step = isMobile ? 8 : 6;
-
-      // 2. Priority pass: load key milestone frames to guarantee full-length coverage quickly
+      // 2. Priority pass: milestone frames every 5 frames for instant response across the full timeline
       const priorityIndices: number[] = [];
-      for (let i = 0; i < TOTAL_FRAMES; i += step) {
+      for (let i = 0; i < TOTAL_FRAMES; i += 5) {
         priorityIndices.push(i);
       }
 
@@ -161,28 +173,27 @@ export const HoneyCraftingJourney: React.FC = () => {
         }
       }
 
-      // 3. Background pass: on mobile load every 2nd frame (saving ~14MB bandwidth & 50% RAM),
-      // on desktop load all remaining frames for ultra-high fidelity
+      // 3. Background pass: load ALL remaining frames for 100% frame-perfect smoothness and zero jumping during slow deceleration
       const remainingIndices: number[] = [];
-      const bgStep = isMobile ? 2 : 1;
-      for (let i = 0; i < TOTAL_FRAMES; i += bgStep) {
+      for (let i = 0; i < TOTAL_FRAMES; i++) {
         if (!loadedImagesRef.current[i]) {
           remainingIndices.push(i);
         }
       }
 
-      const BATCH_SIZE = isMobile ? 4 : 8;
+      const BATCH_SIZE = 4;
       for (let i = 0; i < remainingIndices.length; i += BATCH_SIZE) {
         if (isCancelled) return;
         const batch = remainingIndices.slice(i, i + BATCH_SIZE);
         await Promise.all(batch.map(loadImage));
         loadedCount += batch.length;
-        setLoadProgress(Math.min(100, Math.round((loadedCount / (isMobile ? TOTAL_FRAMES / 2 : TOTAL_FRAMES)) * 100)));
+        setLoadProgress(Math.min(100, Math.round((loadedCount / TOTAL_FRAMES) * 100)));
+        // Yield execution to the browser between batches to maintain solid 60 FPS
+        await new Promise((r) => setTimeout(r, 16));
       }
     };
 
     // Use IntersectionObserver with generous rootMargin (600px) so preloading starts smoothly
-    // as the user approaches the section, without blocking Hero or initial page load
     let observer: IntersectionObserver | null = null;
     if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
       observer = new IntersectionObserver(
@@ -209,20 +220,24 @@ export const HoneyCraftingJourney: React.FC = () => {
     };
   }, [drawImageToCanvas, renderFrame]);
 
-  // Handle Resize: ignore address bar vertical jitter on mobile phones
+  // Handle Resize: ignore address bar vertical jitter on mobile phones and clamp DPR for maximum fillrate performance
   useEffect(() => {
-    let lastWidth = 0; // Initialize with 0 so first call ALWAYS sizes canvas properly!
+    let lastWidth = 0;
     const handleResize = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      // If width hasn't changed on mobile, ignore the address bar height change to avoid canvas recreation & jump
       if (lastWidth !== 0 && window.innerWidth < 640 && Math.abs(window.innerWidth - lastWidth) < 2) {
         return;
       }
       lastWidth = window.innerWidth;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      const isMobile = window.innerWidth < 640;
+      const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+      canvas.width = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      if (ctxRef.current) {
+        ctxRef.current.imageSmoothingEnabled = true;
+        ctxRef.current.imageSmoothingQuality = 'medium';
+      }
       renderFrame(currentFrameRef.current);
     };
 
@@ -238,6 +253,9 @@ export const HoneyCraftingJourney: React.FC = () => {
 
     const ctx = gsap.context(() => {
       const frameState = { frame: 0 };
+      const isTouch = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+      // 0.35s on touch devices eliminates lagging deceleration stutter while preserving silky momentum
+      const scrubDamping = isTouch ? 0.35 : 0.6;
 
       // Main scrubbing timeline with smooth GSAP scrub
       const tl = gsap.timeline({
@@ -245,7 +263,7 @@ export const HoneyCraftingJourney: React.FC = () => {
           trigger: containerRef.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 1.0, // 1.0s smooth inertia dampening (Apple style smooth scrub)
+          scrub: scrubDamping,
         }
       });
 

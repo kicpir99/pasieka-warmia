@@ -62,6 +62,7 @@ interface FramelessJar360ViewerProps {
   showAdminTools?: boolean;
   onToggleAdminTools?: () => void;
   isActive?: boolean;
+  isCarouselVisible?: boolean;
 }
 
 // Hotspot popup animation variants (smooth ease-out with opacity and translateY / translateX in enter and exit states)
@@ -110,6 +111,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
   showAdminTools = false,
   onToggleAdminTools,
   isActive = true,
+  isCarouselVisible = true,
 }) => {
   // Video & Frame state
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -184,6 +186,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
 
   // Intelligent Idle Auto-Spin (Smooth turntable rotation by default; pauses immediately on touch/drag; resumes after 2.5s)
   const isAutoSpinActiveRef = useRef<boolean>(true);
+  const autoSpinRampRef = useRef<number>(1);
   const idleResumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const pauseAutoSpin = useCallback(() => {
@@ -192,6 +195,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
       idleResumeTimerRef.current = null;
     }
     isAutoSpinActiveRef.current = false;
+    autoSpinRampRef.current = 0;
   }, []);
 
   const scheduleAutoSpinResume = useCallback((delayMs: number = 2500) => {
@@ -199,6 +203,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
       clearTimeout(idleResumeTimerRef.current);
     }
     idleResumeTimerRef.current = setTimeout(() => {
+      autoSpinRampRef.current = 0;
       isAutoSpinActiveRef.current = true;
     }, delayMs);
   }, []);
@@ -485,7 +490,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
     const tick = (now: number) => {
       rafIdRef.current = requestAnimationFrame(tick);
 
-      if (!isVisible) {
+      if (!isVisible || !isCarouselVisible) {
         lastTime = now;
         return;
       }
@@ -517,13 +522,15 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
             isNavigatingPresetRef.current = false;
           }
         } else {
-          // 3. Auto-rotation: smooth turntable idle rotation (paused during drag/scrub, resumes after 2.5s)
+          // 3. Auto-rotation: smooth turntable idle rotation with gentle ease-in acceleration (paused during drag/scrub, resumes after 2.5s)
           const shouldAutoSpin = (autoRotate || isAutoSpinActiveRef.current) && !isDraggingRef.current;
           if (shouldAutoSpin) {
-            const speed = (invertDirection ? -1 : 1) * autoRotateSpeed * 0.088; // Natural fluid turntable speed
+            autoSpinRampRef.current = Math.min(1, autoSpinRampRef.current + dt / 0.8);
+            const speed = (invertDirection ? -1 : 1) * autoRotateSpeed * 0.088 * autoSpinRampRef.current; // Natural fluid turntable speed
             targetAngleProgressRef.current += dt * speed;
             currentAngleProgressRef.current += dt * speed;
           } else {
+            autoSpinRampRef.current = 0;
             // 4. Momentum inertia decay after user release (seamless 60fps aerodynamic bearing decay)
             if (Math.abs(velocityRef.current) > 0.00005) {
               currentAngleProgressRef.current += velocityRef.current * dt;
