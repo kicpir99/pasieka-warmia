@@ -61,9 +61,9 @@ const GALLERY_MAP: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=900&q=85',
   ],
   'gryczany-ostry': [
-    'https://images.unsplash.com/photo-1555543789-21b1a774f7be?auto=format&fit=crop&w=900&q=85',
-    'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=900&q=85',
-    'https://images.unsplash.com/photo-1579113800032-c38bd7635818?auto=format&fit=crop&w=900&q=85',
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Buchweizenhonig.jpg/1280px-Buchweizenhonig.jpg',
+    'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=900&q=85',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=85',
     'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=900&q=85',
   ],
 };
