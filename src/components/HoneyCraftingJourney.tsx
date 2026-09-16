@@ -92,8 +92,11 @@ export const HoneyCraftingJourney: React.FC = () => {
     return null;
   }, []);
 
+  const isSectionVisibleRef = useRef<boolean>(true);
+
   const renderFrame = useCallback((targetIndex: number) => {
     currentFrameRef.current = targetIndex;
+    if (!isSectionVisibleRef.current) return;
     const img = getNearestLoadedFrame(targetIndex);
     if (img && img.complete) {
       drawImageToCanvas(img);
@@ -119,20 +122,29 @@ export const HoneyCraftingJourney: React.FC = () => {
     });
   };
 
-  // Preload frames in priority passes
+  // Preload frames progressively: only frame 0 on mount, full sequence triggered via IntersectionObserver
   useEffect(() => {
     let isCancelled = false;
 
-    const startPreload = async () => {
-      // 1. Load initial frame immediately
-      const firstFrame = await loadImage(0);
+    // 1. Load initial frame immediately on mount so canvas is painted cleanly
+    loadImage(0).then((firstFrame) => {
       if (isCancelled) return;
       setIsInitialReady(true);
       drawImageToCanvas(firstFrame);
+    });
 
-      // 2. Priority pass: load every 6th frame to guarantee full-length coverage instantly
+    let hasStartedFullPreload = false;
+
+    const startFullPreload = async () => {
+      if (hasStartedFullPreload || isCancelled) return;
+      hasStartedFullPreload = true;
+
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+      const step = isMobile ? 8 : 6;
+
+      // 2. Priority pass: load key milestone frames to guarantee full-length coverage quickly
       const priorityIndices: number[] = [];
-      for (let i = 0; i < TOTAL_FRAMES; i += 6) {
+      for (let i = 0; i < TOTAL_FRAMES; i += step) {
         priorityIndices.push(i);
       }
 
@@ -142,34 +154,56 @@ export const HoneyCraftingJourney: React.FC = () => {
         await loadImage(idx);
         loadedCount++;
         setLoadProgress(Math.round((loadedCount / (priorityIndices.length + 30)) * 100));
-        // Redraw if this is the current frame being viewed
         if (Math.abs(currentFrameRef.current - idx) < 4) {
           renderFrame(currentFrameRef.current);
         }
       }
 
-      // 3. Background pass: load all remaining frames in batches of 8
+      // 3. Background pass: on mobile load every 2nd frame (saving ~14MB bandwidth & 50% RAM),
+      // on desktop load all remaining frames for ultra-high fidelity
       const remainingIndices: number[] = [];
-      for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const bgStep = isMobile ? 2 : 1;
+      for (let i = 0; i < TOTAL_FRAMES; i += bgStep) {
         if (!loadedImagesRef.current[i]) {
           remainingIndices.push(i);
         }
       }
 
-      const BATCH_SIZE = 8;
+      const BATCH_SIZE = isMobile ? 4 : 8;
       for (let i = 0; i < remainingIndices.length; i += BATCH_SIZE) {
         if (isCancelled) return;
         const batch = remainingIndices.slice(i, i + BATCH_SIZE);
         await Promise.all(batch.map(loadImage));
         loadedCount += batch.length;
-        setLoadProgress(Math.min(100, Math.round((loadedCount / TOTAL_FRAMES) * 100)));
+        setLoadProgress(Math.min(100, Math.round((loadedCount / (isMobile ? TOTAL_FRAMES / 2 : TOTAL_FRAMES)) * 100)));
       }
     };
 
-    startPreload();
+    // Use IntersectionObserver with generous rootMargin (600px) so preloading starts smoothly
+    // as the user approaches the section, without blocking Hero or initial page load
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined' && containerRef.current) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            isSectionVisibleRef.current = entry.isIntersecting;
+            if (entry.isIntersecting) {
+              startFullPreload();
+            }
+          }
+        },
+        { rootMargin: '600px 0px 600px 0px', threshold: 0.01 }
+      );
+      observer.observe(containerRef.current);
+    } else {
+      startFullPreload();
+    }
 
     return () => {
       isCancelled = true;
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, [drawImageToCanvas, renderFrame]);
 

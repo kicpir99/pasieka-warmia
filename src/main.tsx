@@ -6,7 +6,7 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ReactLenis root options={{ lerp: 0.08, smoothWheel: true }}>
+    <ReactLenis root options={{ lerp: 0.08, smoothWheel: true, syncTouch: false, touchMultiplier: 1.2 }}>
       <App />
     </ReactLenis>
   </StrictMode>,

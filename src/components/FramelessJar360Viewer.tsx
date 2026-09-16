@@ -367,6 +367,23 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
         return;
       }
 
+      // For background inactive orbiting jars, defer loading heavy 180-frame sprite sheets or extracting videos.
+      // Render a lightweight single-frame preview immediately. Full 360 interactive rotation assets are loaded when jar becomes active.
+      if (!isActive) {
+        if (framesRef.current.length === 0) {
+          try {
+            const previewFrames = await generateTransparent360JarFrames(1, 480, 480);
+            if (isMounted && previewFrames.length > 0) {
+              framesRef.current = previewFrames;
+              setFrameDimensions({ width: 480, height: 480 });
+              currentRenderedFrameIdx.current = -1;
+              drawActiveFrame(0, true);
+            }
+          } catch {}
+        }
+        return;
+      }
+
       // 1. Load high-precision 180-frame sprite sheet for bundled honey varieties (0ms freeze-proof 360° turn)
       const bundledSprite = BUNDLED_VARIETY_SPRITES[varietyId] || BUNDLED_VARIETY_SPRITES[varietyId.toLowerCase()];
       if (bundledSprite && isMounted) {
@@ -452,10 +469,12 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [varietyId, defaultVideoUrl, chromaMode, chromaTolerance, framingMode, cropWidthRatio, targetFrameCount, extractFramesFromVideo, drawActiveFrame]);
+  }, [isActive, varietyId, defaultVideoUrl, chromaMode, chromaTolerance, framingMode, cropWidthRatio, targetFrameCount, extractFramesFromVideo, drawActiveFrame]);
 
-  // 60FPS RAF Engine with seamless infinite loop integration & decoupled GPU transform physics
+  // 60FPS RAF Engine with seamless infinite loop integration & decoupled GPU transform physics (Active Jar only)
   useEffect(() => {
+    if (!isActive) return;
+
     let lastTime = performance.now();
     let lastAngleCallbackTime = 0;
     let isVisible = !document.hidden;
@@ -655,7 +674,7 @@ export const FramelessJar360Viewer: React.FC<FramelessJar360ViewerProps> = ({
         cancelAnimationFrame(rafIdRef.current);
       }
     };
-  }, [autoRotate, autoRotateSpeed, invertDirection, drawActiveFrame, isEditorialTiltActive, onAngleChange]);
+  }, [isActive, autoRotate, autoRotateSpeed, invertDirection, drawActiveFrame, isEditorialTiltActive, onAngleChange]);
 
   // Pointer drag interactions with Pointer Capture for infinite continuous dragging across the screen
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {

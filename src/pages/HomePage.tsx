@@ -8,9 +8,10 @@ import { ProductFilter } from '../components/ProductFilter';
 import { FilterState, HoneyCategory, HoneyProduct, HealthIntentFilter } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { ApiaryStory } from '../components/ApiaryStory';
-import { HoneyFinderQuiz } from '../components/HoneyFinderQuiz';
-import { ProductDetailModal } from '../components/ProductDetailModal';
 import { PagePreloader } from '../components/PagePreloader';
+
+const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
+const HoneyFinderQuiz = React.lazy(() => import('../components/HoneyFinderQuiz').then(m => ({ default: m.HoneyFinderQuiz })));
 import { HONEY_PRODUCTS } from '../data/honeyProducts';
 import { getEnrichedProduct } from '../utils/honeyHelpers';
 import { Sparkles, ArrowRight, ArrowUp } from 'lucide-react';
@@ -375,21 +376,23 @@ export const HomePage: React.FC<HomePageProps> = ({
         <ApiaryStory containerClass={displayResolution.containerClass} />
       </main>
 
-      <ProductDetailModal
-        product={detailProduct}
-        onClose={() => setDetailProduct(null)}
-        onAddToCart={onAddToCart}
-        onOpenCompare={toggleCompare}
-        onSelectFlavorNote={handleSelectFlavorNote}
-      />
-      {/* Fallback lokalny quiz, jeśli HomePage używany poza App.tsx */}
-      {!onOpenQuiz && (
-        <HoneyFinderQuiz
-          isOpen={localQuizOpen}
-          onClose={() => setLocalQuizOpen(false)}
-          onSelectProduct={(p) => setDetailProduct(p)}
+      <React.Suspense fallback={null}>
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={onAddToCart}
+          onOpenCompare={toggleCompare}
+          onSelectFlavorNote={handleSelectFlavorNote}
         />
-      )}
+        {/* Fallback lokalny quiz, jeśli HomePage używany poza App.tsx */}
+        {!onOpenQuiz && (
+          <HoneyFinderQuiz
+            isOpen={localQuizOpen}
+            onClose={() => setLocalQuizOpen(false)}
+            onSelectProduct={(p) => setDetailProduct(p)}
+          />
+        )}
+      </React.Suspense>
     </>
   );
 };

@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
-import { CartDrawer } from './components/CartDrawer';
-import { ComparisonModal } from './components/ComparisonModal';
 import { ScrollToTop } from './components/ScrollToTop';
 import { Check, X, Scale } from 'lucide-react';
 import { CartItem, HoneyProduct } from './types';
 import { useDisplayResolution } from './hooks/useDisplayResolution';
 
-import { HoneyFinderQuiz } from './components/HoneyFinderQuiz';
+// Lazy-loaded heavy overlay components & secondary pages
+const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
+const ComparisonModal = React.lazy(() => import('./components/ComparisonModal').then(m => ({ default: m.ComparisonModal })));
+const HoneyFinderQuiz = React.lazy(() => import('./components/HoneyFinderQuiz').then(m => ({ default: m.HoneyFinderQuiz })));
+const ProductPage = React.lazy(() => import('./pages/ProductPage').then(m => ({ default: m.ProductPage })));
 
 // Pages
 import { HomePage } from './pages/HomePage';
-import { ProductPage } from './pages/ProductPage';
 
 function GlobalQuizModal({
   isOpen,
@@ -24,15 +25,18 @@ function GlobalQuizModal({
   onClose: () => void;
 }) {
   const navigate = useNavigate();
+  if (!isOpen) return null;
   return (
-    <HoneyFinderQuiz
-      isOpen={isOpen}
-      onClose={onClose}
-      onSelectProduct={(product) => {
-        onClose();
-        navigate(`/produkt/${product.id}`);
-      }}
-    />
+    <Suspense fallback={null}>
+      <HoneyFinderQuiz
+        isOpen={isOpen}
+        onClose={onClose}
+        onSelectProduct={(product) => {
+          onClose();
+          navigate(`/produkt/${product.id}`);
+        }}
+      />
+    </Suspense>
   );
 }
 
@@ -202,38 +206,48 @@ function App() {
           <Route 
             path="/produkt/:id" 
             element={
-              <ProductPage 
-                onAddToCart={handleAddToCart} 
-                onOpenCompare={(p) => {
-                  toggleCompare(p);
-                  setIsCompareModalOpen(true);
-                }}
-              />
+              <Suspense fallback={<div className="min-h-screen bg-[#FAF7F2]" />}>
+                <ProductPage 
+                  onAddToCart={handleAddToCart} 
+                  onOpenCompare={(p) => {
+                    toggleCompare(p);
+                    setIsCompareModalOpen(true);
+                  }}
+                />
+              </Suspense>
             } 
           />
         </Routes>
 
         <Footer containerClass={displayResolution.containerClass} />
 
-        {/* Global Modals & Overlays */}
-        <ComparisonModal
-          isOpen={isCompareModalOpen}
-          onClose={() => setIsCompareModalOpen(false)}
-          products={compareList}
-          onRemove={toggleCompare}
-          onAddToCart={handleAddToCart}
-        />
+        {/* Global Modals & Overlays (Rendered on demand with Suspense) */}
+        {isCompareModalOpen && (
+          <Suspense fallback={null}>
+            <ComparisonModal
+              isOpen={isCompareModalOpen}
+              onClose={() => setIsCompareModalOpen(false)}
+              products={compareList}
+              onRemove={toggleCompare}
+              onAddToCart={handleAddToCart}
+            />
+          </Suspense>
+        )}
 
-        <CartDrawer
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          items={cartItems}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveItem={handleRemoveItem}
-          onClearCart={handleClearCart}
-          onAddToCart={handleAddToCart}
-          onNavigateToCatalog={handleNavigateToCatalogFromCart}
-        />
+        {isCartOpen && (
+          <Suspense fallback={null}>
+            <CartDrawer
+              isOpen={isCartOpen}
+              onClose={() => setIsCartOpen(false)}
+              items={cartItems}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveItem={handleRemoveItem}
+              onClearCart={handleClearCart}
+              onAddToCart={handleAddToCart}
+              onNavigateToCatalog={handleNavigateToCatalogFromCart}
+            />
+          </Suspense>
+        )}
 
         <GlobalQuizModal
           isOpen={isQuizOpen}
