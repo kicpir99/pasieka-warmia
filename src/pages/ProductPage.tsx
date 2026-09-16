@@ -137,6 +137,15 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
     }
   };
 
+  const handleBackToCatalog = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/#katalog');
+    }
+  };
+
   const pricePerKg = currentSize ? Math.round((effectivePrice / currentSize.weightGrams) * 1000) : 0;
   const catInfo = CATEGORY_METADATA[product.category] || {
     label: product.category,
@@ -353,6 +362,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
         <div className="flex sm:hidden items-center justify-between gap-2 py-2 border-b border-[#D9821E]/15">
           <Link
             to="/#katalog"
+            onClick={handleBackToCatalog}
             className="inline-flex items-center gap-1.5 font-bold text-xs text-[#1B4332] hover:text-[#D9821E] transition-colors bg-white px-3 py-1.5 rounded-xl border border-[#D9821E]/20 shadow-2xs shrink-0"
             id="btn-powrot-katalog-mobile"
           >
@@ -414,6 +424,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
           <div className="flex items-center flex-wrap gap-2 text-sm text-[#7A6A5A]">
             <Link
               to="/#katalog"
+              onClick={handleBackToCatalog}
               className="inline-flex items-center gap-1.5 font-bold text-[#1B4332] hover:text-[#D9821E] transition-colors bg-white px-3.5 py-1.5 rounded-xl border border-[#D9821E]/20 shadow-xs"
               id="btn-powrot-katalog-desktop"
             >

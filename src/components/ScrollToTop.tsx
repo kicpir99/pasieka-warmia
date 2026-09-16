@@ -1,6 +1,10 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Disable browser's automatic scroll restoration immediately
 if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
@@ -8,10 +12,13 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
 }
 
 /**
- * ScrollToTop component that resets the scroll position to the top
- * ONLY on route pathname changes (e.g., navigating between pages),
- * unless navigating to a hash anchor (e.g., #katalog).
- * Query parameter changes (search) on the same page will NEVER reset the scroll.
+ * ScrollToTop component:
+ * - When navigating to /produkt/:id: resets scroll to top (0).
+ * - When returning from /produkt/:id back to /: remembers and restores the exact
+ *   scroll position of the visited honey product card in Section 3, taking into account
+ *   Section 2's interactive 450vh scrubbing layout, with multi-frame layout sync and
+ *   GSAP ScrollTrigger updates.
+ * - When clicking a hash anchor (#katalog, #miodobranie): scrolls to the anchor.
  */
 export const ScrollToTop = () => {
   const { pathname, search, hash } = useLocation();
@@ -29,6 +36,7 @@ export const ScrollToTop = () => {
     const isInitialMount = prevPathnameRef.current === null;
     const isPathnameChange = prevPathnameRef.current !== pathname;
     const isHashChange = prevHashRef.current !== hash;
+    const previousPathname = prevPathnameRef.current;
     prevPathnameRef.current = pathname;
     prevHashRef.current = hash;
 
@@ -40,14 +48,112 @@ export const ScrollToTop = () => {
       return;
     }
 
-    // CASE 1: Navigating to a hash anchor (e.g., #katalog)
+    // SPECIAL CASE: Returning to home page from a product subpage (/produkt/:id -> /)
+    const isReturningToHomeFromProduct = Boolean(
+      previousPathname?.startsWith('/produkt/') && (pathname === '/' || pathname === '')
+    );
+
+    if (isReturningToHomeFromProduct) {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+
+      const fromHero = sessionStorage.getItem('pasieka_from_hero') === 'true';
+      if (fromHero) {
+        sessionStorage.removeItem('pasieka_from_hero');
+        const resetScroll = () => {
+          if (lenis) {
+            lenis.scrollTo(0, { immediate: true, force: true });
+            lenis.resize();
+          }
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        };
+        resetScroll();
+        return;
+      }
+
+      const lastProductId = sessionStorage.getItem('pasieka_last_product_id') || 
+        previousPathname?.replace('/produkt/', '').split('?')[0].split('#')[0];
+
+      const restoreScrollPosition = () => {
+        let targetY: number | null = null;
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop || (lenis ? lenis.scroll : 0);
+
+        const cardEl = lastProductId ? document.getElementById(`produkt-karta-${lastProductId}`) : null;
+        if (cardEl) {
+          const rect = cardEl.getBoundingClientRect();
+          // Leave 110px top offset for sticky header clearance and comfortable breathing room
+          targetY = Math.max(0, rect.top + currentScroll - 110);
+        } else {
+          const catalogEl = document.getElementById('katalog');
+          if (catalogEl) {
+            targetY = Math.max(0, catalogEl.getBoundingClientRect().top + currentScroll - 80);
+          } else {
+            const savedY = sessionStorage.getItem('pasieka_home_scroll_y');
+            if (savedY) targetY = parseFloat(savedY);
+          }
+        }
+
+        if (targetY !== null && !isNaN(targetY)) {
+          window.scrollTo({ top: targetY, left: 0, behavior: 'instant' });
+          document.documentElement.scrollTop = targetY;
+          document.body.scrollTop = targetY;
+          if (lenis) {
+            lenis.resize();
+            lenis.scrollTo(targetY, { immediate: true, force: true });
+          }
+          ScrollTrigger.update();
+        }
+      };
+
+      const highlightProductCard = () => {
+        if (!lastProductId) return;
+        const cardEl = document.getElementById(`produkt-karta-${lastProductId}`);
+        if (cardEl) {
+          cardEl.classList.add('ring-2', 'ring-[#E0A94F]', 'ring-offset-2', 'shadow-xl');
+          setTimeout(() => {
+            cardEl.classList.remove('ring-2', 'ring-[#E0A94F]', 'ring-offset-2', 'shadow-xl');
+          }, 2200);
+        }
+      };
+
+      // 1. Immediate sync execution before paint
+      restoreScrollPosition();
+
+      // 2. Progressive multi-pass alignment to account for Section 2 (HoneyCraftingJourney) layout settling
+      const raf1 = requestAnimationFrame(restoreScrollPosition);
+      const raf2 = requestAnimationFrame(() => requestAnimationFrame(restoreScrollPosition));
+      const t1 = setTimeout(restoreScrollPosition, 40);
+      const t2 = setTimeout(restoreScrollPosition, 120);
+      const t3 = setTimeout(() => {
+        restoreScrollPosition();
+        highlightProductCard();
+      }, 250);
+      const t4 = setTimeout(restoreScrollPosition, 450);
+      const t5 = setTimeout(() => {
+        restoreScrollPosition();
+        ScrollTrigger.refresh();
+      }, 700);
+
+      return () => {
+        cancelAnimationFrame(raf1);
+        cancelAnimationFrame(raf2);
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        clearTimeout(t4);
+        clearTimeout(t5);
+      };
+    }
+
+    // CASE 1: Navigating to a hash anchor (e.g., #katalog, #miodobranie)
     if (hash) {
       if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
       }
 
-      // When arriving from a subpage, on initial mount, or with a filter note,
-      // open immediately and instantly at the section without smooth scroll animation.
       const isInstant = isInitialMount || isPathnameChange || search.includes('nuta=');
 
       const jumpToTarget = () => {
@@ -136,4 +242,5 @@ export const ScrollToTop = () => {
 
   return null;
 };
+
 

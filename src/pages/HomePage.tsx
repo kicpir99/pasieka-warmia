@@ -40,7 +40,48 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [detailProduct, setDetailProduct] = useState<HoneyProduct | null>(null);
   const [localQuizOpen, setLocalQuizOpen] = useState(false);
   const [preloaderDoneLocally, setPreloaderDoneLocally] = useState(false);
-  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
+  const [isMobileExpanded, setIsMobileExpanded] = useState<boolean>(() => {
+    try {
+      const saved = sessionStorage.getItem('pasieka_mobile_expanded');
+      const lastId = sessionStorage.getItem('pasieka_last_product_id');
+      const productIdx = HONEY_PRODUCTS.findIndex(p => p.id === lastId);
+      return saved === 'true' || productIdx >= 6;
+    } catch {
+      return false;
+    }
+  });
+
+  const setMobileExpandedWithStorage = (expanded: boolean) => {
+    setIsMobileExpanded(expanded);
+    try {
+      sessionStorage.setItem('pasieka_mobile_expanded', expanded ? 'true' : 'false');
+    } catch {}
+  };
+
+  // Passive scroll listener to remember home scroll position continuously
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          try {
+            const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+            if (y > 100) {
+              sessionStorage.setItem('pasieka_home_scroll_y', String(y));
+            }
+          } catch {}
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleOpenQuiz = onOpenQuiz || (() => setLocalQuizOpen(true));
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -285,7 +326,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                       <button
                         type="button"
-                        onClick={() => setIsMobileExpanded(true)}
+                        onClick={() => setMobileExpandedWithStorage(true)}
                         className="w-full py-3.5 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                         id="btn-pokaz-wszystkie-miody-mobile"
                       >
@@ -315,7 +356,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         <button
                           type="button"
                           onClick={() => {
-                            setIsMobileExpanded(false);
+                            setMobileExpandedWithStorage(false);
                             const catalogElem = document.getElementById('katalog');
                             if (catalogElem) {
                               catalogElem.scrollIntoView({ behavior: 'smooth' });

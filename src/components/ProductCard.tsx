@@ -28,12 +28,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const currentSize = product.sizes.find((s) => s.weightGrams === selectedWeight) || product.sizes[0];
 
+  const handleProductClick = () => {
+    try {
+      sessionStorage.setItem('pasieka_last_product_id', product.id);
+      sessionStorage.setItem('pasieka_home_scroll_y', String(window.pageYOffset || document.documentElement.scrollTop || 0));
+      sessionStorage.removeItem('pasieka_from_hero');
+    } catch {
+      // ignore storage errors
+    }
+  };
+
   return (
-    <div className="group bg-white rounded-3xl overflow-hidden border border-[#E7DCCE] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative">
+    <div 
+      id={`produkt-karta-${product.id}`}
+      className="group bg-white rounded-3xl overflow-hidden border border-[#E7DCCE] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full relative"
+    >
       
       {/* Product Image & Top Overlays */}
       <Link 
         to={`/produkt/${product.id}`} 
+        onClick={handleProductClick}
         className="relative aspect-[4/3] bg-[#EFE7DA] overflow-hidden cursor-pointer block"
       >
         <img
@@ -122,6 +136,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           
           <Link 
             to={`/produkt/${product.id}`}
+            onClick={handleProductClick}
           >
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#23201C] hover:text-[#8E5116] transition-colors cursor-pointer leading-tight">
               {product.name}

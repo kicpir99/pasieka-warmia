@@ -524,6 +524,13 @@ export const Hero: React.FC<HeroProps> = ({
 
               <Link
                 to={`/produkt/${currentProduct.id}`}
+                onClick={() => {
+                  try {
+                    sessionStorage.setItem('pasieka_last_product_id', currentProduct.id);
+                    sessionStorage.setItem('pasieka_home_scroll_y', '0');
+                    sessionStorage.setItem('pasieka_from_hero', 'true');
+                  } catch {}
+                }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-2xl bg-[#18231A]/90 hover:bg-[#233125] border border-[#384C3A] hover:border-[#E0A94F]/70 text-[#FAF7F2] font-bold text-xs sm:text-sm shadow-md transition-all group cursor-pointer"
                 id="hero-btn-karta-miodu"
                 title={`Otwórz pełną podstronę miodu: ${currentProduct.name}`}

@@ -72,6 +72,13 @@ const ProductDetailModalContent: React.FC<ProductDetailModalContentProps> = ({
   };
 
   const handleGoToFullView = () => {
+    try {
+      sessionStorage.setItem('pasieka_last_product_id', rawProduct.id);
+      sessionStorage.setItem('pasieka_home_scroll_y', String(window.pageYOffset || document.documentElement.scrollTop || 0));
+      sessionStorage.removeItem('pasieka_from_hero');
+    } catch {
+      // ignore storage errors
+    }
     document.body.style.overflow = '';
     onClose();
     if (onOpenFullView) {
