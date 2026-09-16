@@ -3,6 +3,7 @@ import {
   loadFramesFromSpriteSheet, 
   BUNDLED_VARIETY_SPRITES 
 } from '../utils/framePreloader';
+import { getAssetUrl } from '../utils/assets';
 
 interface PagePreloaderProps {
   onComplete?: () => void;
@@ -27,11 +28,11 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
     // 1. Preload kluczowych zasobów startowych w tle przeglądarki dla 3 widocznych słoików i wstęg
     const preloadAssets = () => {
       const criticalUrls = [
-        '/sprites/lipowy.webp',
-        '/sprites/gryczany.webp',
-        '/sprites/spadziowy.webp',
-        '/assets/honey-ribbon-front.png',
-        '/assets/honey-ribbon-back.png',
+        getAssetUrl('sprites/lipowy.webp'),
+        getAssetUrl('sprites/gryczany.webp'),
+        getAssetUrl('sprites/spadziowy.webp'),
+        getAssetUrl('assets/honey-ribbon-front.png'),
+        getAssetUrl('assets/honey-ribbon-back.png'),
       ];
       criticalUrls.forEach((url) => {
         const img = new Image();

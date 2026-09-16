@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { getAssetUrl } from '../utils/assets';
+
 gsap.registerPlugin(ScrollTrigger);
 
 // Prevent mobile address bar show/hide from causing ScrollTrigger recalculations and page jumps
@@ -28,7 +30,7 @@ export const HoneyCraftingJourney: React.FC = () => {
   // Helper to get image path for frame (1-based, padded to 3 digits)
   const getFramePath = (index: number) => {
     const frameNum = (index + 1).toString().padStart(3, '0');
-    return `/frames/wyrob/${frameNum}.webp`;
+    return getAssetUrl(`frames/wyrob/${frameNum}.webp`);
   };
 
   // Draw a frame onto canvas: full cover on desktop, crisp uncropped 1080p presentation on mobile

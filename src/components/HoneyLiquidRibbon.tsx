@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetUrl } from '../utils/assets';
 
 interface HoneyRibbonProps {
   varietyId?: string;
@@ -101,8 +102,8 @@ export const HoneyLiquidRibbon: React.FC<HoneyRibbonProps> = ({
   isFrontLayer = false,
 }) => {
   const imageSrc = isFrontLayer 
-    ? '/assets/honey-ribbon-front.png' 
-    : '/assets/honey-ribbon-back.png';
+    ? getAssetUrl('assets/honey-ribbon-front.png') 
+    : getAssetUrl('assets/honey-ribbon-back.png');
 
   const theme = (varietyId && VARIETY_THEMES[varietyId]) || {
     filter: `drop-shadow(0 14px 28px ${ambientColorHex}45) brightness(1.03)`,

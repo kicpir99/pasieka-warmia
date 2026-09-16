@@ -25,81 +25,83 @@ export interface BundledSpriteInfo {
   videoUrl: string;
 }
 
+import { getAssetUrl } from './assets';
+
 // Global in-memory cache shared across the entire session lifecycle
 const GLOBAL_FRAME_CACHE = new Map<string, CachedVarietyFrames>();
 const IN_FLIGHT_PROMISES = new Map<string, Promise<CachedVarietyFrames | null>>();
 
 // Bundled variety videos in /public/videos
 export const BUNDLED_VARIETY_VIDEOS: Record<string, { url: string; fileName: string }> = {
-  lipowy: { url: '/videos/lipowy.mp4', fileName: 'lipowy.mp4' },
-  'lipowy-warminski': { url: '/videos/lipowy.mp4', fileName: 'lipowy.mp4' },
-  gryczany: { url: '/videos/gryczany.mp4', fileName: 'gryczany.mp4' },
-  'gryczany-mazurski': { url: '/videos/gryczany.mp4', fileName: 'gryczany.mp4' },
-  spadziowy: { url: '/videos/spadziowy.mp4', fileName: 'spadziowy.mp4' },
-  'spadz-iglastej': { url: '/videos/spadziowy.mp4', fileName: 'spadziowy.mp4' },
+  lipowy: { url: getAssetUrl('videos/lipowy.mp4'), fileName: 'lipowy.mp4' },
+  'lipowy-warminski': { url: getAssetUrl('videos/lipowy.mp4'), fileName: 'lipowy.mp4' },
+  gryczany: { url: getAssetUrl('videos/gryczany.mp4'), fileName: 'gryczany.mp4' },
+  'gryczany-mazurski': { url: getAssetUrl('videos/gryczany.mp4'), fileName: 'gryczany.mp4' },
+  spadziowy: { url: getAssetUrl('videos/spadziowy.mp4'), fileName: 'spadziowy.mp4' },
+  'spadz-iglastej': { url: getAssetUrl('videos/spadziowy.mp4'), fileName: 'spadziowy.mp4' },
 };
 
 // Bundled 180-frame high-resolution sprite sheets in /public/sprites (2.0° per frame for ultra-smooth 60fps turntable spin)
 export const BUNDLED_VARIETY_SPRITES: Record<string, BundledSpriteInfo> = {
   lipowy: {
-    spriteUrl: '/sprites/lipowy.webp',
+    spriteUrl: getAssetUrl('sprites/lipowy.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'lipowy.mp4',
-    videoUrl: '/videos/lipowy.mp4',
+    videoUrl: getAssetUrl('videos/lipowy.mp4'),
   },
   'lipowy-warminski': {
-    spriteUrl: '/sprites/lipowy.webp',
+    spriteUrl: getAssetUrl('sprites/lipowy.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'lipowy.mp4',
-    videoUrl: '/videos/lipowy.mp4',
+    videoUrl: getAssetUrl('videos/lipowy.mp4'),
   },
   gryczany: {
-    spriteUrl: '/sprites/gryczany.webp',
+    spriteUrl: getAssetUrl('sprites/gryczany.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'gryczany.mp4',
-    videoUrl: '/videos/gryczany.mp4',
+    videoUrl: getAssetUrl('videos/gryczany.mp4'),
   },
   'gryczany-mazurski': {
-    spriteUrl: '/sprites/gryczany.webp',
+    spriteUrl: getAssetUrl('sprites/gryczany.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'gryczany.mp4',
-    videoUrl: '/videos/gryczany.mp4',
+    videoUrl: getAssetUrl('videos/gryczany.mp4'),
   },
   spadziowy: {
-    spriteUrl: '/sprites/spadziowy.webp',
+    spriteUrl: getAssetUrl('sprites/spadziowy.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'spadziowy.mp4',
-    videoUrl: '/videos/spadziowy.mp4',
+    videoUrl: getAssetUrl('videos/spadziowy.mp4'),
   },
   'spadz-iglastej': {
-    spriteUrl: '/sprites/spadziowy.webp',
+    spriteUrl: getAssetUrl('sprites/spadziowy.webp'),
     cols: 15,
     rows: 12,
     totalFrames: 180,
     tileWidth: 440,
     tileHeight: 440,
     fileName: 'spadziowy.mp4',
-    videoUrl: '/videos/spadziowy.mp4',
+    videoUrl: getAssetUrl('videos/spadziowy.mp4'),
   },
 };
 

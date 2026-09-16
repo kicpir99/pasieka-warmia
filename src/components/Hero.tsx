@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getAssetUrl } from '../utils/assets';
 import { 
   Award, 
   ChevronDown, 
@@ -63,7 +64,7 @@ export const HERO_VARIETIES: VarietyItem[] = [
   {
     id: 'lipowy',
     product: HONEY_PRODUCTS[0],
-    defaultVideoUrl: '/videos/lipowy.mp4',
+    defaultVideoUrl: getAssetUrl('videos/lipowy.mp4'),
     tagline: 'Klasyczny mazurski miód lipowy ze starych mazurskich alei. Niezastąpiony do wieczornego kubka gorącej herbaty z cytryną w chłodne dni.',
     vintageYear: 'Zbiór Letni 2026',
     terroirLocation: 'Święta Lipka • Stare Aleje Lipowe',
@@ -97,7 +98,7 @@ export const HERO_VARIETIES: VarietyItem[] = [
   {
     id: 'gryczany',
     product: HONEY_PRODUCTS[1],
-    defaultVideoUrl: '/videos/gryczany.mp4',
+    defaultVideoUrl: getAssetUrl('videos/gryczany.mp4'),
     tagline: 'Ciemny, wyrazisty miód o zapachu palonego karmelu. Cudownie rozgrzewa i idealnie pasuje do pajdy wiejskiego chleba z masłem.',
     vintageYear: 'Zbiór Sierpniowy 2026',
     terroirLocation: 'Północne Mazury • Pola Gryki',
@@ -230,7 +231,7 @@ export const HERO_VARIETIES: VarietyItem[] = [
   {
     id: 'spadziowy',
     product: HONEY_PRODUCTS[3],
-    defaultVideoUrl: '/videos/spadziowy.mp4',
+    defaultVideoUrl: getAssetUrl('videos/spadziowy.mp4'),
     tagline: 'Szlachetny, gęsty miód z mazurskich borów świerkowych i jodłowych. Żywiczny zapach lasu i naturalne wsparcie odporności.',
     vintageYear: 'Zbiór Leśny 2026',
     terroirLocation: 'Puszcza Piska • Mazurskie Bory',
