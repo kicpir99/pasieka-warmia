@@ -11,7 +11,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
     {
       id: 'miody',
       title: 'Miód Pszczeli – Odmianowy & Surowy',
-      badge: 'Baza Pasieki',
+      badge: 'Miody Odmianowe RAW',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-miody-infobox.jpg',
       icon: Droplets,
       description:
@@ -75,7 +75,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
     {
       id: 'wosk',
       title: 'Wosk Pszczeli & Świece',
-      badge: 'Czyste Światło',
+      badge: '100% Wosk Pszczeli',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-wosk-pszeczeli.jpg',
       icon: Flame,
       description:
@@ -91,7 +91,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
     {
       id: 'szkolenia',
       title: 'Odkłady Pszczele & Szkolenia',
-      badge: 'Dla Pszczelarzy',
+      badge: 'Odkłady & Szkolenia',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-oklady-683x1024.jpg',
       icon: BookOpen,
       description:
@@ -143,13 +143,12 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
+                  {/* Card Image Badge with clear descriptive label and icon */}
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full bg-[#2D2821]/85 backdrop-blur-md text-[#E5983A] text-[11px] font-bold tracking-wide">
-                      {item.badge}
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2D2821]/90 backdrop-blur-md text-[#E5983A] text-[11px] font-bold tracking-wide shadow-sm">
+                      <Icon className="w-3.5 h-3.5 text-[#E5983A] shrink-0" />
+                      <span>{item.badge}</span>
                     </span>
-                  </div>
-                  <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-[#8B5337] shadow-xs">
-                    <Icon className="w-4 h-4" />
                   </div>
                 </div>
 
