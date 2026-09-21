@@ -96,74 +96,6 @@ export const HERO_VARIETIES: VarietyItem[] = [
     cardTastingTip: 'Prawdziwy klasyk na chłodne wieczory: łyżka miodu, plaster cytryny i świeży napar lipowy.'
   },
   {
-    id: 'wrzosowy',
-    product: HONEY_PRODUCTS.find(p => p.id === 'miod-wrzosowy') || HONEY_PRODUCTS[1],
-    defaultVideoUrl: getAssetUrl('videos/lipowy.mp4'),
-    tagline: 'Szlachetny, galaretowaty miód z dolnośląskich wrzosowisk. Niezwykle rzadki rarytas o wytrawnym, głębokim smaku.',
-    vintageYear: 'Zbiór Wrześniowy 2026',
-    terroirLocation: 'Wrzosowiska Dolnośląskie',
-    pollenNote: 'Królewski miód z wrzosu • Galaretowata konsystencja',
-    flavorTastingNotes: 'Aromatyczny, lekko gorzkawy, głęboki smak wrzosowiska o bursztynowo-rubinowej barwie.',
-    teaPairingNote: 'Doskonały do degustacji łyżeczką oraz do wykwintnych serów i orzechów.',
-    ambientToneHex: '#A05C22',
-    badge: 'Rarytas Pasieki Usza',
-    cardCategorySubtitle: 'WRZOSOWISKA • DOLNY ŚLĄSK',
-    cardMainTitle: 'Królewski Wrzos & Galaretka',
-    cardBadgeIcon: 'sparkles',
-    cardFeatures: [
-      {
-        title: 'Naturalna konsystencja galaretki',
-        description: 'Miód wrzosowy jako jedyny posiada naturalną galaretowatą strukturę bogatą w białka i biopierwiastki.',
-        iconName: 'sparkles'
-      },
-      {
-        title: 'Wsparcie układu moczowego',
-        description: 'Tradycyjnie stosowany przy schorzeniach nerek, dróg moczowych oraz dla zdrowia prostaty.',
-        iconName: 'heart'
-      },
-      {
-        title: 'Trudny zbiór jesienny',
-        description: 'Ostatnie miodobranie w roku, wymagające ogromnego kunsztu i specjalnych odsklepiaczy.',
-        iconName: 'shield'
-      }
-    ],
-    cardTastingTip: 'Znakomity do deski długodojrzewających serów, orzechów włoskich i pieczonego pieczywa.'
-  },
-  {
-    id: 'spadziowy',
-    product: HONEY_PRODUCTS.find(p => p.id === 'miod-ze-spadzi-iglastej') || HONEY_PRODUCTS[2],
-    defaultVideoUrl: getAssetUrl('videos/spadziowy.mp4'),
-    tagline: 'Szlachetny, ciemny miód z dolnośląskich borów jodłowych i świerkowych. Żywiczny aromat i naturalne wsparcie odporności.',
-    vintageYear: 'Zbiór Leśny 2026',
-    terroirLocation: 'Bory Dolnośląskie',
-    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
-    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
-    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
-    ambientToneHex: '#4D6B35',
-    badge: 'Skarb Borów Dolnośląskich',
-    cardCategorySubtitle: 'BORY DOLNOŚLĄSKIE',
-    cardMainTitle: 'Skarb Borów & Minerały',
-    cardBadgeIcon: 'trees',
-    cardFeatures: [
-      {
-        title: '9x więcej biopierwiastków',
-        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
-        iconName: 'trees'
-      },
-      {
-        title: 'Żywiczny aromat lasu',
-        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
-        iconName: 'droplets'
-      },
-      {
-        title: 'Królewska tarcza odporności',
-        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
-        iconName: 'shield'
-      }
-    ],
-    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
-  },
-  {
     id: 'gryczany',
     product: HONEY_PRODUCTS.find(p => p.id === 'miod-gryczany') || HONEY_PRODUCTS[5],
     defaultVideoUrl: getAssetUrl('videos/gryczany.mp4'),
@@ -262,6 +194,73 @@ export const HERO_VARIETIES: VarietyItem[] = [
       }
     ],
     cardTastingTip: 'Niezrównany rano na chrupiącą bułkę z wiejskim masłem do kubka kawy zbożowej lub mleka.'
+  },
+  {
+    id: 'wrzosowy',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-wrzosowy') || HONEY_PRODUCTS[1],
+    tagline: 'Szlachetny, galaretowaty miód z dolnośląskich wrzosowisk. Niezwykle rzadki rarytas o wytrawnym, głębokim smaku.',
+    vintageYear: 'Zbiór Wrześniowy 2026',
+    terroirLocation: 'Wrzosowiska Dolnośląskie',
+    pollenNote: 'Królewski miód z wrzosu • Galaretowata konsystencja',
+    flavorTastingNotes: 'Aromatyczny, lekko gorzkawy, głęboki smak wrzosowiska o bursztynowo-rubinowej barwie.',
+    teaPairingNote: 'Doskonały do degustacji łyżeczką oraz do wykwintnych serów i orzechów.',
+    ambientToneHex: '#A05C22',
+    badge: 'Rarytas Pasieki Usza',
+    cardCategorySubtitle: 'WRZOSOWISKA • DOLNY ŚLĄSK',
+    cardMainTitle: 'Królewski Wrzos & Galaretka',
+    cardBadgeIcon: 'sparkles',
+    cardFeatures: [
+      {
+        title: 'Naturalna konsystencja galaretki',
+        description: 'Miód wrzosowy jako jedyny posiada naturalną galaretowatą strukturę bogatą w białka i biopierwiastki.',
+        iconName: 'sparkles'
+      },
+      {
+        title: 'Wsparcie układu moczowego',
+        description: 'Tradycyjnie stosowany przy schorzeniach nerek, dróg moczowych oraz dla zdrowia prostaty.',
+        iconName: 'heart'
+      },
+      {
+        title: 'Trudny zbiór jesienny',
+        description: 'Ostatnie miodobranie w roku, wymagające ogromnego kunsztu i specjalnych odsklepiaczy.',
+        iconName: 'shield'
+      }
+    ],
+    cardTastingTip: 'Znakomity do deski długodojrzewających serów, orzechów włoskich i pieczonego pieczywa.'
+  },
+  {
+    id: 'spadziowy',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-ze-spadzi-iglastej') || HONEY_PRODUCTS[2],
+    defaultVideoUrl: getAssetUrl('videos/spadziowy.mp4'),
+    tagline: 'Szlachetny, ciemny miód z dolnośląskich borów jodłowych i świerkowych. Żywiczny aromat i naturalne wsparcie odporności.',
+    vintageYear: 'Zbiór Leśny 2026',
+    terroirLocation: 'Bory Dolnośląskie',
+    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
+    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
+    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
+    ambientToneHex: '#4D6B35',
+    badge: 'Skarb Borów Dolnośląskich',
+    cardCategorySubtitle: 'BORY DOLNOŚLĄSKIE',
+    cardMainTitle: 'Skarb Borów & Minerały',
+    cardBadgeIcon: 'trees',
+    cardFeatures: [
+      {
+        title: '9x więcej biopierwiastków',
+        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
+        iconName: 'trees'
+      },
+      {
+        title: 'Żywiczny aromat lasu',
+        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
+        iconName: 'droplets'
+      },
+      {
+        title: 'Królewska tarcza odporności',
+        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
+        iconName: 'shield'
+      }
+    ],
+    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
   },
 ];
 
