@@ -37,8 +37,8 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Naturalny probiotyk regenerujący florę bakteryjną jelit',
         'Pokarm, którym pszczoły karmią matkę i młode larwy',
       ],
-      ctaText: 'Zapytaj o dostępność pierzgi',
-      ctaLink: '/kontakt',
+      ctaText: 'Zobacz pierzgę w sklepie',
+      ctaLink: '/produkt/pierzga-pszczela',
     },
     {
       id: 'propolis',
@@ -53,8 +53,8 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Błyskawiczna ulga przy bólach gardła, infekcjach jamy ustnej i dziąseł',
         'Naturalna tarcza układu oddechowego i odpornościowego',
       ],
-      ctaText: 'Zapytaj o propolis',
-      ctaLink: '/kontakt',
+      ctaText: 'Zobacz propolis w sklepie',
+      ctaLink: '/produkt/propolis-kit',
     },
     {
       id: 'pylek',
@@ -69,8 +69,8 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Wspomaga prawidłową pracę układu krążenia i obniża cholesterol',
         'Znakomicie wpływa na witalność, pamięć oraz stan skóry, włosów i paznokci',
       ],
-      ctaText: 'Zamów pyłek pszczeli',
-      ctaLink: '/kontakt',
+      ctaText: 'Zobacz pyłek w sklepie',
+      ctaLink: '/produkt/pylek-pszczeli',
     },
     {
       id: 'wosk',
@@ -85,8 +85,8 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Piękny, miodowo-propolisowy aromat palącej się świecy',
         'Świece odlewane i zwijane z naturalnej węzy pszczelej',
       ],
-      ctaText: 'Zobacz zestawy ze świecą',
-      ctaLink: '/sklep',
+      ctaText: 'Zobacz świece w sklepie',
+      ctaLink: '/produkt/swieca-wosk-pszczeli',
     },
     {
       id: 'szkolenia',
@@ -101,8 +101,8 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Praktyczna nauka pracy przy ulu bez stresu i dróg na skróty',
         'Wsparcie merytoryczne i doradztwo w doborze sprzętu',
       ],
-      ctaText: 'Skontaktuj się w sprawie odkładów',
-      ctaLink: '/kontakt',
+      ctaText: 'Szczegóły odkładów & szkoleń',
+      ctaLink: '/produkt/odklad-szkolenie-pszczele',
     },
   ];
 

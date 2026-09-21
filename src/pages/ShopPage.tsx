@@ -128,7 +128,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
     if (filters.healthIntent && filters.healthIntent !== 'wszystkie') {
       result = result.filter(p => {
-        const enriched = getEnrichedProduct(p.id);
+        const enriched = getEnrichedProduct(p);
         const benefits = enriched.healthBenefits.map(b => b.toLowerCase());
         const uses = p.recommendedUse.map(u => u.toLowerCase());
         const combined = [...benefits, ...uses].join(' ');

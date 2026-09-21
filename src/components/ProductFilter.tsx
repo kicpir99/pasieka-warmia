@@ -5,11 +5,11 @@ import { HONEY_PRODUCTS } from '../data/honeyProducts';
 import { Search, Sparkles, X, ChevronDown, ChevronUp, ChevronRight, Check, RotateCcw, SlidersHorizontal } from 'lucide-react';
 
 const HEALTH_INTENTS: { id: HealthIntentFilter; label: string; icon: string; desc: string }[] = [
-  { id: 'wszystkie', label: 'Wszystkie zbiory', icon: '✨', desc: 'Pełna oferta 15 miodów pasiecznych' },
-  { id: 'odpornosc', label: 'Odporność & Infekcje', icon: '🛡️', desc: 'Lipa, Spadź, Propolis, Malina' },
-  { id: 'lagodne', label: 'Łagodne & Dla Dzieci', icon: '🥞', desc: 'Rzepak kremowany, Akacja, Facelia' },
-  { id: 'koneser', label: 'Głębokie & Koneser', icon: '🌲', desc: 'Gryka, Wrzos, Spadź iglasta' },
-  { id: 'prezent', label: 'Na Prezent & Rarytas', icon: '🎁', desc: 'Orzechy w akacji, Miód wrzosowy' },
+  { id: 'wszystkie', label: 'Wszystkie zbiory', icon: '✨', desc: 'Pełna oferta 12 miodów oraz darów pasieki' },
+  { id: 'odpornosc', label: 'Odporność & Infekcje', icon: '🛡️', desc: 'Lipa, Spadź, Pierzga, Propolis' },
+  { id: 'lagodne', label: 'Łagodne & Dla Dzieci', icon: '🥞', desc: 'Rzepak, Akacja, Facelia, Wielokwiat' },
+  { id: 'koneser', label: 'Głębokie & Koneser', icon: '🌲', desc: 'Gryka, Wrzos, Spadź iglasta, Mniszek' },
+  { id: 'prezent', label: 'Na Prezent & Rarytas', icon: '🎁', desc: 'Miód wrzosowy, Świece z wosku pszczelego' },
 ];
 
 interface ProductFilterProps {
@@ -26,15 +26,13 @@ const POPULAR_NOTES = [
   'Melasa',
   'Kwiat lipy',
   'Żywica sosnowa',
-  'Malina',
+  'Nuta malinowa',
   'Cytrusy',
   'Białe kwiaty',
   'Mięta leśna',
   'Wanilia',
   'Wrzosiec',
-  'Kawa',
-  'Dzikie owoce',
-  'Skórka orzecha',
+  'Jagody leśne',
 ];
 
 export const ProductFilter: React.FC<ProductFilterProps> = ({
@@ -54,11 +52,12 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
   }, [filters.flavorNote]);
 
   const categories: { id: HoneyCategory; label: string }[] = [
-    { id: 'wszystkie', label: 'Wszystkie pory zbioru' },
-    { id: 'wiosenne', label: '🌸 Wiosenne (Maj)' },
-    { id: 'letnie', label: '☀️ Letnie (Lipa, Gryka)' },
-    { id: 'lesne-spadz', label: '🌲 Leśne & Spadziowe' },
-    { id: 'z-dodatkami', label: '🍓 Z dodatkami (Malina)' },
+    { id: 'wszystkie', label: 'Wszystkie zbiory' },
+    { id: 'wiosenne', label: '🌸 Wiosenne (Rzepak, Akacja, Mniszek)' },
+    { id: 'letnie', label: '☀️ Letnie (Lipa, Gryka, Facelia)' },
+    { id: 'lesne-spadz', label: '🌲 Leśne & Spadziowe (Spadź, Wrzos)' },
+    { id: 'z-dodatkami', label: '🍯 Skarby ula (Pierzga, Propolis, Pyłek)' },
+    { id: 'zestawy', label: '🐝 Manufaktura & Oferta pszczela' },
   ];
 
   // Wszystkie unikalne nuty smakowe zebrane z bazy miodów

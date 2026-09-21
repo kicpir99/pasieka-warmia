@@ -15,25 +15,30 @@ interface VarietyRibbonTheme {
 }
 
 const VARIETY_THEMES: Record<string, VarietyRibbonTheme> = {
-  // 1. Miód Lipowy Warmiński: klasyczny mazurski złocisty bursztyn z ciepłym, miodowym blaskiem
+  // 1. Miód Lipowy: klasyczny złocisty bursztyn z ciepłym, miodowym blaskiem
   lipowy: {
     filter: 'drop-shadow(0 14px 28px rgba(229,152,58,0.30)) brightness(1.0)',
     glowColor: '#E5983A',
     glowOpacity: 0.30,
   },
-  'lipowy-warminski': {
+  'miod-lipowy': {
+    filter: 'drop-shadow(0 14px 28px rgba(229,152,58,0.30)) brightness(1.0)',
+    glowColor: '#E5983A',
+    glowOpacity: 0.30,
+  },
+  'miod-wielokwiatowy': {
     filter: 'drop-shadow(0 14px 28px rgba(229,152,58,0.30)) brightness(1.0)',
     glowColor: '#E5983A',
     glowOpacity: 0.30,
   },
 
-  // 2. Miód Gryczany Mazurski: głęboka melasa, palony karmel i ciemny mahoń
+  // 2. Miód Gryczany: głęboka melasa, palony karmel i ciemny mahoń
   gryczany: {
     filter: 'drop-shadow(0 14px 28px rgba(75,35,15,0.40)) brightness(0.55) contrast(1.15) saturate(1.1) hue-rotate(-10deg)',
     glowColor: '#5C2C16',
     glowOpacity: 0.35,
   },
-  'gryczany-mazurski': {
+  'miod-gryczany': {
     filter: 'drop-shadow(0 14px 28px rgba(75,35,15,0.40)) brightness(0.55) contrast(1.15) saturate(1.1) hue-rotate(-10deg)',
     glowColor: '#5C2C16',
     glowOpacity: 0.35,
@@ -50,38 +55,36 @@ const VARIETY_THEMES: Record<string, VarietyRibbonTheme> = {
     glowColor: '#423D2D',
     glowOpacity: 0.35,
   },
-
-  // 4. Miód Kremowany z Maliną Liofilizowaną: zgaszona malinowa czerwień (nie neonowa)
-  malina: {
-    filter: 'drop-shadow(0 14px 28px rgba(185,55,75,0.30)) brightness(0.85) contrast(1.05) saturate(1.0) hue-rotate(-25deg)',
-    glowColor: '#B83A4E',
-    glowOpacity: 0.30,
+  'miod-ze-spadzi-iglastej': {
+    filter: 'drop-shadow(0 14px 28px rgba(45,40,25,0.40)) brightness(0.45) contrast(1.2) saturate(0.7) hue-rotate(15deg) sepia(0.1)',
+    glowColor: '#423D2D',
+    glowOpacity: 0.35,
   },
-  'wielokwiat-kremowany-malina': {
-    filter: 'drop-shadow(0 14px 28px rgba(185,55,75,0.30)) brightness(0.85) contrast(1.05) saturate(1.0) hue-rotate(-25deg)',
-    glowColor: '#B83A4E',
-    glowOpacity: 0.30,
+  'miod-wrzosowy': {
+    filter: 'drop-shadow(0 14px 28px rgba(160,92,34,0.38)) brightness(0.60) contrast(1.15) saturate(1.1) hue-rotate(-5deg)',
+    glowColor: '#A05C22',
+    glowOpacity: 0.35,
   },
 
-  // 5. Miód Akacjowy Niefiltrowany: krystalicznie jasny, słoneczny nektar, przejrzyste słomkowe złoto
+  // 4. Miód Akacjowy: krystalicznie jasny, słoneczny nektar, przejrzyste słomkowe złoto
   akacja: {
     filter: 'drop-shadow(0 14px 28px rgba(240,215,130,0.25)) brightness(1.2) contrast(0.95) saturate(0.7)',
     glowColor: '#F3E196',
     glowOpacity: 0.25,
   },
-  'akacjowy-warminski': {
+  'miod-akacjowy': {
     filter: 'drop-shadow(0 14px 28px rgba(240,215,130,0.25)) brightness(1.2) contrast(0.95) saturate(0.7)',
     glowColor: '#F3E196',
     glowOpacity: 0.25,
   },
 
-  // 6. Miód Rzepakowy Kremowany: śnieżnobiały, puszysty perłowy krem miodowy, aksamitne jasne masło
+  // 5. Miód Rzepakowy Kremowany: śnieżnobiały, puszysty perłowy krem miodowy
   rzepakowy: {
     filter: 'drop-shadow(0 14px 28px rgba(240,230,200,0.25)) brightness(1.45) contrast(0.8) saturate(0.2)',
     glowColor: '#F5EFE0',
     glowOpacity: 0.25,
   },
-  'rzepakowy-kremowany': {
+  'miod-rzepakowy': {
     filter: 'drop-shadow(0 14px 28px rgba(240,230,200,0.25)) brightness(1.45) contrast(0.8) saturate(0.2)',
     glowColor: '#F5EFE0',
     glowOpacity: 0.25,

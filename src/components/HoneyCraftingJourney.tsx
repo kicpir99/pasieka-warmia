@@ -415,7 +415,7 @@ export const HoneyCraftingJourney: React.FC = () => {
 
               {/* Seamless Body Text */}
               <p className="text-xs sm:text-base md:text-lg text-[#E8E0D2] font-normal leading-relaxed max-w-lg [text-shadow:0_2px_16px_rgba(0,0,0,0.95),0_1px_4px_rgba(0,0,0,0.9)]">
-                Prawdziwy, tradycyjny miód z dzikich łąk. Niezmienny od stuleci, zrodzony w harmonii z przyrodą Warmii i Mazur.
+                Prawdziwy, tradycyjny miód z dzikich łąk. Niezmienny od stuleci, zrodzony w harmonii z przyrodą Dolnego Śląska.
               </p>
             </div>
           </div>

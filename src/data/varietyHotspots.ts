@@ -10,15 +10,15 @@ export interface VarietyHotspot {
 }
 
 export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
-  lipowy: [
+  'miod-lipowy': [
     {
       angle: 0,
       position: 'left',
       verticalPos: 'top',
       badge: 'Pasieka',
-      category: 'Święta Lipka',
-      title: 'Stare Mazurskie Aleje Lipowe',
-      description: 'Pozyskiwany ze starych lip drobnolistnych wokół Świętej Lipki. Pieczęć rodzinnej pasieki i 100% czysty skład.',
+      category: 'Ciechów • Dolny Śląsk',
+      title: 'Stare Dolnośląskie Aleje Lipowe',
+      description: 'Pozyskiwany ze starych lip drobnolistnych wokół Ciechowa. Pieczęć pasieki wędrownej i 100% czysty skład.',
       iconName: 'shield',
     },
     {
@@ -28,7 +28,7 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Na Zimno',
       category: 'RAW • Max 36°C',
       title: 'Nigdy Niepodgrzewany (RAW)',
-      description: 'Wirowany wyłącznie na zimno. Zachowuje pełnię aktywnych enzymów, biopierwiastków i kojący aromat kwiatów.',
+      description: 'Wirowany wyłącznie na zimno. Zachowuje pełnię aktywnych enzymów, biopierwiastków i kojący aromat kwiatów lipy.',
       iconName: 'droplets',
     },
     {
@@ -38,119 +38,53 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Rytuał',
       category: 'Czysty Nektar & Napary',
       title: 'Kojący Bukiet do Herbaty',
-      description: 'Aksamitna słodycz i delikatny, żywiczny finisz. Idealny do przestudzonej herbaty ziołowej przy przeziębieniu.',
+      description: 'Aksamitna słodycz i odświeżający mentolowy finisz. Niezastąpiony przy przeziębieniach i wieczornym wyciszeniu.',
       iconName: 'sparkles',
     },
   ],
 
-  'lipowy-warminski': [
+  'miod-wrzosowy': [
     {
       angle: 0,
       position: 'left',
       verticalPos: 'top',
-      badge: 'Pasieka',
-      category: 'Święta Lipka',
-      title: 'Stare Mazurskie Aleje Lipowe',
-      description: 'Pozyskiwany ze starych lip drobnolistnych wokół Świętej Lipki. Pieczęć rodzinnej pasieki i 100% czysty skład.',
-      iconName: 'shield',
+      badge: 'Rarytas',
+      category: 'Wrzosowiska Dolnośląskie',
+      title: 'Królewski Miód z Wrzosu',
+      description: 'Pozyskiwany z dzikich wrzosowisk na przełomie lata i jesieni. Niezwykle trudny do odwirowania ze względu na naturalną galaretowatość.',
+      iconName: 'trees',
     },
     {
       angle: 120,
       position: 'right',
       verticalPos: 'top',
-      badge: 'Na Zimno',
-      category: 'RAW • Max 36°C',
-      title: 'Nigdy Niepodgrzewany (RAW)',
-      description: 'Wirowany wyłącznie na zimno. Zachowuje pełnię aktywnych enzymów, biopierwiastków i kojący aromat kwiatów.',
-      iconName: 'droplets',
+      badge: 'Medycyna',
+      category: 'Drogi Moczowe',
+      title: 'Tarcza Przeciwzapalna',
+      description: 'Bogaty w enzymy i związki fenolowe o silnym działaniu antyseptycznym i moczopędnym. Wspiera zdrowie nerek i prostaty.',
+      iconName: 'shield',
     },
     {
       angle: 240,
       position: 'left',
       verticalPos: 'bottom',
-      badge: 'Rytuał',
-      category: 'Czysty Nektar & Napary',
-      title: 'Kojący Bukiet do Herbaty',
-      description: 'Aksamitna słodycz i delikatny, żywiczny finisz. Idealny do przestudzonej herbaty ziołowej przy przeziębieniu.',
+      badge: 'Koneser',
+      category: 'Gorzka Pomarańcza & Żywica',
+      title: 'Unikatowy Wytrawny Bukiet',
+      description: 'Bursztynowo-rubinowa barwa i wyrazisty, szlachetnie gorzkawy smak. Doskonały kompan do dojrzałych serów.',
       iconName: 'sparkles',
     },
   ],
 
-  gryczany: [
-    {
-      angle: 0,
-      position: 'left',
-      verticalPos: 'top',
-      badge: 'Pasieka',
-      category: 'Północne Mazury',
-      title: 'Mazurskie Pola Gryki',
-      description: 'Ciemny, wyrazisty miód o zapachu palonego karmelu i melasy. Zbiór z tradycyjnych mazurskich pól uprawnych.',
-      iconName: 'shield',
-    },
-    {
-      angle: 120,
-      position: 'right',
-      verticalPos: 'top',
-      badge: 'Moc',
-      category: 'Rutyna i Żelazo',
-      title: 'Wsparcie Serca i Krążenia',
-      description: 'Gryka nasyca miód rutyną i łatwo przyswajalnym żelazem, które naturalnie wzmacniają naczynia krwionośne.',
-      iconName: 'heart',
-    },
-    {
-      angle: 240,
-      position: 'left',
-      verticalPos: 'bottom',
-      badge: 'Kulinaria',
-      category: 'Pieczywo & Piernik',
-      title: 'Do Pajdy Chleba i Piernika',
-      description: 'Niezastąpiony do staropolskich wypieków, ciemnych sosów oraz na grubą pajdę chrupiącego wiejskiego chleba.',
-      iconName: 'flame',
-    },
-  ],
-
-  'gryczany-mazurski': [
-    {
-      angle: 0,
-      position: 'left',
-      verticalPos: 'top',
-      badge: 'Pasieka',
-      category: 'Północne Mazury',
-      title: 'Mazurskie Pola Gryki',
-      description: 'Ciemny, wyrazisty miód o zapachu palonego karmelu i melasy. Zbiór z tradycyjnych mazurskich pól uprawnych.',
-      iconName: 'shield',
-    },
-    {
-      angle: 120,
-      position: 'right',
-      verticalPos: 'top',
-      badge: 'Moc',
-      category: 'Rutyna i Żelazo',
-      title: 'Wsparcie Serca i Krążenia',
-      description: 'Gryka nasyca miód rutyną i łatwo przyswajalnym żelazem, które naturalnie wzmacniają naczynia krwionośne.',
-      iconName: 'heart',
-    },
-    {
-      angle: 240,
-      position: 'left',
-      verticalPos: 'bottom',
-      badge: 'Kulinaria',
-      category: 'Pieczywo & Piernik',
-      title: 'Do Pajdy Chleba i Piernika',
-      description: 'Niezastąpiony do staropolskich wypieków, ciemnych sosów oraz na grubą pajdę chrupiącego wiejskiego chleba.',
-      iconName: 'flame',
-    },
-  ],
-
-  spadziowy: [
+  'miod-ze-spadzi-iglastej': [
     {
       angle: 0,
       position: 'left',
       verticalPos: 'top',
       badge: 'Bory',
-      category: 'Puszcza Piska',
-      title: 'Skarb Puszczy Piskiej',
-      description: 'Pozyskiwany w ostępach puszczańskich z igieł wiekowych świerków i jodeł. Szlachetny, rzadki i ciemny nektar lasu.',
+      category: 'Bory Dolnośląskie',
+      title: 'Czarny Diament Lasu',
+      description: 'Gęsty, ciemny miód ze spadzi jodłowej i świerkowej. Rzadki pożytek zbierany w najczystszych lasach iglastych.',
       iconName: 'trees',
     },
     {
@@ -170,86 +104,20 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Bukiet',
       category: 'Leśne Igliwie',
       title: 'Żywiczny Aromat Iglasty',
-      description: 'Głęboka ciemnobrunatna barwa i szlachetna, stonowana słodycz. Najlepiej smakuje powoli z drewnianej łyżeczki.',
+      description: 'Głęboka ciemnobrunatna barwa i szlachetna, stonowana słodycz z nutą karmelu i żywicy.',
       iconName: 'shield',
     },
   ],
 
-  'spadz-iglastej': [
-    {
-      angle: 0,
-      position: 'left',
-      verticalPos: 'top',
-      badge: 'Bory',
-      category: 'Puszcza Piska',
-      title: 'Skarb Puszczy Piskiej',
-      description: 'Pozyskiwany w ostępach puszczańskich z igieł wiekowych świerków i jodeł. Szlachetny, rzadki i ciemny nektar lasu.',
-      iconName: 'trees',
-    },
-    {
-      angle: 120,
-      position: 'right',
-      verticalPos: 'top',
-      badge: 'Minerały',
-      category: '9x Więcej Biopierwiastków',
-      title: 'Królewska Tarcza Odporności',
-      description: 'Spadź iglasta zawiera 9-krotnie więcej potasu, magnezu i mikroelementów niż tradycyjne miody kwiatowe.',
-      iconName: 'sparkles',
-    },
-    {
-      angle: 240,
-      position: 'left',
-      verticalPos: 'bottom',
-      badge: 'Bukiet',
-      category: 'Leśne Igliwie',
-      title: 'Żywiczny Aromat Iglasty',
-      description: 'Głęboka ciemnobrunatna barwa i szlachetna, stonowana słodycz. Najlepiej smakuje powoli z drewnianej łyżeczki.',
-      iconName: 'shield',
-    },
-  ],
-
-  malina: [
-    {
-      angle: 0,
-      position: 'left',
-      verticalPos: 'top',
-      badge: 'Sady',
-      category: 'Gietrzwałd',
-      title: 'Miód & Polska Malina',
-      description: 'Nasz surowy miód wielokwiatowy połączony z prawdziwą liofilizowaną polską maliną. Zero aromatów i barwników.',
-      iconName: 'sparkles',
-    },
-    {
-      angle: 120,
-      position: 'right',
-      verticalPos: 'top',
-      badge: 'Krem',
-      category: 'Kremowany na Zimno',
-      title: 'Puszysta, Maślana Struktura',
-      description: 'Powolne napowietrzanie na zimno sprawia, że smaruje się gładko jak masło i nie spływa ze świeżego pieczywa.',
-      iconName: 'droplets',
-    },
-    {
-      angle: 240,
-      position: 'left',
-      verticalPos: 'bottom',
-      badge: 'Rytuał',
-      category: 'Śniadania & Dzieci',
-      title: 'Ulubieniec do Mleka i Owsianki',
-      description: 'Rozmieszaj łyżkę w letnim mleku lub owsiance — powstaje orzeźwiający, witaminowy deser o smaku letnich malin.',
-      iconName: 'heart',
-    },
-  ],
-
-  akacja: [
+  'miod-akacjowy': [
     {
       angle: 0,
       position: 'left',
       verticalPos: 'top',
       badge: 'Pożytek',
-      category: 'Dolina Łyny',
-      title: 'Nektar z Białej Robinii',
-      description: 'Kryształowo czysty, złocisto-jasny miód z kwitnących w czerwcu mazurskich robinii akacjowych w dolinie Łyny.',
+      category: 'Dolina Odry • Lasy Akacjowe',
+      title: 'Jasny Nektar z Białej Robinii',
+      description: 'Krystalicznie czysty, jasnosłomkowy miód ze słonecznych zagajników akacjowych w dolinie rzeki Odry.',
       iconName: 'feather',
     },
     {
@@ -259,8 +127,8 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Łagodność',
       category: 'Niska Kwasowość',
       title: 'Najdelikatniejszy dla Żołądka',
-      description: 'Aksamitna łagodność i niska kwasowość. Wyjątkowo przyjazny dla przewodu pokarmowego oraz dla najmłodszych.',
-      iconName: 'feather',
+      description: 'Aksamitna łagodność i niska kwasowość. Wyjątkowo przyjazny przy nadkwasocie, dla dzieci i do codziennego słodzenia.',
+      iconName: 'heart',
     },
     {
       angle: 240,
@@ -269,20 +137,53 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Patoka',
       category: 'Zioła & Napoje',
       title: 'Długo Płynny Waniliowy Bukiet',
-      description: 'Wysoka zawartość fruktozy sprawia, że krystalizuje najwolniej. Słodzi napary bez zmiany naturalnego smaku ziół.',
+      description: 'Wysoka zawartość naturalnej fruktozy sprawia, że krystalizuje najwolniej ze wszystkich miodów krajowych.',
       iconName: 'coffee',
     },
   ],
 
-  rzepakowy: [
+  'miod-gryczany': [
+    {
+      angle: 0,
+      position: 'left',
+      verticalPos: 'top',
+      badge: 'Pasieka',
+      category: 'Dolny Śląsk',
+      title: 'Pola Gryki Zwyczajnej',
+      description: 'Ciemny, wyrazisty miód o intensywnym zapachu palonego karmelu, suszonej śliwki i kwiatów gryki.',
+      iconName: 'shield',
+    },
+    {
+      angle: 120,
+      position: 'right',
+      verticalPos: 'top',
+      badge: 'Moc',
+      category: 'Rutyna i Żelazo',
+      title: 'Wsparcie Serca i Krążenia',
+      description: 'Gryka nasyca miód rutyną i łatwo przyswajalnym żelazem, które naturalnie uszczelniają naczynia krwionośne.',
+      iconName: 'heart',
+    },
+    {
+      angle: 240,
+      position: 'left',
+      verticalPos: 'bottom',
+      badge: 'Kulinaria',
+      category: 'Pieczywo & Piernik',
+      title: 'Do Pajdy Chleba i Piernika',
+      description: 'Niezastąpiony do tradycyjnego piernika, ciemnych marynat do mięs oraz na chrupiący chleb na zakwasie.',
+      iconName: 'flame',
+    },
+  ],
+
+  'miod-rzepakowy': [
     {
       angle: 0,
       position: 'left',
       verticalPos: 'top',
       badge: 'Wiosna',
-      category: 'Warmia Zachodnia',
-      title: 'Pierwszy Zbiór Wiosenny',
-      description: 'Świeże majowe miodobranie z czystych warmińskich pożytków. Łagodny, ciepły zapach budzącej się przyrody.',
+      category: 'Ciechów i Okolice',
+      title: 'Pierwsze Majowe Miodobranie',
+      description: 'Świeży majowy pożytek ze słonecznych dolnośląskich pól rzepaku. Łagodny, ciepły zapach budzącej się przyrody.',
       iconName: 'sun',
     },
     {
@@ -292,7 +193,7 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       badge: 'Energia',
       category: 'Glukoza dla Serca',
       title: 'Szybki Zastrzyk Sił',
-      description: 'Ponad 50% łatwo przyswajalnej glukozy błyskawicznie odżywia mięsień sercowy i wspomaga powrót do formy.',
+      description: 'Wysoka zawartość łatwo przyswajalnej glukozy błyskawicznie odżywia mięsień sercowy i regeneruje organizm.',
       iconName: 'zap',
     },
     {
@@ -300,19 +201,65 @@ export const VARIETY_HOTSPOTS_MAP: Record<string, VarietyHotspot[]> = {
       position: 'left',
       verticalPos: 'bottom',
       badge: 'Krem',
-      category: 'Perłowy Krem',
-      title: 'Śnieżnobiały Aksamitny Krem',
-      description: 'Kremowany tuż po odwirowaniu. Ma puszystą strukturę, która natychmiast delikatnie rozpływa się w ustach.',
+      category: 'Kremowany na Zimno',
+      title: 'Aksamitna Maślana Struktura',
+      description: 'Miód kremowany mechanicznie bez podgrzewania — zachowuje delikatną strukturę, która nie spływa z pieczywa.',
+      iconName: 'droplets',
+    },
+  ],
+
+  'miod-wielokwiatowy': [
+    {
+      angle: 0,
+      position: 'left',
+      verticalPos: 'top',
+      badge: 'Bukiet',
+      category: 'Łąki Nadodrzańskie • Ciechów',
+      title: 'Mozaika Dzikich Kwiatów',
+      description: 'Bogaty bukiet kwiatów łąkowych, sadów i ziół. Każdy słoik odzwierciedla zmienność pór kwitnienia.',
+      iconName: 'sun',
+    },
+    {
+      angle: 120,
+      position: 'right',
+      verticalPos: 'top',
+      badge: 'Odporność',
+      category: 'Dla Całej Rodziny',
+      title: 'Codzienna Profilaktyka',
+      description: 'Zrównoważony profil pyłkowy sprzyja budowaniu naturalnej tolerancji alergicznej i odporności organizmu.',
+      iconName: 'heart',
+    },
+    {
+      angle: 240,
+      position: 'left',
+      verticalPos: 'bottom',
+      badge: 'Uniwersalny',
+      category: 'Do Kuchni i Napojów',
+      title: 'Słodycz na Dzień Dobry',
+      description: 'Idealny dodatek do porannej owsianki, herbaty z cytryną, twarogu oraz domowych wypieków.',
       iconName: 'droplets',
     },
   ],
 };
+
+// Aliases for legacy short IDs
+VARIETY_HOTSPOTS_MAP['lipowy'] = VARIETY_HOTSPOTS_MAP['miod-lipowy'];
+VARIETY_HOTSPOTS_MAP['lipowy-warminski'] = VARIETY_HOTSPOTS_MAP['miod-lipowy'];
+VARIETY_HOTSPOTS_MAP['gryczany'] = VARIETY_HOTSPOTS_MAP['miod-gryczany'];
+VARIETY_HOTSPOTS_MAP['gryczany-mazurski'] = VARIETY_HOTSPOTS_MAP['miod-gryczany'];
+VARIETY_HOTSPOTS_MAP['spadziowy'] = VARIETY_HOTSPOTS_MAP['miod-ze-spadzi-iglastej'];
+VARIETY_HOTSPOTS_MAP['spadz-iglastej'] = VARIETY_HOTSPOTS_MAP['miod-ze-spadzi-iglastej'];
+VARIETY_HOTSPOTS_MAP['wrzosowy'] = VARIETY_HOTSPOTS_MAP['miod-wrzosowy'];
+VARIETY_HOTSPOTS_MAP['akacja'] = VARIETY_HOTSPOTS_MAP['miod-akacjowy'];
+VARIETY_HOTSPOTS_MAP['akacjowy'] = VARIETY_HOTSPOTS_MAP['miod-akacjowy'];
+VARIETY_HOTSPOTS_MAP['rzepakowy'] = VARIETY_HOTSPOTS_MAP['miod-rzepakowy'];
+VARIETY_HOTSPOTS_MAP['wielokwiatowy'] = VARIETY_HOTSPOTS_MAP['miod-wielokwiatowy'];
 
 export function getVarietyHotspots(varietyId: string): VarietyHotspot[] {
   const normId = varietyId.toLowerCase();
   return (
     VARIETY_HOTSPOTS_MAP[normId] ||
     VARIETY_HOTSPOTS_MAP[varietyId] ||
-    VARIETY_HOTSPOTS_MAP['lipowy']
+    VARIETY_HOTSPOTS_MAP['miod-lipowy']
   );
 }

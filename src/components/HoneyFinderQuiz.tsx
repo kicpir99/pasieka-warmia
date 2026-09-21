@@ -31,21 +31,21 @@ export const HoneyFinderQuiz: React.FC<HoneyFinderQuizProps> = ({
   // Simple matching algorithm
   const getRecommendation = (): HoneyProduct => {
     if (purpose === 'odpornosc') {
-      return HONEY_PRODUCTS.find((p) => p.id === 'lipowy-warminski') || HONEY_PRODUCTS[0];
+      return HONEY_PRODUCTS.find((p) => p.id === 'miod-lipowy') || HONEY_PRODUCTS[0];
     }
     if (purpose === 'dzieci') {
-      return HONEY_PRODUCTS.find((p) => p.id === 'wielokwiat-kremowany-malina') || HONEY_PRODUCTS[3];
+      return HONEY_PRODUCTS.find((p) => p.id === 'miod-wielokwiatowy') || HONEY_PRODUCTS[4];
     }
     if (purpose === 'kuchnia' || taste === 'mocny') {
-      return HONEY_PRODUCTS.find((p) => p.id === 'gryczany-mazurski') || HONEY_PRODUCTS[1];
+      return HONEY_PRODUCTS.find((p) => p.id === 'miod-gryczany') || HONEY_PRODUCTS[5];
     }
     if (texture === 'kremowany') {
-      return HONEY_PRODUCTS.find((p) => p.id === 'rzepakowy-kremowany') || HONEY_PRODUCTS[5];
+      return HONEY_PRODUCTS.find((p) => p.id === 'miod-rzepakowy') || HONEY_PRODUCTS[6];
     }
     if (taste === 'swiezy') {
-      return HONEY_PRODUCTS.find((p) => p.id === 'faceliowy-nektar') || HONEY_PRODUCTS[4];
+      return HONEY_PRODUCTS.find((p) => p.id === 'miod-faceliowy') || HONEY_PRODUCTS[11];
     }
-    return HONEY_PRODUCTS.find((p) => p.id === 'spadz-iglastej') || HONEY_PRODUCTS[2];
+    return HONEY_PRODUCTS.find((p) => p.id === 'miod-ze-spadzi-iglastej') || HONEY_PRODUCTS[2];
   };
 
   const recommendedProduct = getRecommendation();
@@ -62,7 +62,7 @@ export const HoneyFinderQuiz: React.FC<HoneyFinderQuizProps> = ({
             </div>
             <div>
               <h3 className="font-serif text-lg font-bold text-[#23201C] leading-none">
-                Doradca Pasieczny
+                Doradca Pasieczny Usza
               </h3>
               <span className="text-[11px] text-[#786D5E]">Dobierz idealny miód w 3 szybkich krokach</span>
             </div>
@@ -88,9 +88,9 @@ export const HoneyFinderQuiz: React.FC<HoneyFinderQuizProps> = ({
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
-                  { id: 'odpornosc', title: 'Odporność i przeziębienie', desc: 'Miód o wysokiej aktywności antybiotycznej i aromatach ziół' },
+                  { id: 'odpornosc', title: 'Odporność i przeziębienie', desc: 'Miód o wysokiej aktywności enzymatycznej i aromacie lipy lub spadzi' },
                   { id: 'herbata', title: 'Do herbaty i napojów', desc: 'Aksamitny, który doskonale słodzi nie zagłuszając smaku' },
-                  { id: 'dzieci', title: 'Dla dzieci & na śniadania', desc: 'Słodki, łagodny lub z owocami liofilizowanymi' },
+                  { id: 'dzieci', title: 'Dla dzieci & na śniadania', desc: 'Łagodny, maślany lub z wiosennego nektaru kwiatowego' },
                   { id: 'kuchnia', title: 'Do serów, mięs i pierników', desc: 'Mocny, wytrawny, korzenny akcent kulinarny' },
                 ].map((item) => (
                   <button

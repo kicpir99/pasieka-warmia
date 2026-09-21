@@ -63,17 +63,17 @@ export interface VarietyItem {
 export const HERO_VARIETIES: VarietyItem[] = [
   {
     id: 'lipowy',
-    product: HONEY_PRODUCTS[0],
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-lipowy') || HONEY_PRODUCTS[0],
     defaultVideoUrl: getAssetUrl('videos/lipowy.mp4'),
-    tagline: 'Klasyczny mazurski miód lipowy ze starych mazurskich alei. Niezastąpiony do wieczornego kubka gorącej herbaty z cytryną w chłodne dni.',
+    tagline: 'Królewski miód lipowy ze starych alei lipowych wokół Ciechowa. Niezastąpiony do wieczornego kubka gorącej herbaty z cytryną w chłodne dni.',
     vintageYear: 'Zbiór Letni 2026',
-    terroirLocation: 'Święta Lipka • Stare Aleje Lipowe',
+    terroirLocation: 'Aleje Lipowe • Ciechów',
     pollenNote: 'Czysty nektar lipy drobnolistnej • Naturalnie łagodzi gardło',
     flavorTastingNotes: 'Głęboki, ciepły zapach kwiatu lipy, delikatnie żywiczny finisz i aksamitna słodycz.',
     teaPairingNote: 'Najlepszy z czarną herbatą i cytryną lub naparem z suszonej lipy.',
     ambientToneHex: '#E5983A',
     badge: 'Klasyk do Gorącej Herbaty',
-    cardCategorySubtitle: 'PASIEKA ŚWIĘTA LIPKA • ALEJE LIPOWE',
+    cardCategorySubtitle: 'ALEJE LIPOWE • CIECHÓW',
     cardMainTitle: 'Ciepło Domu & Herbata',
     cardBadgeIcon: 'coffee',
     cardFeatures: [
@@ -88,26 +88,94 @@ export const HERO_VARIETIES: VarietyItem[] = [
         iconName: 'coffee'
       },
       {
-        title: '100% z mazurskich alei',
-        description: 'Zbiór ze starych drzew w Świętej Lipce. Prawdziwy, czysty miód bez sztucznego dokarmiania.',
+        title: 'Brak standaryzacji',
+        description: 'Nie mieszamy miodu w masę. Prawdziwy, czysty zbiór od naszych wędrownych rodzin pszczelich.',
         iconName: 'shield'
       }
     ],
     cardTastingTip: 'Prawdziwy klasyk na chłodne wieczory: łyżka miodu, plaster cytryny i świeży napar lipowy.'
   },
   {
+    id: 'wrzosowy',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-wrzosowy') || HONEY_PRODUCTS[1],
+    defaultVideoUrl: getAssetUrl('videos/lipowy.mp4'),
+    tagline: 'Szlachetny, galaretowaty miód z dolnośląskich wrzosowisk. Niezwykle rzadki rarytas o wytrawnym, głębokim smaku.',
+    vintageYear: 'Zbiór Wrześniowy 2026',
+    terroirLocation: 'Wrzosowiska Dolnośląskie',
+    pollenNote: 'Królewski miód z wrzosu • Galaretowata konsystencja',
+    flavorTastingNotes: 'Aromatyczny, lekko gorzkawy, głęboki smak wrzosowiska o bursztynowo-rubinowej barwie.',
+    teaPairingNote: 'Doskonały do degustacji łyżeczką oraz do wykwintnych serów i orzechów.',
+    ambientToneHex: '#A05C22',
+    badge: 'Rarytas Pasieki Usza',
+    cardCategorySubtitle: 'WRZOSOWISKA • DOLNY ŚLĄSK',
+    cardMainTitle: 'Królewski Wrzos & Galaretka',
+    cardBadgeIcon: 'sparkles',
+    cardFeatures: [
+      {
+        title: 'Naturalna konsystencja galaretki',
+        description: 'Miód wrzosowy jako jedyny posiada naturalną galaretowatą strukturę bogatą w białka i biopierwiastki.',
+        iconName: 'sparkles'
+      },
+      {
+        title: 'Wsparcie układu moczowego',
+        description: 'Tradycyjnie stosowany przy schorzeniach nerek, dróg moczowych oraz dla zdrowia prostaty.',
+        iconName: 'heart'
+      },
+      {
+        title: 'Trudny zbiór jesienny',
+        description: 'Ostatnie miodobranie w roku, wymagające ogromnego kunsztu i specjalnych odsklepiaczy.',
+        iconName: 'shield'
+      }
+    ],
+    cardTastingTip: 'Znakomity do deski długodojrzewających serów, orzechów włoskich i pieczonego pieczywa.'
+  },
+  {
+    id: 'spadziowy',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-ze-spadzi-iglastej') || HONEY_PRODUCTS[2],
+    defaultVideoUrl: getAssetUrl('videos/spadziowy.mp4'),
+    tagline: 'Szlachetny, ciemny miód z dolnośląskich borów jodłowych i świerkowych. Żywiczny aromat i naturalne wsparcie odporności.',
+    vintageYear: 'Zbiór Leśny 2026',
+    terroirLocation: 'Bory Dolnośląskie',
+    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
+    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
+    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
+    ambientToneHex: '#4D6B35',
+    badge: 'Skarb Borów Dolnośląskich',
+    cardCategorySubtitle: 'BORY DOLNOŚLĄSKIE',
+    cardMainTitle: 'Skarb Borów & Minerały',
+    cardBadgeIcon: 'trees',
+    cardFeatures: [
+      {
+        title: '9x więcej biopierwiastków',
+        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
+        iconName: 'trees'
+      },
+      {
+        title: 'Żywiczny aromat lasu',
+        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
+        iconName: 'droplets'
+      },
+      {
+        title: 'Królewska tarcza odporności',
+        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
+        iconName: 'shield'
+      }
+    ],
+    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
+  },
+  {
     id: 'gryczany',
-    product: HONEY_PRODUCTS[1],
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-gryczany') || HONEY_PRODUCTS[5],
     defaultVideoUrl: getAssetUrl('videos/gryczany.mp4'),
     tagline: 'Ciemny, wyrazisty miód o zapachu palonego karmelu. Cudownie rozgrzewa i idealnie pasuje do pajdy wiejskiego chleba z masłem.',
     vintageYear: 'Zbiór Sierpniowy 2026',
-    terroirLocation: 'Północne Mazury • Pola Gryki',
+    terroirLocation: 'Pola Gryki • Dolny Śląsk',
     pollenNote: 'Bogaty w naturalne żelazo i rutynę • Krzepiący i sycący',
     flavorTastingNotes: 'Intensywny aromat melasy i palonych ziaren, głęboki ciemnobrunatny kolor i mocny smak.',
     teaPairingNote: 'Idealny do mocnej herbaty z imbirem oraz jako dodatek do domowego piernika.',
     ambientToneHex: '#9E5316',
     badge: 'Na Chłodne Wieczory',
-    cardCategorySubtitle: 'PÓŁNOCNE MAZURY • POLA GRYKI',
+    cardCategorySubtitle: 'POLA GRYKI • DOLNY ŚLĄSK',
     cardMainTitle: 'Moc Krzepy & Żelazo',
     cardBadgeIcon: 'heart',
     cardFeatures: [
@@ -131,16 +199,16 @@ export const HERO_VARIETIES: VarietyItem[] = [
   },
   {
     id: 'akacja',
-    product: HONEY_PRODUCTS[2],
-    tagline: 'Złocisto-jasny, wyjątkowo łagodny nektar z białej akacji. Długo płynny, aksamitny – słodzi zioła bez zmiany ich naturalnego smaku.',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-akacjowy') || HONEY_PRODUCTS[3],
+    tagline: 'Złocisto-jasny, wyjątkowo łagodny nektar z białej akacji. Długo płynny, aksamitny – słodzi napoje bez zmiany ich naturalnego smaku.',
     vintageYear: 'Zbiór Czerwcowy 2026',
-    terroirLocation: 'Dolina rzeki Łyny • Czysta Warmia',
+    terroirLocation: 'Dolina Odry • Lasy Akacjowe',
     pollenNote: 'Nektar z robinii akacjowej • Wyjątkowo łagodny dla żołądka',
     flavorTastingNotes: 'Niezwykle subtelny, z nutą wanilii i wiosennych kwiatów, aksamitnie gładki na języku.',
     teaPairingNote: 'Wspaniale słodzi herbatę rumiankową, miętę, melisę i zieloną herbatę.',
     ambientToneHex: '#DDA83B',
     badge: 'Delikatny i Łagodny',
-    cardCategorySubtitle: 'DOLINA RZEKI ŁYNY • MAZURSKIE ROBINIE',
+    cardCategorySubtitle: 'DOLINA ODRY • LASY AKACJOWE',
     cardMainTitle: 'Aksamitny Nektar & Żołądek',
     cardBadgeIcon: 'feather',
     cardFeatures: [
@@ -155,7 +223,7 @@ export const HERO_VARIETIES: VarietyItem[] = [
         iconName: 'droplets'
       },
       {
-        title: 'Czysty słodzik niepsujący ziół',
+        title: 'Czysty słodzik niepsujący smaku',
         description: 'Subtelny, waniliowy bukiet nie zmienia smaku delikatnych ziół, mięty, rumianku, melisy czy herbaty zielonej.',
         iconName: 'coffee'
       }
@@ -163,50 +231,17 @@ export const HERO_VARIETIES: VarietyItem[] = [
     cardTastingTip: 'Znakomity do słodzenia wieczornych ziół wyciszających i letnich domowych lemoniad.'
   },
   {
-    id: 'malina',
-    product: HONEY_PRODUCTS[5],
-    tagline: 'Kremowany na zimno miód wielokwiatowy z polską maliną. Puszysty, owocowy – ulubiony przysmak dzieci i do ciepłego mleka.',
-    vintageYear: 'Zbiór 2026 + Malina Ogródkowa',
-    terroirLocation: 'Gietrzwałd • Mazurskie Pola i Sady',
-    pollenNote: 'Nektar łąkowy + 100% polska liofilizowana malina leśna',
-    flavorTastingNotes: 'Maślana konsystencja wiejskiego masła, słodko-kwaskowaty smak prawdziwych letnich owoców.',
-    teaPairingNote: 'Wspaniały do owocowej herbaty, ciepłego mleka, owsianki i naleśników.',
-    ambientToneHex: '#B23A48',
-    badge: 'Ulubiony Przysmak Dzieci',
-    cardCategorySubtitle: 'GIETRZWAŁD • POLSKIE SADY & ŁĄKI',
-    cardMainTitle: 'Polska Malina & Dzieci',
-    cardBadgeIcon: 'sparkles',
-    cardFeatures: [
-      {
-        title: '100% liofilizowana malina',
-        description: 'Zero sztucznych aromatów i barwników — wyłącznie nasz surowy miód i prawdziwe, aromatyczne polskie owoce.',
-        iconName: 'sparkles'
-      },
-      {
-        title: 'Puszysty krem na zimno',
-        description: 'Mechanicznie kremowany bez podgrzewania. Smaruje się gładko jak wiejskie masło i nie spływa z pieczywa.',
-        iconName: 'droplets'
-      },
-      {
-        title: 'Ulubieniec najmłodszych',
-        description: 'Naturalnie słodko-kwaskowaty smak. Dzieci uwielbiają go w ciepłym mleku, z naleśnikami, goframi i owsianką.',
-        iconName: 'heart'
-      }
-    ],
-    cardTastingTip: 'Rozmieszaj łyżkę w szklance letniego mleka lub owsianki — smakuje jak domowy koktajl malinowy!'
-  },
-  {
     id: 'rzepakowy',
-    product: HONEY_PRODUCTS[6] || HONEY_PRODUCTS[4],
-    tagline: 'Śnieżnobiały, puszysty krem z pierwszych majowych kwiatów. Rozpływa się w ustach, dając uczucie ciepła i domowego spokoju.',
+    product: HONEY_PRODUCTS.find(p => p.id === 'miod-rzepakowy') || HONEY_PRODUCTS[6],
+    tagline: 'Kremowobiały, puszysty krem z pierwszych majowych kwiatów. Rozpływa się w ustach, dając uczucie ciepła i domowego spokoju.',
     vintageYear: 'Zbiór Majowy 2026',
-    terroirLocation: 'Warmia Zachodnia • Wiosenne Pożytki',
-    pollenNote: 'Pierwsze wiosenne miodobranie • Łatwo przyswajalny zastrzyk energii',
-    flavorTastingNotes: 'Puszysty, śnieżnobiały krem o łagodnym, ciepłym smaku świeżego mleka i miodu.',
+    terroirLocation: 'Pola Rzepakowe • Ciechów',
+    pollenNote: 'Pierwsze wiosenne miodobranie • Błyskawiczny zastrzyk energii',
+    flavorTastingNotes: 'Puszysty, perłowy krem o łagodnym, ciepłym smaku świeżego mleka i miodu.',
     teaPairingNote: 'Niezastąpiony do porannej herbaty i chrupiącej ciepłej bułki z masłem.',
     ambientToneHex: '#D4AA55',
     badge: 'Pierwszy Zbiór Wiosenny',
-    cardCategorySubtitle: 'WARMIA ZACHODNIA • MAJOWE POŻYTKI',
+    cardCategorySubtitle: 'CIECHÓW • POLA RZEPAKOWE',
     cardMainTitle: 'Wiosenny Krem & Serce',
     cardBadgeIcon: 'sun',
     cardFeatures: [
@@ -221,46 +256,12 @@ export const HERO_VARIETIES: VarietyItem[] = [
         iconName: 'droplets'
       },
       {
-        title: 'Pierwszy zbiór z czystej Warmii',
-        description: 'Wiosenne miodobranie z wolnych od zanieczyszczeń mazurskich łąk. Łagodny, ciepły zapach polskiego maja.',
+        title: 'Pierwszy zbiór z Ciechowa',
+        description: 'Wiosenne miodobranie z wolnych od zanieczyszczeń łąk. Łagodny, ciepły zapach polskiego maja.',
         iconName: 'shield'
       }
     ],
     cardTastingTip: 'Niezrównany rano na chrupiącą bułkę z wiejskim masłem do kubka kawy zbożowej lub mleka.'
-  },
-  {
-    id: 'spadziowy',
-    product: HONEY_PRODUCTS[3],
-    defaultVideoUrl: getAssetUrl('videos/spadziowy.mp4'),
-    tagline: 'Szlachetny, gęsty miód z mazurskich borów świerkowych i jodłowych. Żywiczny zapach lasu i naturalne wsparcie odporności.',
-    vintageYear: 'Zbiór Leśny 2026',
-    terroirLocation: 'Puszcza Piska • Mazurskie Bory',
-    pollenNote: 'Spadź iglasta • 9-krotnie więcej biopierwiastków niż w miodach nektarowych',
-    flavorTastingNotes: 'Łagodny, leśno-żywiczny aromat, głęboka barwa i nienachalna, stonowana słodycz.',
-    teaPairingNote: 'Wyborny do powolnego kosztowania z drewnianej łyżeczki i do naparów z igliwia lub dzikiej róży.',
-    ambientToneHex: '#4D6B35',
-    badge: 'Skarb Mazurskich Borów',
-    cardCategorySubtitle: 'PUSZCZA PISKA • BORY MAZURSKIE',
-    cardMainTitle: 'Skarb Borów & Minerały',
-    cardBadgeIcon: 'trees',
-    cardFeatures: [
-      {
-        title: '9x więcej biopierwiastków',
-        description: 'Spadź iglasta ze świerków i jodeł zawiera 9-krotnie więcej potasu, magnezu i fosforu niż miody kwiatowe.',
-        iconName: 'trees'
-      },
-      {
-        title: 'Żywiczny aromat lasu',
-        description: 'Głęboka, ciemnobrunatna barwa z zielonkawym refleksem oraz szlachetna słodycz z nutą leśnego igliwia.',
-        iconName: 'droplets'
-      },
-      {
-        title: 'Królewska tarcza odporności',
-        description: 'Od stuleci ceniony za silne działanie wzmacniające organizm i wsparcie dróg oddechowych.',
-        iconName: 'shield'
-      }
-    ],
-    cardTastingTip: 'Najlepiej kosztować powoli z drewnianej łyżeczki, dając mu rozpuścić się na języku.'
   },
 ];
 
@@ -448,7 +449,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             <span className="text-[11px] sm:text-xs text-[#C5BCAD] font-sans px-2.5 py-1 rounded-full bg-[#1C251D]/80 border border-[#334435]">
-              {currentItem.vintageYear} • Zbiór Mazurski
+              {currentItem.vintageYear} • Zbiór Dolnośląski
             </span>
           </div>
 
@@ -582,7 +583,7 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Subtle Pasieka Note */}
           <div className="hidden lg:flex items-center gap-2 text-xs text-[#B8AEA0]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#E0A94F]/80" />
-            <span className="font-light tracking-wide">Zbiory odmianowe z Mazur</span>
+            <span className="font-light tracking-wide">Zbiory odmianowe Pasieki Usza</span>
           </div>
 
           {/* Floating Editorial Selector Track */}

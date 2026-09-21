@@ -12,7 +12,7 @@ export const LIPOWY_FALLBACK_CONFIG: ProceduralHoneyConfig = {
   liquidColor: '#F5B027',
   amberTone: '#B56505',
   name: 'MIÓD LIPOWY',
-  subtitle: 'Ze Starodrzewu Lipowego • Święta Lipka',
+  subtitle: 'Ze Starodrzewu Lipowego • Ciechów',
   botanicalName: 'Tilia cordata',
 };
 
@@ -93,7 +93,7 @@ export async function generateTransparent360JarFrames(
           ctx.fillText(config.name, cx, labelY + labelH * 0.45);
           ctx.font = 'italic 9px serif';
           ctx.fillStyle = '#6E522C';
-          ctx.fillText('PASIEKA WARMIA', cx, labelY + labelH * 0.25);
+          ctx.fillText('PASIEKA USZA', cx, labelY + labelH * 0.25);
         }
       }
     }

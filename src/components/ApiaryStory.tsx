@@ -14,7 +14,7 @@ export const ApiaryStory: React.FC<ApiaryStoryProps> = ({ containerClass }) => {
         <div className="max-w-3xl mx-auto text-center space-y-3 mb-16">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFE4D2] text-[#713F0C] text-xs font-semibold">
             <Trees className="w-3.5 h-3.5 text-[#A05C12]" />
-            Gospodarstwo Pasieczne Warmia
+            Pasieka Wędrowna Usza • Ciechów
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#23201C] tracking-tight">
             Nie produkujemy miodu. Zbieramy to, co stworzyły pszczoły.
@@ -118,7 +118,7 @@ export const ApiaryStory: React.FC<ApiaryStoryProps> = ({ containerClass }) => {
             </div>
 
             <p className="text-xs text-[#A89C8C] italic">
-              W Pasiece Warmia udostępniamy wyniki badań laboratoryjnych każdej partii miodu (liczbę diastazową, HMF oraz analizę melisopalynologiczną).
+              W Pasiece Usza udostępniamy wyniki badań laboratoryjnych każdej partii miodu (liczbę diastazową, HMF oraz analizę melisopalynologiczną).
             </p>
           </div>
         </div>

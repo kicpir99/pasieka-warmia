@@ -13,7 +13,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const [isDone, setIsDone] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
-  const [statusText, setStatusText] = useState('Inicjalizacja pasieki Święta Lipka...');
+  const [statusText, setStatusText] = useState('Inicjalizacja Pasieki Wędrownej Usza...');
 
   const progressRef = useRef(0);
 
@@ -144,7 +144,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
 
       // Aktualizacja statusu
       if (currentVisualP < 25) {
-        setStatusText('Inicjalizacja pasieki Święta Lipka...');
+        setStatusText('Inicjalizacja Pasieki Wędrownej Usza...');
       } else if (currentVisualP < 55) {
         setStatusText('Kalibracja modeli 3D i obrotów słoików...');
       } else if (currentVisualP < 85) {

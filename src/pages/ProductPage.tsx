@@ -941,7 +941,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                   </p>
                   <p className="text-[#594D42] text-sm sm:text-base leading-relaxed">
                     Nasz miód nie jest poddawany szkodliwym procesom pasteryzacji, dekrystalizacji termicznej ani filtracji ciśnieniowej. 
-                    Trafia do słoika dokładnie w takiej postaci, w jakiej stworzyły go pszczoły w czystym ekosystemie Warmii i Mazur. 
+                    Trafia do słoika dokładnie w takiej postaci, w jakiej stworzyły go pszczoły w czystym ekosystemie Dolnego Śląska. 
                     Zachowuje naturalne pyłki kwiatowe, drobiny wosku i propolisu oraz pełną bioaktywność enzymatyczną.
                   </p>
                 </div>

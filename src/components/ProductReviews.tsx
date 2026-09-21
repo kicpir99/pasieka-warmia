@@ -360,7 +360,7 @@ export const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) =
                       onChange={(e) => setIsVerifiedPurchase(e.target.checked)}
                       className="w-4 h-4 rounded text-[#1B4332] border-[#C4B3A0] focus:ring-[#1B4332]"
                     />
-                    <span>Potwierdzam zakup w Pasiece Warmia</span>
+                    <span>Potwierdzam zakup w Pasiece Usza</span>
                   </label>
                 </div>
                 {isVerifiedPurchase && (

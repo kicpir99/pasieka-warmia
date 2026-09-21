@@ -1131,16 +1131,16 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       </td>
                       <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <p className="font-bold text-[#241D17]">{currentA.region}</p>
-                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentA.harvestYear} • 100% Pasieka Warmia</p>
+                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentA.harvestYear} • 100% Pasieka Usza</p>
                       </td>
                       <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                         <p className="font-bold text-[#241D17]">{currentB.region}</p>
-                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentB.harvestYear} • 100% Pasieka Warmia</p>
+                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentB.harvestYear} • 100% Pasieka Usza</p>
                       </td>
                       {hasThreeProducts && currentC && (
                         <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
                           <p className="font-bold text-[#241D17]">{currentC.region}</p>
-                          <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentC.harvestYear} • 100% Pasieka Warmia</p>
+                          <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentC.harvestYear} • 100% Pasieka Usza</p>
                         </td>
                       )}
                     </tr>

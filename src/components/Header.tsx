@@ -132,23 +132,23 @@ export const Header: React.FC<HeaderProps> = ({
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/lipowy-warminski" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                          <Link to="/produkt/miod-lipowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
                             Miód Lipowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/akacjowy-klarowny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Akacjowy
+                          <Link to="/produkt/miod-wrzosowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Wrzosowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/rzepakowy-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Rzepakowy
+                          <Link to="/produkt/miod-ze-spadzi-iglastej" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód ze Spadzi Iglastej
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/spadziowy-iglasty" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Spadź Iglasta
+                          <Link to="/produkt/miod-gryczany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Gryczany
                           </Link>
                         </li>
                       </ul>
@@ -157,38 +157,48 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => navigateToCatalog('wszystkie')}
                         className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
                       >
-                        <span>Wszystkie odmiany</span>
+                        <span>Wszystkie 12 odmian</span>
                         <span>→</span>
                       </button>
                     </div>
 
-                    {/* Kolumna 2: Superfoods & Dodatki */}
+                    {/* Kolumna 2: Kwiatowe & Leśne */}
                     <div className="space-y-2.5">
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog('z-dodatkami')}
+                        onClick={() => navigateToCatalog('letnie')}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🍓 Z Dodatkami
+                        🌸 Kwiatowe & Leśne
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/malina-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Z Maliną Liofilizowaną
+                          <Link to="/produkt/miod-akacjowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Akacjowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/orzech-w-miodzie" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Orzechy w Akacji
+                          <Link to="/produkt/miod-wielokwiatowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Wielokwiatowy
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/produkt/miod-lesny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Leśny
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/produkt/miod-malinowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Malinowy
                           </Link>
                         </li>
                       </ul>
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog('z-dodatkami')}
+                        onClick={() => navigateToCatalog('wiosenne')}
                         className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
                       >
-                        <span>Kolekcja owocowa</span>
+                        <span>Zbiory wiosenne & letnie</span>
                         <span>→</span>
                       </button>
                     </div>
@@ -200,22 +210,22 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => navigateToCatalog(undefined, 'odpornosc')}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🛡️ Zdrowie i Odporność
+                        🛡️ Skarby Ula (Apiterapia)
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                          <Link to="/produkt/pierzga-pszczela" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
                             Pierzga Pszczela
                           </Link>
                         </li>
                         <li>
-                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                          <Link to="/produkt/propolis-kit" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
                             Propolis (Kit pszczeli)
                           </Link>
                         </li>
                         <li>
-                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Pyłek kwiatowy
+                          <Link to="/produkt/pylek-pszczeli" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Pyłek kwiatowy pszczeli
                           </Link>
                         </li>
                       </ul>
@@ -229,33 +239,33 @@ export const Header: React.FC<HeaderProps> = ({
                       </Link>
                     </div>
 
-                    {/* Kolumna 4: Zestawy & Upominki */}
+                    {/* Kolumna 4: Manufaktura & Edukacja */}
                     <div className="space-y-2.5">
-                      <button
-                        type="button"
-                        onClick={() => navigateToCatalog(undefined, 'prezent')}
+                      <Link
+                        to="/oferta"
+                        onClick={() => setMegaMenuOpen(false)}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🎁 Na Prezent
-                      </button>
+                        🐝 Manufaktura & Oferta
+                      </Link>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'prezent')}
+                          <Link
+                            to="/produkt/swieca-wosk-pszczeli"
+                            onClick={() => setMegaMenuOpen(false)}
                             className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
                           >
-                            Skrzynki Degustacyjne
-                          </button>
+                            Świece z Wosku Pszczelego
+                          </Link>
                         </li>
                         <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'prezent')}
+                          <Link
+                            to="/produkt/odklad-szkolenie-pszczele"
+                            onClick={() => setMegaMenuOpen(false)}
                             className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
                           >
-                            Zestawy ze Świecą
-                          </button>
+                            Odkłady Pszczele i Szkolenia
+                          </Link>
                         </li>
                       </ul>
                       <button
