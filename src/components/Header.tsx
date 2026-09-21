@@ -53,6 +53,8 @@ export const Header: React.FC<HeaderProps> = ({
     return location.pathname.startsWith(path);
   };
 
+  const isShopOrProduct = location.pathname.startsWith('/sklep') || location.pathname.startsWith('/produkt');
+
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#EBE4D8] transition-all">
       {/* Main navigation */}
@@ -326,14 +328,16 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Actions: Quiz + Cart */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={onOpenQuiz}
-              className="hidden sm:flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-full bg-[#F3ECE0] text-[#7A4007] border border-[#E4D8C5] hover:bg-[#EBDDC8] transition-all cursor-pointer"
-              id="header-quiz-btn"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#C47514]" />
-              <span>Dobierz miód</span>
-            </button>
+            {isShopOrProduct && (
+              <button
+                onClick={onOpenQuiz}
+                className="hidden sm:flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-full bg-[#F3ECE0] text-[#7A4007] border border-[#E4D8C5] hover:bg-[#EBDDC8] transition-all cursor-pointer animate-in fade-in duration-200"
+                id="header-quiz-btn"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#C47514]" />
+                <span>Dobierz miód</span>
+              </button>
+            )}
 
             <button
               onClick={onOpenCart}
