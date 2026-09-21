@@ -304,7 +304,7 @@ export const Header: React.FC<HeaderProps> = ({
                 isActive('/oferta') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
               }`}
             >
-              Oferta & Apiterapia
+              Skarby Ula
             </Link>
 
             <Link
@@ -409,7 +409,7 @@ export const Header: React.FC<HeaderProps> = ({
                 isActive('/oferta') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
               }`}
             >
-              Oferta & Skarby Ula (Pierzga, Propolis)
+              Skarby Ula (Pierzga, Propolis, Wosk)
             </Link>
 
             <Link

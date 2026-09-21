@@ -114,7 +114,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4 max-w-3xl mx-auto`}>
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#3F372C] text-[#E5983A] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Oferta Pasieki Wędrownej Usza</span>
+            <span>Skarby Ula • Pasieka Wędrowna Usza</span>
           </div>
           <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-[#FAF5ED] tracking-tight">
             Poznaj Skarby Naszej Pasieki

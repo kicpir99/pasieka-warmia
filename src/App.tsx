@@ -240,6 +240,14 @@ function App() {
             } 
           />
           <Route 
+            path="/skarby-ula" 
+            element={
+              <OfferPage 
+                displayResolution={displayResolution}
+              />
+            } 
+          />
+          <Route 
             path="/blog" 
             element={
               <BlogPage 

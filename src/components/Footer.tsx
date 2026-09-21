@@ -84,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
                 <Link to="/sklep" className="hover:text-[#FAF5ED] transition-colors">Sklep z Miodami</Link>
               </li>
               <li>
-                <Link to="/oferta" className="hover:text-[#FAF5ED] transition-colors">Skarby Ula: Pierzga & Propolis</Link>
+                <Link to="/oferta" className="hover:text-[#FAF5ED] transition-colors">Skarby Ula (Pierzga, Propolis, Wosk)</Link>
               </li>
               <li>
                 <Link to="/blog" className="hover:text-[#FAF5ED] transition-colors">Blog Pszczelarski</Link>

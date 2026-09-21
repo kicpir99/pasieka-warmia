@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { ProductFilter } from '../components/ProductFilter';
 import { FilterState, HoneyCategory, HoneyProduct, HealthIntentFilter } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { HONEY_PRODUCTS } from '../data/honeyProducts';
 import { getEnrichedProduct } from '../utils/honeyHelpers';
-import { Sparkles, ArrowUp, ShoppingBag, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { Sparkles, ArrowUp, ShoppingBag, ShieldCheck, Truck, RotateCcw, ArrowRight } from 'lucide-react';
 
 const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
 
@@ -215,6 +215,30 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
       {/* Catalog & Filter Section */}
       <section id="katalog" className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 mt-10 space-y-8`}>
+        {/* Banner: Skarby Ula Link */}
+        <div className="bg-gradient-to-r from-[#FAF3EA] via-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3.5 text-left">
+            <div className="w-10 h-10 rounded-xl bg-[#2D2821] flex items-center justify-center text-lg shrink-0 shadow-2xs">
+              <Sparkles className="w-5 h-5 text-[#E5983A]" />
+            </div>
+            <div>
+              <h3 className="font-serif text-sm sm:text-base font-bold text-[#23201C]">
+                Szukasz pierzgi, propolisu, pyłku lub świec z wosku?
+              </h3>
+              <p className="text-xs text-[#6B5E4F]">
+                Poznaj dary ula o wybitnych właściwościach prozdrowotnych i regenerujących.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/oferta"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all shrink-0 shadow-xs cursor-pointer"
+          >
+            <span>Poznaj Skarby Ula</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
         <ProductFilter
           filters={filters}
           onFilterChange={handleFilterChange}
