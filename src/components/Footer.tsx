@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Phone, MapPin, Heart } from 'lucide-react';
 
 interface FooterProps {
@@ -18,35 +19,39 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
                 🐝
               </div>
               <span className="font-serif text-xl font-bold tracking-tight text-[#FAF5ED]">
-                Pasieka Warmia
+                Pasieka Usza
               </span>
             </div>
             <p className="text-xs text-[#B5A896] leading-relaxed">
-              Rodzinne gospodarstwo pasieczne założone w 1984 roku. Pozyskujemy surowe miody nektarowe i spadziowe z najczystszych zakątków Warmii i Mazur.
+              Rodzinna pasieka wędrowna Magdaleny i Piotra Szymkowicz. Pozyskujemy surowe miody nektarowe i spadziowe oraz skarby ula z najczystszych pożytków Dolnego Śląska.
             </p>
             <div className="flex items-center gap-2 text-xs text-[#E5983A] pt-1">
-              <ShieldCheck className="w-4 h-4" />
-              <span>WNI: 28143501 (Nadzór Weterynaryjny)</span>
+              <ShieldCheck className="w-4 h-4 text-[#52B788]" />
+              <span>Nadzór Powiatowego Lekarza Weterynarii</span>
             </div>
           </div>
 
           {/* Direct Beekeeper Contact */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-[#FAF5ED]">
-              Kontakt z Pszczelarzem
+              Kontakt z Pasieką
             </h4>
             <div className="space-y-2.5 text-xs text-[#B5A896]">
               <p className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#E5983A] shrink-0 mt-0.5" />
-                <span>ul. Leśna Polana 14, 11-100 Lidzbark Warmiński</span>
+                <span>ul. Łąkowa 3, 55-300 Ciechów (Dolny Śląsk)</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#E5983A] shrink-0" />
-                <span>+48 604 123 456 (Mistrz Pszczelarski Jan)</span>
+                <a href="tel:697512103" className="hover:text-white transition-colors font-semibold">
+                  +48 697 512 103 (Magdalena i Piotr)
+                </a>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#E5983A] shrink-0" />
-                <span>pasieka@warmia-miody.pl</span>
+                <a href="mailto:kontakt@pasiekausza.pl" className="hover:text-white transition-colors">
+                  kontakt@pasiekausza.pl
+                </a>
               </p>
               <p className="text-[11px] text-[#8C7F6D] pt-1">
                 Możliwy bezpośredni odbiór miodu w pasiece po wcześniejszym kontakcie telefonicznym.
@@ -61,16 +66,22 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
             </h4>
             <ul className="space-y-2 text-xs text-[#B5A896]">
               <li>
-                <a href="/#katalog" className="hover:text-[#FAF5ED] transition-colors">Katalog Miodów Odmianowych</a>
+                <Link to="/" className="hover:text-[#FAF5ED] transition-colors">Strona Główna</Link>
               </li>
               <li>
-                <a href="/#miodobranie" className="hover:text-[#FAF5ED] transition-colors">Droga Miodu & Miodobranie</a>
+                <Link to="/o-nas" className="hover:text-[#FAF5ED] transition-colors">O nas (Historia i Filozofia)</Link>
               </li>
               <li>
-                <a href="/#o-pasiece" className="hover:text-[#FAF5ED] transition-colors">Pasieka & Etyka Pszczelarska</a>
+                <Link to="/sklep" className="hover:text-[#FAF5ED] transition-colors">Sklep z Miodami</Link>
               </li>
               <li>
-                <a href="/#jak-rozpoznac" className="hover:text-[#FAF5ED] transition-colors">Jak Rozpoznać Prawdziwy Miód</a>
+                <Link to="/oferta" className="hover:text-[#FAF5ED] transition-colors">Skarby Ula: Pierzga & Propolis</Link>
+              </li>
+              <li>
+                <Link to="/blog" className="hover:text-[#FAF5ED] transition-colors">Blog Pszczelarski</Link>
+              </li>
+              <li>
+                <Link to="/kontakt" className="hover:text-[#FAF5ED] transition-colors">Kontakt i Dojazd</Link>
               </li>
             </ul>
           </div>
@@ -78,15 +89,15 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
           {/* Packing & Guarantee */}
           <div className="space-y-3">
             <h4 className="font-serif text-sm font-bold uppercase tracking-wider text-[#FAF5ED]">
-              Gwarancja Bezpieczeństwa
+              Filozofia i Bezpieczeństwo
             </h4>
             <p className="text-xs text-[#B5A896] leading-relaxed">
-              Wysyłamy słoiki w specjalnie zaprojektowanych tubach komorowych z tektury falistej. 100% dostaw bez stłuczek lub natychmiastowa wymiana na nasz koszt w 24h.
+              Nie standaryzujemy miodu – każdy słoiczek jest unikatowy. Wysyłamy miód w pancernych tekturowych tubach, gwarantując 100% bezpieczeństwa dostawy.
             </p>
             <div className="pt-2 text-[11px] text-[#A69784] border-t border-[#3B342B] space-y-1">
-              <p>🌱 Pakowanie bez grama plastiku i folii bąbelkowej</p>
-              <p>🚚 Wysyłka w 24h od poniedziałku do czwartku</p>
-              <p>❄️ Reżim letni: termoizolacja i wkłady chłodzące w upały</p>
+              <p>🌱 100% naturalny, surowy miód bez podgrzewania</p>
+              <p>🚚 Bezpieczne pakowanie z tektury falistej</p>
+              <p>🐝 Pasieka pod stałym nadzorem weterynaryjnym</p>
             </div>
           </div>
 
@@ -94,10 +105,10 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
 
         {/* Bottom copyright */}
         <div className="mt-12 pt-6 border-t border-[#383127] flex flex-col sm:flex-row items-center justify-between text-xs text-[#877967] gap-3">
-          <p>© {new Date().getFullYear()} Pasieka Warmia. Wszelkie prawa zastrzeżone.</p>
+          <p>© {new Date().getFullYear()} Pasieka wędrowna „Usza” (Magdalena i Piotr Szymkowicz). Wszelkie prawa zastrzeżone.</p>
           <p className="flex items-center gap-1.5 text-[11px] text-[#A69784]">
             <ShieldCheck className="w-3.5 h-3.5 text-[#52B788]" />
-            <span>Gospodarstwo Pasieczne pod stałym nadzorem Powiatowego Lekarza Weterynarii • WNI: 28143501</span>
+            <span>Ekologiczne Gospodarstwo Pasieczne • Ciechów, Dolny Śląsk</span>
           </p>
         </div>
       </div>

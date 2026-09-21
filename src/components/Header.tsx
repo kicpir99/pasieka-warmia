@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Sparkles, Menu, X, ShieldCheck, MapPin, ChevronDown, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Sparkles, Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
 
 interface HeaderProps {
   cartItemCount: number;
@@ -42,84 +42,86 @@ export const Header: React.FC<HeaderProps> = ({
     }
 
     const searchStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
-
     navigate({
-      pathname: '/',
+      pathname: '/sklep',
       search: searchStr,
     });
-
-    setTimeout(() => {
-      const el = document.getElementById('katalog');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   };
 
-  const scrollToSection = (sectionId: string) => {
-    setMegaMenuOpen(false);
-    setMobileMenuOpen(false);
-
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 150);
-    } else {
-      const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/' || location.pathname === '';
+    return location.pathname.startsWith(path);
   };
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#EBE4D8] transition-all">
-
       {/* Main navigation */}
       <div className={`adaptive-container ${containerClass || ''} px-4 sm:px-6 lg:px-8 2xl:px-10 relative`}>
         <div className="flex items-center justify-between h-20">
-          {/* Logo brand - kliknięcie przewija na sam początek strony głównej */}
+          
+          {/* Logo brand */}
           <Link 
             to="/" 
             onClick={handleLogoClick}
             className="flex items-center gap-3.5 group cursor-pointer"
-            title="Przejdź na początek strony głównej"
+            title="Pasieka wędrowna Usza - Strona Główna"
           >
             <div className="w-11 h-11 rounded-xl bg-[#2D2821] flex items-center justify-center text-[#E5983A] shadow-sm border border-[#484036] group-hover:scale-105 transition-transform">
               <span className="text-xl">🐝</span>
             </div>
             <div>
-              <span className="block font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#24211D] group-hover:text-[#945209] transition-colors">
-                Pasieka Warmia
+              <span className="block font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#24211D] group-hover:text-[#8B5337] transition-colors">
+                Pasieka Usza
               </span>
               <span className="block text-[11px] uppercase tracking-widest text-[#7C7164] font-medium">
-                Gospodarstwo Pasieczne • Od 1984
+                Pasieka Wędrowna • Ciechów
               </span>
             </div>
           </Link>
 
           {/* Desktop nav links */}
-          <nav className="hidden lg:flex items-center gap-7 xl:gap-8">
-            {/* Mega Menu Wrapper for Nasze Miody */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <Link
+              to="/"
+              className={`text-sm font-semibold transition-colors py-1 ${
+                isActive('/') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+              }`}
+            >
+              Strona Główna
+            </Link>
+
+            <Link
+              to="/o-nas"
+              className={`text-sm font-semibold transition-colors py-1 ${
+                isActive('/o-nas') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+              }`}
+            >
+              O nas
+            </Link>
+
+            {/* Sklep z Mega Menu */}
             <div 
               className="relative py-6"
               onMouseEnter={() => setMegaMenuOpen(true)}
               onMouseLeave={() => setMegaMenuOpen(false)}
             >
-              <button
-                type="button"
-                onClick={() => navigateToCatalog()}
-                className="text-sm font-semibold text-[#484138] hover:text-[#945209] transition-colors flex items-center gap-1 cursor-pointer py-1"
-                title="Przejdź do katalogu naszych miodów"
+              <Link
+                to="/sklep"
+                className={`text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer py-1 ${
+                  isActive('/sklep') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+                }`}
+                title="Przejdź do pełnego sklepu"
               >
-                <span>Nasze Miody</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${megaMenuOpen ? 'rotate-180 text-[#945209]' : 'text-[#8C7A6B]'}`} />
-              </button>
+                <span>Sklep</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${megaMenuOpen ? 'rotate-180 text-[#8B5337]' : 'text-[#8C7A6B]'}`} />
+              </Link>
 
               {/* Mega Menu Dropdown */}
               {megaMenuOpen && (
                 <div className="absolute top-[68px] -left-20 w-[780px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="grid grid-cols-4 gap-5 pb-5 border-b border-[#EADFCF]">
                     
-                    {/* Kolumna 1: Miody Tradycyjne */}
+                    {/* Kolumna 1: Miody Odmianowe */}
                     <div className="space-y-2.5">
                       <button
                         type="button"
@@ -130,28 +132,23 @@ export const Header: React.FC<HeaderProps> = ({
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/lipowy-warminski" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Miód Lipowy (Św. Lipka)
+                          <Link to="/produkt/lipowy-warminski" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Lipowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/akacjowy-klarowny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Miód Akacjowy (Bory)
+                          <Link to="/produkt/akacjowy-klarowny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Akacjowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/rzepakowy-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Rzepakowy Kremowany
+                          <Link to="/produkt/rzepakowy-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Rzepakowy
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/gryczany-ostry" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Gryczany z Suwalszczyzny
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/produkt/spadziowy-iglasty" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Spadź Iglasta (Puszcza)
+                          <Link to="/produkt/spadziowy-iglasty" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Spadź Iglasta
                           </Link>
                         </li>
                       </ul>
@@ -176,23 +173,14 @@ export const Header: React.FC<HeaderProps> = ({
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/malina-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
+                          <Link to="/produkt/malina-kremowany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
                             Z Maliną Liofilizowaną
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/orzech-w-miodzie" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#D9821E] font-medium block">
-                            Orzechy Włoskie w Akacji
+                          <Link to="/produkt/orzech-w-miodzie" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Orzechy w Akacji
                           </Link>
-                        </li>
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog('z-dodatkami')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
-                          >
-                            Z Pyłkiem i Propolisem
-                          </button>
                         </li>
                       </ul>
                       <button
@@ -216,41 +204,29 @@ export const Header: React.FC<HeaderProps> = ({
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'odpornosc')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
-                          >
-                            Kuracja Odpornościowa
-                          </button>
+                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Pierzga Pszczela
+                          </Link>
                         </li>
                         <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'lagodne')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
-                          >
-                            Miody Łagodne dla Dzieci
-                          </button>
+                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Propolis (Kit pszczeli)
+                          </Link>
                         </li>
                         <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'koneser')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
-                          >
-                            Dla Konesera (Wytrawne)
-                          </button>
+                          <Link to="/oferta" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Pyłek kwiatowy
+                          </Link>
                         </li>
                       </ul>
-                      <button
-                        type="button"
-                        onClick={() => navigateToCatalog(undefined, 'odpornosc')}
+                      <Link
+                        to="/oferta"
+                        onClick={() => setMegaMenuOpen(false)}
                         className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
                       >
-                        <span>Wskazania zdrowotne</span>
+                        <span>Przewodnik po apiterapii</span>
                         <span>→</span>
-                      </button>
+                      </Link>
                     </div>
 
                     {/* Kolumna 4: Zestawy & Upominki */}
@@ -267,7 +243,7 @@ export const Header: React.FC<HeaderProps> = ({
                           <button
                             type="button"
                             onClick={() => navigateToCatalog(undefined, 'prezent')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
+                            className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
                           >
                             Skrzynki Degustacyjne
                           </button>
@@ -276,18 +252,9 @@ export const Header: React.FC<HeaderProps> = ({
                           <button
                             type="button"
                             onClick={() => navigateToCatalog(undefined, 'prezent')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
+                            className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
                           >
-                            Zestawy z Nabierakiem
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() => navigateToCatalog(undefined, 'prezent')}
-                            className="text-[#3D3428] hover:text-[#D9821E] font-medium block text-left cursor-pointer"
-                          >
-                            Świece z Wosku Pszczelego
+                            Zestawy ze Świecą
                           </button>
                         </li>
                       </ul>
@@ -315,7 +282,7 @@ export const Header: React.FC<HeaderProps> = ({
                         setMegaMenuOpen(false);
                         onOpenQuiz();
                       }}
-                      className="text-xs font-bold text-[#1B4332] hover:text-[#D9821E] transition-colors flex items-center gap-1 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-[#DFCBB5] shadow-2xs hover:shadow-xs"
+                      className="text-xs font-bold text-[#1B4332] hover:text-[#8B5337] transition-colors flex items-center gap-1 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-[#DFCBB5] shadow-2xs hover:shadow-xs"
                     >
                       <span>Uruchom Quiz Doboru Miodu</span>
                       <ArrowRight className="w-3 h-3" />
@@ -325,27 +292,32 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            <button
-              type="button"
-              onClick={() => scrollToSection('miodobranie')}
-              className="text-sm font-semibold text-[#484138] hover:text-[#945209] transition-colors cursor-pointer"
+            <Link
+              to="/oferta"
+              className={`text-sm font-semibold transition-colors py-1 ${
+                isActive('/oferta') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+              }`}
             >
-              Droga Miodu
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection('o-pasiece')}
-              className="text-sm font-semibold text-[#484138] hover:text-[#945209] transition-colors cursor-pointer"
+              Oferta & Apiterapia
+            </Link>
+
+            <Link
+              to="/blog"
+              className={`text-sm font-semibold transition-colors py-1 ${
+                isActive('/blog') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+              }`}
             >
-              O Pasiece
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollToSection('jak-rozpoznac')}
-              className="text-sm font-semibold text-[#484138] hover:text-[#945209] transition-colors cursor-pointer"
+              Blog
+            </Link>
+
+            <Link
+              to="/kontakt"
+              className={`text-sm font-semibold transition-colors py-1 ${
+                isActive('/kontakt') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+              }`}
             >
-              Jak Rozpoznać Prawdziwy Miód
-            </button>
+              Kontakt
+            </Link>
           </nav>
 
           {/* Actions: Quiz + Cart */}
@@ -356,7 +328,7 @@ export const Header: React.FC<HeaderProps> = ({
               id="header-quiz-btn"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#C47514]" />
-              <span>Dobierz miód dla siebie</span>
+              <span>Dobierz miód</span>
             </button>
 
             <button
@@ -391,93 +363,66 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-[#EBE4D8] space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-            {/* Główna pozycja: Nasze Miody (Katalog) */}
-            <button
-              type="button"
-              onClick={() => navigateToCatalog()}
-              className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#F4EDE0] border border-[#DFCBB5] text-left group cursor-pointer hover:bg-[#EFE4D2] transition-all shadow-xs"
+          <div className="lg:hidden py-4 border-t border-[#EBE4D8] space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#2D2821] text-[#E5983A] flex items-center justify-center text-lg shadow-2xs">
-                  🍯
-                </div>
-                <div>
-                  <span className="font-serif text-base font-bold text-[#24211D] block leading-tight">
-                    Nasze Miody (Katalog)
-                  </span>
-                  <span className="text-[10px] text-[#7A6A5A] uppercase tracking-wider font-semibold">
-                    Przejdź do sekcji miodów z Warmii
-                  </span>
-                </div>
-              </div>
-              <ArrowRight className="w-4 h-4 text-[#945209] group-hover:translate-x-1 transition-transform" />
-            </button>
+              Strona Główna
+            </Link>
 
-            {/* Kolekcje Miodów w siatce */}
-            <div className="p-3 bg-[#FAF3E5] rounded-2xl border border-[#DFCBB5] space-y-2">
-              <span className="text-[10px] uppercase font-bold text-[#8C7A6B] tracking-wider block">
-                Szybki wybór kolekcji:
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <button 
-                  type="button"
-                  onClick={() => navigateToCatalog('wszystkie')}
-                  className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <span>🍯</span>
-                  <span>Odmianowe</span>
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => navigateToCatalog('z-dodatkami')}
-                  className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <span>🍓</span>
-                  <span>Z Dodatkami</span>
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => navigateToCatalog(undefined, 'odpornosc')}
-                  className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <span>🛡️</span>
-                  <span>Zdrowie i Odporność</span>
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => navigateToCatalog(undefined, 'prezent')}
-                  className="p-2.5 bg-white rounded-xl border border-[#DFCBB5] text-[#3D3428] font-bold text-left hover:border-[#D9821E] hover:bg-[#FAF6EE] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <span>🎁</span>
-                  <span>Na Prezent</span>
-                </button>
-              </div>
-            </div>
+            <Link
+              to="/o-nas"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/o-nas') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
+            >
+              O nas (Historia Pasieki Usza)
+            </Link>
 
-            <div className="space-y-1 pt-1">
-              <button
-                type="button"
-                onClick={() => scrollToSection('miodobranie')}
-                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold text-[#24211D] hover:bg-[#EDE5D8] transition-colors cursor-pointer"
-              >
-                Droga Miodu (Miodobranie)
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection('o-pasiece')}
-                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold text-[#24211D] hover:bg-[#EDE5D8] transition-colors cursor-pointer"
-              >
-                O Pasiece & Tradycja
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollToSection('jak-rozpoznac')}
-                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold text-[#24211D] hover:bg-[#EDE5D8] transition-colors cursor-pointer"
-              >
-                Jak Rozpoznać Prawdziwy Miód
-              </button>
-            </div>
+            <Link
+              to="/sklep"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/sklep') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
+            >
+              Sklep z Miodami
+            </Link>
+
+            <Link
+              to="/oferta"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/oferta') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
+            >
+              Oferta & Skarby Ula (Pierzga, Propolis)
+            </Link>
+
+            <Link
+              to="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/blog') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
+            >
+              Blog & Wiedza
+            </Link>
+
+            <Link
+              to="/kontakt"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                isActive('/kontakt') ? 'bg-[#F4EDE0] text-[#8B5337] font-bold' : 'text-[#24211D] hover:bg-[#EDE5D8]'
+              }`}
+            >
+              Kontakt (Ciechów)
+            </Link>
 
             <button
               type="button"
@@ -485,7 +430,7 @@ export const Header: React.FC<HeaderProps> = ({
                 setMobileMenuOpen(false);
                 onOpenQuiz();
               }}
-              className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold rounded-xl bg-[#1B4332] text-white hover:bg-[#143326] transition-colors cursor-pointer shadow-sm"
+              className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold rounded-xl bg-[#1B4332] text-white hover:bg-[#143326] transition-colors cursor-pointer shadow-sm"
             >
               <Sparkles className="w-4 h-4 text-[#E6C065]" />
               <span>Dobierz miód dla siebie (Quiz)</span>

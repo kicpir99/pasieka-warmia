@@ -1,20 +1,16 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Hero } from '../components/Hero';
-import { HoneyCraftingJourney } from '../components/HoneyCraftingJourney';
 import { HoneyQualitySection } from '../components/HoneyQualitySection';
 import { HoneyFAQSection } from '../components/HoneyFAQSection';
-import { ProductFilter } from '../components/ProductFilter';
-import { FilterState, HoneyCategory, HoneyProduct, HealthIntentFilter } from '../types';
 import { ProductCard } from '../components/ProductCard';
-import { ApiaryStory } from '../components/ApiaryStory';
 import { PagePreloader } from '../components/PagePreloader';
+import { HoneyProduct } from '../types';
+import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { Sparkles, ArrowRight, ShieldCheck, Heart, Droplets, Star, Quote, MapPin } from 'lucide-react';
 
 const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
 const HoneyFinderQuiz = React.lazy(() => import('../components/HoneyFinderQuiz').then(m => ({ default: m.HoneyFinderQuiz })));
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
-import { getEnrichedProduct } from '../utils/honeyHelpers';
-import { Sparkles, ArrowRight, ArrowUp } from 'lucide-react';
 
 interface HomePageProps {
   onAddToCart: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
@@ -27,8 +23,8 @@ interface HomePageProps {
   onPreloadComplete?: () => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ 
-  onAddToCart, 
+export const HomePage: React.FC<HomePageProps> = ({
+  onAddToCart,
   displayResolution,
   toggleCompare,
   compareList,
@@ -40,381 +36,253 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [detailProduct, setDetailProduct] = useState<HoneyProduct | null>(null);
   const [localQuizOpen, setLocalQuizOpen] = useState(false);
   const [preloaderDoneLocally, setPreloaderDoneLocally] = useState(false);
-  const [isMobileExpanded, setIsMobileExpanded] = useState<boolean>(() => {
-    try {
-      const saved = sessionStorage.getItem('pasieka_mobile_expanded');
-      const lastId = sessionStorage.getItem('pasieka_last_product_id');
-      const productIdx = HONEY_PRODUCTS.findIndex(p => p.id === lastId);
-      return saved === 'true' || productIdx >= 6;
-    } catch {
-      return false;
-    }
-  });
-
-  const setMobileExpandedWithStorage = (expanded: boolean) => {
-    setIsMobileExpanded(expanded);
-    try {
-      sessionStorage.setItem('pasieka_mobile_expanded', expanded ? 'true' : 'false');
-    } catch {}
-  };
-
-  // Passive scroll listener to remember home scroll position continuously
-  useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          try {
-            const y = window.pageYOffset || document.documentElement.scrollTop || 0;
-            if (y > 100) {
-              sessionStorage.setItem('pasieka_home_scroll_y', String(y));
-            }
-          } catch {}
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   const handleOpenQuiz = onOpenQuiz || (() => setLocalQuizOpen(true));
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  const urlFlavorNote = searchParams.get('nuta');
-  const urlCategory = searchParams.get('kategoria') as HoneyCategory | null;
-  const urlHealthIntent = searchParams.get('intencja') as HealthIntentFilter | null;
-  const validCategories: HoneyCategory[] = ['wszystkie', 'wiosenne', 'letnie', 'lesne-spadz', 'z-dodatkami', 'zestawy'];
-  const validIntents: HealthIntentFilter[] = ['wszystkie', 'odpornosc', 'lagodne', 'koneser', 'prezent'];
-  const initialCategory = urlCategory && validCategories.includes(urlCategory) ? urlCategory : 'wszystkie';
-  const initialIntent = urlHealthIntent && validIntents.includes(urlHealthIntent) ? urlHealthIntent : 'wszystkie';
+  // Top 3 bestsellers for featured preview
+  const featuredProducts = HONEY_PRODUCTS.filter(p => p.isBestseller).slice(0, 3);
 
-  const [filters, setFilters] = useState<FilterState>({
-    category: initialCategory,
-    healthIntent: initialIntent,
-    consistency: 'all',
-    intensity: 'all',
-    flavorNote: urlFlavorNote || null,
-    searchQuery: '',
-    sortBy: 'popular',
-  });
-
-  const scrollToCatalogIfNeeded = () => {
-    const catalogEl = document.getElementById('katalog');
-    if (!catalogEl) return;
-    const rect = catalogEl.getBoundingClientRect();
-    // If the catalog is already comfortably visible, avoid jarring scroll jump
-    const isAlreadyInView = rect.top >= -80 && rect.top <= 220;
-    if (!isAlreadyInView) {
-      scrollToProducts();
-    }
-  };
-
-  // Keep filters in sync when URL search params change (e.g. navigation, back button, category links)
-  useEffect(() => {
-    const noteParam = searchParams.get('nuta') || null;
-    const catParam = searchParams.get('kategoria') as HoneyCategory | null;
-    const intentParam = searchParams.get('intencja') as HealthIntentFilter | null;
-    const targetCat = catParam && validCategories.includes(catParam) ? catParam : 'wszystkie';
-    const targetIntent = intentParam && validIntents.includes(intentParam) ? intentParam : 'wszystkie';
-
-    setFilters(prev => {
-      if (
-        prev.flavorNote === noteParam && 
-        prev.category === targetCat && 
-        prev.healthIntent === targetIntent
-      ) {
-        return prev;
-      }
-      return {
-        ...prev,
-        flavorNote: noteParam,
-        category: targetCat,
-        healthIntent: targetIntent,
-      };
-    });
-  }, [searchParams]);
-
-  const handleFilterChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      if (newFilters.flavorNote) {
-        next.set('nuta', newFilters.flavorNote);
-      } else {
-        next.delete('nuta');
-      }
-      if (newFilters.category && newFilters.category !== 'wszystkie') {
-        next.set('kategoria', newFilters.category);
-      } else {
-        next.delete('kategoria');
-      }
-      if (newFilters.healthIntent && newFilters.healthIntent !== 'wszystkie') {
-        next.set('intencja', newFilters.healthIntent);
-      } else {
-        next.delete('intencja');
-      }
-      return next;
-    }, { replace: true });
-  };
-
-  const handleSelectFlavorNote = (note: string) => {
-    const isCurrent = filters.flavorNote?.toLowerCase() === note.toLowerCase();
-    const nextNote = isCurrent ? null : note;
-    handleFilterChange({
-      ...filters,
-      flavorNote: nextNote
-    });
-    scrollToCatalogIfNeeded();
-  };
-
-  const filteredProducts = useMemo(() => {
-    let result = HONEY_PRODUCTS;
-    if (filters.category !== 'wszystkie') {
-      result = result.filter((p) => p.category === filters.category);
-    }
-    if (filters.healthIntent && filters.healthIntent !== 'wszystkie') {
-      result = result.filter((p) => {
-        const enriched = getEnrichedProduct(p);
-        return enriched.healthIntents.includes(filters.healthIntent as any);
-      });
-    }
-    if (filters.consistency !== 'all') {
-      result = result.filter((p) => p.consistency === filters.consistency);
-    }
-    if (filters.intensity !== 'all') {
-      result = result.filter((p) => p.flavorIntensity === filters.intensity);
-    }
-    if (filters.flavorNote) {
-      const target = filters.flavorNote.toLowerCase().trim();
-      result = result.filter((p) =>
-        p.flavorNotes.some((n) => {
-          const lower = n.toLowerCase();
-          return lower === target || lower.includes(target) || target.includes(lower);
-        })
-      );
-    }
-    if (filters.searchQuery) {
-      const query = filters.searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.subtitle.toLowerCase().includes(query) ||
-          p.flavorNotes.some((n) => n.toLowerCase().includes(query))
-      );
-    }
-    if (filters.sortBy === 'price-asc') {
-      result.sort((a, b) => a.sizes[0].pricePln - b.sizes[0].pricePln);
-    } else if (filters.sortBy === 'price-desc') {
-      result.sort((a, b) => b.sizes[0].pricePln - a.sizes[0].pricePln);
-    }
-    return result;
-  }, [filters]);
+  const reviews = [
+    {
+      author: 'Anna',
+      role: 'Wielbicielka miodów',
+      text: 'Pierwszym krokiem do zostania odnoszącym sukcesy pszczelarzem jest nauczenie się jak najwięcej o samych pszczołach. Ule wymagają dobrego zarządzania i opieki, co wymaga czasu – pasieka Usza nad wszystkim panuje ;)',
+      rating: 5,
+    },
+    {
+      author: 'Julia',
+      role: 'Smakuje wszystkie miody',
+      text: 'Miody bardzo dobre jakościowo i smakowo, za każdym razem kupuję coś nowego i na żadnym miodzie się nie zawiodłam – polecam serdecznie wyroby z pasieki Usza.',
+      rating: 5,
+    },
+    {
+      author: 'Marek z Wrocławia',
+      role: 'Klient stały',
+      text: 'Niezwykły miód wrzosowy i leśny. Czuć, że nikt go nie przegrzewał ani nie standaryzował. Zupełnie inna kategoria niż to, co można kupić w sklepach.',
+      rating: 5,
+    },
+  ];
 
   return (
     <>
+      {/* Preloader tylko przy pierwszym załadowaniu strony głównej */}
       {!hasPreloadedHome && !preloaderDoneLocally && (
         <PagePreloader
           onComplete={() => {
-            setTimeout(() => {
-              setPreloaderDoneLocally(true);
-              if (onPreloadComplete) {
-                onPreloadComplete();
-              }
-            }, 800);
+            setPreloaderDoneLocally(true);
+            if (onPreloadComplete) onPreloadComplete();
           }}
         />
       )}
+
       <main className="flex-1">
+        {/* Hero z interaktywną karuzelą 3D i obrotowym słoikiem 360° */}
         <Hero
-          onScrollToProducts={scrollToProducts}
-          onOpenQuiz={handleOpenQuiz}
           onAddToCart={onAddToCart}
-          onOpenProductDetail={setDetailProduct}
-          displayResolution={displayResolution}
+          containerClass={displayResolution.containerClass}
+          scrollToProducts={scrollToProducts}
+          onOpenQuiz={handleOpenQuiz}
+          onToggleCompare={toggleCompare}
+          isCompared={(p) => compareList.some(item => item.id === p.id)}
         />
-        <HoneyCraftingJourney />
-        <section id="katalog" className={`py-16 md:py-20 adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 2xl:px-10`}>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
-            <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E5983A]/10 border border-[#E5983A]/20 text-[#9E5A12] text-xs font-bold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                Prosto z naszej pracowni
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#23201C] tracking-tight">
-                Nasze Miody – Prawdziwe i Naturalne
-              </h2>
-              <p className="text-[15px] text-[#665A4B] leading-relaxed max-w-xl">
-                Nie poprawiamy natury. Każdy słoik to autentyczny smak tegorocznych zbiorów, z zachowaniem pełni wartości odżywczych. Takie jak dawniej – dla Ciebie i Twojej rodziny.
-              </p>
-            </div>
 
-            {/* DEDYKOWANY PRZYCISK DORADCY PASIECZNEGO (QUIZ) W SEKCJI 3 */}
-            <div className="shrink-0">
-              <button
-                onClick={handleOpenQuiz}
-                id="catalog-quiz-cta-btn"
-                className="group w-full sm:w-auto flex items-center gap-3.5 px-5 py-3.5 rounded-2xl bg-[#1B4332] hover:bg-[#143326] text-white border border-[#2D5A45] shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <div className="w-10 h-10 rounded-xl bg-[#E0A94F]/20 text-[#E0A94F] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                  <Sparkles className="w-5 h-5 text-[#E0A94F]" />
+        {/* Sekcja: Nasza Filozofia – Pasieka Usza */}
+        <section className="py-20 bg-white border-b border-[#E8DECFA0]">
+          <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8`}>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              
+              <div className="lg:col-span-6 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#FAF0E1] text-[#8B5337] text-xs font-semibold">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Ciechów • Dolny Śląsk</span>
                 </div>
-                <div className="text-left">
-                  <div className="text-[11px] font-bold text-[#E0A94F] uppercase tracking-wider flex items-center gap-1">
-                    <span>Nie wiesz, co wybrać?</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+
+                <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#23201C] tracking-tight leading-tight">
+                  Wędrowna pasieka z pasją i szacunkiem do pszczół
+                </h2>
+
+                <p className="text-sm sm:text-base text-[#594C3F] leading-relaxed">
+                  Jesteśmy rodzinną pasieką wędrowną prowadzoną przez Magdalenę i Piotra Szymkowicz. Nasze ule wędrują za najczystszymi pożytkami Dolnego Śląska – od wiosennych sadów i mniszka, przez aleje lipowe i lasy, po fioletowe wrzosowiska.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E7DCCE] space-y-1.5">
+                    <span className="text-sm font-bold text-[#8B5337] flex items-center gap-1.5">
+                      🍯 Brak standaryzacji
+                    </span>
+                    <p className="text-xs text-[#6B5E4F] leading-relaxed">
+                      Nie mieszamy całego miodu w jedną masę. Każdy słoik ma unikatowy charakter i smak stworzony przez pszczoły.
+                    </p>
                   </div>
-                  <span className="text-sm font-serif font-bold text-[#FAF7F2] block leading-tight">
-                    Dobierz miód dla siebie
-                  </span>
+
+                  <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#E7DCCE] space-y-1.5">
+                    <span className="text-sm font-bold text-[#8B5337] flex items-center gap-1.5">
+                      🌸 Promień 2 kilometrów
+                    </span>
+                    <p className="text-xs text-[#6B5E4F] leading-relaxed">
+                      Pszczoły same decydują, który nektar i pyłek najbardziej im smakuje w otoczeniu leśnym i łąkowym.
+                    </p>
+                  </div>
                 </div>
-              </button>
-            </div>
-          </div>
-          <div className="mb-10">
-            <ProductFilter
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              totalProductsCount={HONEY_PRODUCTS.length}
-              filteredProductsCount={filteredProducts.length}
-            />
-          </div>
-          {filteredProducts.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-                {filteredProducts.map((product, idx) => (
-                  <div
-                    key={product.id}
-                    className={idx >= 6 && !isMobileExpanded ? 'hidden sm:block' : 'block'}
+
+                <div className="pt-2 flex flex-wrap items-center gap-4">
+                  <Link
+                    to="/o-nas"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all shadow-sm"
                   >
-                    <ProductCard
-                      product={product}
-                      onAddToCart={onAddToCart}
-                      onOpenDetails={(p) => setDetailProduct(p)}
-                      onToggleCompare={toggleCompare}
-                      isCompared={compareList.some(p => p.id === product.id)}
-                      onSelectFlavorNote={handleSelectFlavorNote}
-                      activeFlavorNote={filters.flavorNote}
-                    />
-                  </div>
-                ))}
+                    <span>Poznaj całą naszą historię</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    to="/sklep"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#FAF6EE] hover:bg-[#EFE3D0] text-[#3D3328] border border-[#DFCBB5] text-xs font-bold transition-all"
+                  >
+                    <span>Zobacz ofertę miodów</span>
+                  </Link>
+                </div>
               </div>
 
-              {/* Mobile Load More & Back to Top Controller */}
-              {filteredProducts.length > 6 && (
-                <div className="sm:hidden mt-8 p-4 bg-[#FAF6EE] rounded-2xl border border-[#D9821E]/20 text-center space-y-3">
-                  {!isMobileExpanded ? (
-                    <>
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-xs font-semibold text-[#594D42]">
-                          <span>Wyświetlasz 6 z {filteredProducts.length} miodów</span>
-                          <span className="text-[#945209] font-bold">
-                            {Math.round((6 / filteredProducts.length) * 100)}%
-                          </span>
-                        </div>
-                        <div className="h-1.5 w-full bg-[#EADCCB] rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gradient-to-r from-[#D9821E] to-[#1B4332] rounded-full transition-all duration-300"
-                            style={{ width: `${(6 / filteredProducts.length) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setMobileExpandedWithStorage(true)}
-                        className="w-full py-3.5 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-                        id="btn-pokaz-wszystkie-miody-mobile"
-                      >
-                        <span>🍯 Pokaż wszystkie miody ({filteredProducts.length})</span>
-                      </button>
-                    </>
-                  ) : (
-                    <div className="space-y-2.5">
-                      <p className="text-xs font-semibold text-[#1B4332] flex items-center justify-center gap-1.5">
-                        <span>✓ Wyświetlasz pełną ofertę {filteredProducts.length} miodów</span>
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const catalogElem = document.getElementById('katalog');
-                            if (catalogElem) {
-                              catalogElem.scrollIntoView({ behavior: 'smooth' });
-                            }
-                          }}
-                          className="flex-1 py-3 px-3 rounded-xl bg-[#2D2821] hover:bg-[#433B31] text-[#FAF5ED] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                          id="btn-wroc-do-gory-katalogu-mobile"
-                        >
-                          <ArrowUp className="w-4 h-4 text-[#E6C065]" />
-                          <span>Wróć do góry katalogu</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setMobileExpandedWithStorage(false);
-                            const catalogElem = document.getElementById('katalog');
-                            if (catalogElem) {
-                              catalogElem.scrollIntoView({ behavior: 'smooth' });
-                            }
-                          }}
-                          className="py-3 px-3 rounded-xl bg-white border border-[#DFCBB5] text-[#594D42] text-xs font-bold hover:bg-[#F5EDE0] transition-colors cursor-pointer shrink-0"
-                          title="Zwiń listę do 6 miodów"
-                          id="btn-zwin-miody-mobile"
-                        >
-                          <span>Zwiń listę</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+              <div className="lg:col-span-6 grid grid-cols-2 gap-4">
+                <div className="rounded-2xl overflow-hidden border border-[#E7DCCE] shadow-md">
+                  <img
+                    src="https://pasiekausza.pl/wp-content/uploads/2022/02/DSC02154-683x1024.jpg"
+                    alt="Praca przy ulach"
+                    className="w-full h-72 sm:h-80 object-cover"
+                    loading="lazy"
+                  />
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center py-16 bg-[#FAF8F5] rounded-3xl border border-[#E7DCCE] space-y-3">
-              <span className="text-3xl">🔍</span>
-              <h3 className="font-serif text-lg font-bold text-[#23201C]">
-                Nie znaleźliśmy miodu o takich parametrach
-              </h3>
-              <p className="text-xs text-[#716556] max-w-sm mx-auto">
-                {filters.flavorNote 
-                  ? `Brak miodów z wybraną nutą „${filters.flavorNote}”. Wybierz inną nutę lub wyczyść filtry.`
-                  : 'Spróbuj zmienić filtry lub wyczyścić pole wyszukiwania, by zobaczyć pełną ofertę pasieki.'}
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <button
-                  onClick={() =>
-                    handleFilterChange({
-                      category: 'wszystkie',
-                      consistency: 'all',
-                      intensity: 'all',
-                      flavorNote: null,
-                      searchQuery: '',
-                      sortBy: 'popular',
-                    })
-                  }
-                  className="px-4 py-2 rounded-xl bg-[#2D2821] text-[#FAF5ED] text-xs font-semibold hover:bg-[#433B31] cursor-pointer transition-colors"
+                <div className="rounded-2xl overflow-hidden border border-[#E7DCCE] shadow-md mt-6">
+                  <img
+                    src="https://pasiekausza.pl/wp-content/uploads/2022/02/DSC01985-683x1024.jpg"
+                    alt="Plaster miodu w ulu"
+                    className="w-full h-72 sm:h-80 object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* Wybrane Odmiany Miodów – Bestsellery ze Sklepu */}
+        <section className="py-20 bg-[#FAF7F2] border-b border-[#E8DECFA0]">
+          <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 space-y-12`}>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFE4D2] text-[#713F0C] text-xs font-semibold">
+                  <Sparkles className="w-3.5 h-3.5 text-[#A05C12]" />
+                  <span>Zbiory Wędrowne</span>
+                </div>
+                <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#23201C] tracking-tight">
+                  Najchętniej Wybierane Miody
+                </h2>
+                <p className="text-xs sm:text-sm text-[#6B5E4F] max-w-xl">
+                  Poznaj nasze tegoroczne zbiory surowego miodu niepoddanego obróbce termicznej.
+                </p>
+              </div>
+
+              <div>
+                <Link
+                  to="/sklep"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all shadow-sm"
                 >
-                  Resetuj filtry
-                </button>
-                <button
-                  onClick={handleOpenQuiz}
-                  className="px-4 py-2 rounded-xl bg-[#1B4332] text-white text-xs font-semibold hover:bg-[#143326] cursor-pointer transition-colors flex items-center gap-1.5"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#E0A94F]" />
-                  <span>Rozwiąż quiz i dobierz miód</span>
-                </button>
+                  <span>Przejdź do pełnego sklepu ({HONEY_PRODUCTS.length} miodów)</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
-          )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {featuredProducts.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={onAddToCart}
+                  onOpenDetail={setDetailProduct}
+                  onToggleCompare={toggleCompare}
+                  isCompared={compareList.some(p => p.id === product.id)}
+                />
+              ))}
+            </div>
+
+            {/* Skarby Ula Teaser */}
+            <div className="bg-[#2D2821] text-[#FAF5ED] rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-xl">
+              <div className="max-w-2xl space-y-4 relative z-10">
+                <span className="px-3 py-1 rounded-full bg-[#3F372C] text-[#E5983A] text-xs font-bold">
+                  Apiterapia & Odporność
+                </span>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#FAF5ED]">
+                  Pierzga, Propolis, Pyłek kwiatowy i Wosk
+                </h3>
+                <p className="text-xs sm:text-sm text-[#C7BDB0] leading-relaxed">
+                  Odkryj najsilniejsze naturalne biostymulatory prosto z pasieki. Pomagają w rekonwalescencji, odbudowują odporność i wzmacniają cały organizm.
+                </p>
+                <div className="pt-2">
+                  <Link
+                    to="/oferta"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E5983A] hover:bg-[#D4892A] text-[#24211D] text-xs font-bold transition-all shadow-md"
+                  >
+                    <span>Poznaj właściwości pierzgi i propolisu</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </section>
+
+        {/* Opinie Klientów */}
+        <section className="py-20 bg-white border-b border-[#E8DECFA0]">
+          <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 space-y-12`}>
+            <div className="text-center space-y-3 max-w-2xl mx-auto">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF0E1] text-[#8B5337] text-xs font-semibold">
+                <Heart className="w-3.5 h-3.5" />
+                <span>Głosy Naszych Odbiorców</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#23201C] tracking-tight">
+                Opinie o Miodach z Pasieki Usza
+              </h2>
+              <p className="text-xs sm:text-sm text-[#665848]">
+                Nasze miody trafiają zarówno do domów koneserów, jak i do lokalnych sklepów ze zdrową żywnością.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {reviews.map((rev, idx) => (
+                <div 
+                  key={idx} 
+                  className="bg-[#FAF8F5] rounded-2xl p-6 sm:p-8 border border-[#E7DCCE] shadow-xs flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-1 text-[#E5983A]">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#524536] italic leading-relaxed">
+                      „{rev.text}”
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#EFE5D8]">
+                    <span className="font-serif text-sm font-bold text-[#23201C] block">
+                      {rev.author}
+                    </span>
+                    <span className="text-[11px] text-[#8A7966]">
+                      {rev.role}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Standard Quality & FAQ */}
         <HoneyQualitySection containerClass={displayResolution.containerClass} />
         <HoneyFAQSection containerClass={displayResolution.containerClass} />
-        <ApiaryStory containerClass={displayResolution.containerClass} />
       </main>
 
       <React.Suspense fallback={null}>
@@ -423,9 +291,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           onClose={() => setDetailProduct(null)}
           onAddToCart={onAddToCart}
           onOpenCompare={toggleCompare}
-          onSelectFlavorNote={handleSelectFlavorNote}
         />
-        {/* Fallback lokalny quiz, jeśli HomePage używany poza App.tsx */}
         {!onOpenQuiz && (
           <HoneyFinderQuiz
             isOpen={localQuizOpen}

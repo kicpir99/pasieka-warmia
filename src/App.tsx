@@ -20,6 +20,11 @@ const ProductPage = React.lazy(() => import('./pages/ProductPage').then(m => ({ 
 
 // Pages
 import { HomePage } from './pages/HomePage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { ShopPage } from './pages/ShopPage';
+import { OfferPage } from './pages/OfferPage';
+import { BlogPage } from './pages/BlogPage';
+import { ContactPage } from './pages/ContactPage';
 
 function GlobalQuizModal({
   isOpen,
@@ -150,26 +155,12 @@ function App() {
   }, [lenis]);
 
   const scrollToProducts = () => {
-    if (lenis) {
-      lenis.resize();
-      lenis.scrollTo('#katalog', { offset: -80, immediate: false, duration: 1.2 });
-    } else {
-      const productsSection = document.getElementById('katalog');
-      if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    window.location.hash = '#/sklep';
   };
 
   const handleNavigateToCatalogFromCart = () => {
     setIsCartOpen(false);
-    if (window.location.pathname !== '/' && window.location.pathname !== '') {
-      window.location.href = '/#katalog';
-    } else {
-      setTimeout(() => {
-        scrollToProducts();
-      }, 100);
-    }
+    window.location.hash = '#/sklep';
   };
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -188,7 +179,7 @@ function App() {
             <span className="text-xs font-medium">{toastMessage}</span>
             <button
               onClick={() => setIsCartOpen(true)}
-              className="ml-2 text-xs font-bold text-[#E5983A] hover:underline"
+              className="ml-2 text-xs font-bold text-[#E5983A] hover:underline cursor-pointer"
             >
               Zobacz koszyk →
             </button>
@@ -220,6 +211,51 @@ function App() {
             } 
           />
           <Route 
+            path="/o-nas" 
+            element={
+              <AboutUsPage 
+                displayResolution={displayResolution}
+                scrollToProducts={scrollToProducts}
+              />
+            } 
+          />
+          <Route 
+            path="/sklep" 
+            element={
+              <ShopPage 
+                onAddToCart={handleAddToCart} 
+                displayResolution={displayResolution}
+                toggleCompare={toggleCompare}
+                compareList={compareList}
+                onOpenQuiz={() => setIsQuizOpen(true)}
+              />
+            } 
+          />
+          <Route 
+            path="/oferta" 
+            element={
+              <OfferPage 
+                displayResolution={displayResolution}
+              />
+            } 
+          />
+          <Route 
+            path="/blog" 
+            element={
+              <BlogPage 
+                displayResolution={displayResolution}
+              />
+            } 
+          />
+          <Route 
+            path="/kontakt" 
+            element={
+              <ContactPage 
+                displayResolution={displayResolution}
+              />
+            } 
+          />
+          <Route 
             path="/produkt/:id" 
             element={
               <Suspense fallback={<div className="min-h-screen bg-[#FAF7F2]" />}>
@@ -231,6 +267,22 @@ function App() {
                   }}
                 />
               </Suspense>
+            } 
+          />
+          {/* Catch-all fallback */}
+          <Route 
+            path="*" 
+            element={
+              <HomePage 
+                onAddToCart={handleAddToCart} 
+                displayResolution={displayResolution}
+                toggleCompare={toggleCompare}
+                compareList={compareList}
+                scrollToProducts={scrollToProducts}
+                onOpenQuiz={() => setIsQuizOpen(true)}
+                hasPreloadedHome={hasPreloadedHome}
+                onPreloadComplete={() => setHasPreloadedHome(true)}
+              />
             } 
           />
         </Routes>
