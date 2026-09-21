@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { HoneyCategory, FilterState, HealthIntentFilter } from '../types';
 export type { FilterState, HealthIntentFilter };
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
 import { Search, Sparkles, X, ChevronDown, ChevronUp, ChevronRight, Check, RotateCcw, SlidersHorizontal } from 'lucide-react';
 
 const HEALTH_INTENTS: { id: HealthIntentFilter; label: string; icon: string; desc: string }[] = [
-  { id: 'wszystkie', label: 'Wszystkie zbiory', icon: '✨', desc: 'Pełna oferta 12 miodów oraz darów pasieki' },
-  { id: 'odpornosc', label: 'Odporność & Infekcje', icon: '🛡️', desc: 'Lipa, Spadź, Pierzga, Propolis' },
-  { id: 'lagodne', label: 'Łagodne & Dla Dzieci', icon: '🥞', desc: 'Rzepak, Akacja, Facelia, Wielokwiat' },
-  { id: 'koneser', label: 'Głębokie & Koneser', icon: '🌲', desc: 'Gryka, Wrzos, Spadź iglasta, Mniszek' },
-  { id: 'prezent', label: 'Na Prezent & Rarytas', icon: '🎁', desc: 'Miód wrzosowy, Świece z wosku pszczelego' },
+  { id: 'wszystkie', label: 'Wszystkie miody', icon: '✨', desc: '11 surowych miodów odmianowych z Dolnego Śląska' },
+  { id: 'odpornosc', label: 'Odporność & Infekcje', icon: '🛡️', desc: 'Miód lipowy, spadziowy, mniszkowy' },
+  { id: 'lagodne', label: 'Łagodne & Dla Dzieci', icon: '🥞', desc: 'Miód rzepakowy, akacjowy, faceliowy, wielokwiat' },
+  { id: 'koneser', label: 'Głębokie & Koneser', icon: '🌲', desc: 'Miód gryczany, wrzosowy, spadziowy' },
+  { id: 'prezent', label: 'Na Prezent & Rarytas', icon: '🎁', desc: 'Miód wrzosowy, nawłociowy, leśny' },
 ];
 
 interface ProductFilterProps {
@@ -19,19 +19,19 @@ interface ProductFilterProps {
   filteredProductsCount: number;
 }
 
-// Wybrane kluczowe nuty smakowe promowane w pierwszej linii
+// Wybrane kluczowe nuty smakowe miodów odmianowych promowane w pierwszej linii
 const POPULAR_NOTES = [
+  'Kwiat lipy',
+  'Mięta leśna',
+  'Wrzosiec',
+  'Zioła polne',
+  'Gorzka pomarańcza',
   'Suszona śliwka',
   'Karmel',
   'Melasa',
-  'Kwiat lipy',
-  'Żywica sosnowa',
-  'Nuta malinowa',
-  'Cytrusy',
   'Białe kwiaty',
-  'Mięta leśna',
   'Wanilia',
-  'Wrzosiec',
+  'Cytrusy',
   'Jagody leśne',
 ];
 
@@ -52,18 +52,16 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
   }, [filters.flavorNote]);
 
   const categories: { id: HoneyCategory; label: string }[] = [
-    { id: 'wszystkie', label: 'Wszystkie zbiory' },
+    { id: 'wszystkie', label: 'Wszystkie odmiany miodów' },
     { id: 'wiosenne', label: '🌸 Wiosenne (Rzepak, Akacja, Mniszek)' },
     { id: 'letnie', label: '☀️ Letnie (Lipa, Gryka, Facelia)' },
-    { id: 'lesne-spadz', label: '🌲 Leśne & Spadziowe (Spadź, Wrzos)' },
-    { id: 'z-dodatkami', label: '🍯 Skarby ula (Pierzga, Propolis, Pyłek)' },
-    { id: 'zestawy', label: '🐝 Manufaktura & Oferta pszczela' },
+    { id: 'lesne-spadz', label: '🌲 Leśne & Spadziowe (Spadź, Wrzos, Leśny)' },
   ];
 
-  // Wszystkie unikalne nuty smakowe zebrane z bazy miodów
+  // Wszystkie unikalne nuty smakowe zebrane z bazy miodów odmianowych
   const allUniqueFlavorNotes = useMemo(() => {
     const notesSet = new Set<string>();
-    HONEY_PRODUCTS.forEach((p) => {
+    HONEY_VARIETIES.forEach((p) => {
       p.flavorNotes?.forEach((n) => notesSet.add(n));
     });
     return Array.from(notesSet).sort((a, b) => a.localeCompare(b, 'pl'));

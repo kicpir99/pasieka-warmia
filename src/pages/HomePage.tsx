@@ -6,7 +6,7 @@ import { HoneyFAQSection } from '../components/HoneyFAQSection';
 import { ProductCard } from '../components/ProductCard';
 import { PagePreloader } from '../components/PagePreloader';
 import { HoneyProduct } from '../types';
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
 import { Sparkles, ArrowRight, ShieldCheck, Heart, Droplets, Star, Quote, MapPin } from 'lucide-react';
 
 const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
@@ -181,7 +181,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   to="/sklep"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all shadow-sm"
                 >
-                  <span>Przejdź do pełnego sklepu ({HONEY_PRODUCTS.length} miodów)</span>
+                  <span>Przejdź do pełnego sklepu ({HONEY_VARIETIES.length} odmian miodu)</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

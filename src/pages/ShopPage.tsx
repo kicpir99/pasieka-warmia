@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { ProductFilter } from '../components/ProductFilter';
 import { FilterState, HoneyCategory, HoneyProduct, HealthIntentFilter } from '../types';
 import { ProductCard } from '../components/ProductCard';
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
 import { getEnrichedProduct } from '../utils/honeyHelpers';
 import { Sparkles, ArrowUp, ShoppingBag, ShieldCheck, Truck, RotateCcw, ArrowRight } from 'lucide-react';
 
@@ -45,7 +45,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   const urlFlavorNote = searchParams.get('nuta');
   const urlCategory = searchParams.get('kategoria') as HoneyCategory | null;
   const urlHealthIntent = searchParams.get('intencja') as HealthIntentFilter | null;
-  const validCategories: HoneyCategory[] = ['wszystkie', 'wiosenne', 'letnie', 'lesne-spadz', 'z-dodatkami', 'zestawy'];
+  const validCategories: HoneyCategory[] = ['wszystkie', 'wiosenne', 'letnie', 'lesne-spadz'];
   const validIntents: HealthIntentFilter[] = ['wszystkie', 'odpornosc', 'lagodne', 'koneser', 'prezent'];
   const initialCategory = urlCategory && validCategories.includes(urlCategory) ? urlCategory : 'wszystkie';
   const initialIntent = urlHealthIntent && validIntents.includes(urlHealthIntent) ? urlHealthIntent : 'wszystkie';
@@ -109,7 +109,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   };
 
   const filteredProducts = useMemo(() => {
-    let result = [...HONEY_PRODUCTS];
+    let result = [...HONEY_VARIETIES];
 
     if (filters.searchQuery.trim()) {
       const q = filters.searchQuery.toLowerCase();
@@ -242,7 +242,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
         <ProductFilter
           filters={filters}
           onFilterChange={handleFilterChange}
-          totalCount={HONEY_PRODUCTS.length}
+          totalCount={HONEY_VARIETIES.length}
           filteredCount={filteredProducts.length}
         />
 

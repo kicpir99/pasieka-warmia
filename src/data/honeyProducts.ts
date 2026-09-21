@@ -566,3 +566,14 @@ export const HONEY_PRODUCTS: HoneyProduct[] = [
     reviewsCount: 32,
   },
 ];
+
+export const HIVE_TREASURE_IDS = [
+  'pierzga-pszczela',
+  'propolis-kit',
+  'pylek-pszczeli',
+  'swieca-wosk-pszczeli',
+  'odklad-szkolenie-pszczele',
+];
+
+export const HONEY_VARIETIES = HONEY_PRODUCTS.filter(p => !HIVE_TREASURE_IDS.includes(p.id));
+export const HIVE_TREASURES = HONEY_PRODUCTS.filter(p => HIVE_TREASURE_IDS.includes(p.id));

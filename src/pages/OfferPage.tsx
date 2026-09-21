@@ -12,6 +12,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       id: 'miody',
       title: 'Miód Pszczeli – Odmianowy & Surowy',
       badge: 'Miody Odmianowe RAW',
+      price: 'od 32 zł / słoik',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-miody-infobox.jpg',
       icon: Droplets,
       description:
@@ -19,15 +20,16 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       bullets: [
         '100% naturalny, surowy miód bez podgrzewania powyżej 36°C',
         'Bogaty w aktywne enzymy (inhibina, lizozym, apidycyna)',
-        'Miód lipowy, rzepakowy, akacjowy, spadziowy, wrzosowy, wielokwiat',
+        '11 odmian: lipowy, gryczany, spadziowy, wrzosowy, akacjowy...',
       ],
-      ctaText: 'Zobacz miody w sklepie',
+      ctaText: 'Zobacz 11 odmian w sklepie',
       ctaLink: '/sklep',
     },
     {
       id: 'pierzga',
       title: 'Pierzga Pszczela (Bee Bread)',
       badge: 'Superfood Ula',
+      price: 'od 45 zł (100g / 250g)',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-pierzga.jpg',
       icon: Sparkles,
       description:
@@ -37,13 +39,14 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Naturalny probiotyk regenerujący florę bakteryjną jelit',
         'Pokarm, którym pszczoły karmią matkę i młode larwy',
       ],
-      ctaText: 'Zobacz pierzgę w sklepie',
+      ctaText: 'Wybierz gramaturę i kup',
       ctaLink: '/produkt/pierzga-pszczela',
     },
     {
       id: 'propolis',
       title: 'Propolis – Kit Pszczeli',
       badge: 'Naturalny Antybiotyk',
+      price: 'od 25 zł (50g / 100g)',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-propolis.jpg',
       icon: ShieldCheck,
       description:
@@ -53,13 +56,14 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Błyskawiczna ulga przy bólach gardła, infekcjach jamy ustnej i dziąseł',
         'Naturalna tarcza układu oddechowego i odpornościowego',
       ],
-      ctaText: 'Zobacz propolis w sklepie',
+      ctaText: 'Kup naturalny propolis',
       ctaLink: '/produkt/propolis-kit',
     },
     {
       id: 'pylek',
       title: 'Pyłek Pszczeli Kwiatowy',
       badge: 'Bomba Witaminowa',
+      price: 'od 28 zł (200g / 500g)',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/pylek-pszczeli.jpg',
       icon: Heart,
       description:
@@ -69,13 +73,14 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Wspomaga prawidłową pracę układu krążenia i obniża cholesterol',
         'Znakomicie wpływa na witalność, pamięć oraz stan skóry, włosów i paznokci',
       ],
-      ctaText: 'Zobacz pyłek w sklepie',
+      ctaText: 'Wybierz gramaturę i kup',
       ctaLink: '/produkt/pylek-pszczeli',
     },
     {
       id: 'wosk',
       title: 'Wosk Pszczeli & Świece',
       badge: '100% Wosk Pszczeli',
+      price: 'od 22 zł',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-wosk-pszeczeli.jpg',
       icon: Flame,
       description:
@@ -85,13 +90,14 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Piękny, miodowo-propolisowy aromat palącej się świecy',
         'Świece odlewane i zwijane z naturalnej węzy pszczelej',
       ],
-      ctaText: 'Zobacz świece w sklepie',
+      ctaText: 'Zobacz świece z wosku',
       ctaLink: '/produkt/swieca-wosk-pszczeli',
     },
     {
       id: 'szkolenia',
       title: 'Odkłady Pszczele & Szkolenia',
       badge: 'Odkłady & Szkolenia',
+      price: 'od 350 zł',
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-oklady-683x1024.jpg',
       icon: BookOpen,
       description:
@@ -101,7 +107,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
         'Praktyczna nauka pracy przy ulu bez stresu i dróg na skróty',
         'Wsparcie merytoryczne i doradztwo w doborze sprzętu',
       ],
-      ctaText: 'Szczegóły odkładów & szkoleń',
+      ctaText: 'Szczegóły i rezerwacja',
       ctaLink: '/produkt/odklad-szkolenie-pszczele',
     },
   ];
@@ -170,12 +176,21 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
                         </div>
                       ))}
                     </div>
+
+                    <div className="pt-3 border-t border-[#EFE5D8] flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#8B5337] bg-[#FAF5EE] px-3 py-1.5 rounded-lg border border-[#ECDCCB]">
+                        {item.price}
+                      </span>
+                      <span className="text-[11px] text-[#7A6E5E] font-medium">
+                        {item.id === 'miody' ? 'Zbiory Dolnego Śląska' : '100% z naszej pasieki'}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <Link
                       to={item.ctaLink}
-                      className="w-full py-2.5 px-4 rounded-xl bg-[#FAF5EE] hover:bg-[#8B5337] text-[#8B5337] hover:text-white border border-[#DFCBB5] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white border border-[#8B5337] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-md"
                     >
                       <span>{item.ctaText}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
