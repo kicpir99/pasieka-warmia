@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#EBE4D8] transition-all">
       {/* Main navigation */}
       <div className={`adaptive-container ${containerClass || ''} px-4 sm:px-6 lg:px-8 2xl:px-10 relative`}>
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-20 sm:h-24">
           
           {/* Logo brand */}
           <Link 
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             <img 
               src="/assets/logo-usza.png" 
               alt="Pasieka Wędrowna Usza" 
-              className="h-11 sm:h-13 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              className="h-14 sm:h-18 md:h-20 lg:h-[82px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
@@ -112,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Mega Menu Dropdown */}
               {megaMenuOpen && (
-                <div className="absolute top-[68px] -left-20 w-[780px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute top-full -left-20 w-[780px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="grid grid-cols-4 gap-5 pb-5 border-b border-[#EADFCF]">
                     
                     {/* Kolumna 1: Miody Odmianowe */}

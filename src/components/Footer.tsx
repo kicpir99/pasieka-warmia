@@ -15,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
           {/* Brand & Mission */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
-              <div className="w-12 h-12 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-1.5 shadow-sm border border-[#E7DCCE] group-hover:border-[#E5983A] transition-colors shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-1.5 shadow-sm border border-[#E7DCCE] group-hover:border-[#E5983A] transition-colors shrink-0">
                 <img 
                   src="/assets/footer-pasieka-usza.png" 
                   alt="Pasieka Usza - Logo" 
