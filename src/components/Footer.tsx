@@ -14,14 +14,23 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
           
           {/* Brand & Mission */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#3A332A] flex items-center justify-center text-[#E5983A] text-xl border border-[#4E4437]">
-                🐝
+            <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
+              <div className="w-12 h-12 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-1.5 shadow-sm border border-[#E7DCCE] group-hover:border-[#E5983A] transition-colors shrink-0">
+                <img 
+                  src="/assets/footer-pasieka-usza.png" 
+                  alt="Pasieka Usza - Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span className="font-serif text-xl font-bold tracking-tight text-[#FAF5ED]">
-                Pasieka Usza
-              </span>
-            </div>
+              <div>
+                <span className="font-serif text-xl font-bold tracking-tight text-[#FAF5ED] group-hover:text-[#E5983A] transition-colors block">
+                  Pasieka Usza
+                </span>
+                <span className="block text-[11px] text-[#B5A896]">
+                  Pasieka Wędrowna • Ciechów
+                </span>
+              </div>
+            </Link>
             <p className="text-xs text-[#B5A896] leading-relaxed">
               Rodzinna pasieka wędrowna Magdaleny i Piotra Szymkowicz. Pozyskujemy surowe miody nektarowe i spadziowe oraz skarby ula z najczystszych pożytków Dolnego Śląska.
             </p>

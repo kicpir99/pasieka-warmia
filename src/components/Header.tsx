@@ -63,20 +63,14 @@ export const Header: React.FC<HeaderProps> = ({
           <Link 
             to="/" 
             onClick={handleLogoClick}
-            className="flex items-center gap-3.5 group cursor-pointer"
+            className="flex items-center group cursor-pointer py-1"
             title="Pasieka wędrowna Usza - Strona Główna"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#2D2821] flex items-center justify-center text-[#E5983A] shadow-sm border border-[#484036] group-hover:scale-105 transition-transform">
-              <span className="text-xl">🐝</span>
-            </div>
-            <div>
-              <span className="block font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#24211D] group-hover:text-[#8B5337] transition-colors">
-                Pasieka Usza
-              </span>
-              <span className="block text-[11px] uppercase tracking-widest text-[#7C7164] font-medium">
-                Pasieka Wędrowna • Ciechów
-              </span>
-            </div>
+            <img 
+              src="/assets/logo-usza.png" 
+              alt="Pasieka Wędrowna Usza" 
+              className="h-11 sm:h-13 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            />
           </Link>
 
           {/* Desktop nav links */}
