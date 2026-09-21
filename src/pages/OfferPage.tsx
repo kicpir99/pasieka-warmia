@@ -1,18 +1,37 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ShieldCheck, Heart, Droplets, Flame, BookOpen, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
 
 interface OfferPageProps {
   displayResolution: { width: number; height: number; deviceType: string; containerClass: string };
 }
 
 export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
-  const offerItems = [
+  // Automatyczne, dynamiczne wyszukiwanie najniższych cen z bazy produktów
+  const minHoneyPrice = useMemo(() => {
+    const allPrices = HONEY_VARIETIES.flatMap(h => h.sizes.map(s => s.pricePln));
+    return allPrices.length > 0 ? Math.min(...allPrices) : 30;
+  }, []);
+
+  const getLowestPrice = (productId: string, fallback: number) => {
+    const prod = HONEY_PRODUCTS.find(p => p.id === productId);
+    if (!prod || !prod.sizes || prod.sizes.length === 0) return fallback;
+    return Math.min(...prod.sizes.map(s => s.pricePln));
+  };
+
+  const minPierzgaPrice = useMemo(() => getLowestPrice('pierzga-pszczela', 45), []);
+  const minPropolisPrice = useMemo(() => getLowestPrice('propolis-kit', 25), []);
+  const minPylekPrice = useMemo(() => getLowestPrice('pylek-pszczeli', 28), []);
+  const minWoskPrice = useMemo(() => getLowestPrice('swieca-wosk-pszczeli', 22), []);
+  const minOdkladPrice = useMemo(() => getLowestPrice('odklad-szkolenie-pszczele', 350), []);
+
+  const offerItems = useMemo(() => [
     {
       id: 'miody',
       title: 'Miód Pszczeli – Odmianowy & Surowy',
       badge: 'Miody Odmianowe RAW',
-      price: 'od 32 zł / słoik',
+      price: `od ${minHoneyPrice} zł / słoik`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-miody-infobox.jpg',
       icon: Droplets,
       description:
@@ -20,16 +39,16 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       bullets: [
         '100% naturalny, surowy miód bez podgrzewania powyżej 36°C',
         'Bogaty w aktywne enzymy (inhibina, lizozym, apidycyna)',
-        '11 odmian: lipowy, gryczany, spadziowy, wrzosowy, akacjowy...',
+        `${HONEY_VARIETIES.length} odmian: lipowy, gryczany, spadziowy, wrzosowy, akacjowy...`,
       ],
-      ctaText: 'Zobacz 11 odmian w sklepie',
+      ctaText: `Zobacz ${HONEY_VARIETIES.length} odmian w sklepie`,
       ctaLink: '/sklep',
     },
     {
       id: 'pierzga',
       title: 'Pierzga Pszczela (Bee Bread)',
       badge: 'Superfood Ula',
-      price: 'od 45 zł (100g / 250g)',
+      price: `od ${minPierzgaPrice} zł`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-pierzga.jpg',
       icon: Sparkles,
       description:
@@ -46,7 +65,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       id: 'propolis',
       title: 'Propolis – Kit Pszczeli',
       badge: 'Naturalny Antybiotyk',
-      price: 'od 25 zł (50g / 100g)',
+      price: `od ${minPropolisPrice} zł`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-propolis.jpg',
       icon: ShieldCheck,
       description:
@@ -63,7 +82,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       id: 'pylek',
       title: 'Pyłek Pszczeli Kwiatowy',
       badge: 'Bomba Witaminowa',
-      price: 'od 28 zł (200g / 500g)',
+      price: `od ${minPylekPrice} zł`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/pylek-pszczeli.jpg',
       icon: Heart,
       description:
@@ -80,7 +99,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       id: 'wosk',
       title: 'Wosk Pszczeli & Świece',
       badge: '100% Wosk Pszczeli',
-      price: 'od 22 zł',
+      price: `od ${minWoskPrice} zł`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-wosk-pszeczeli.jpg',
       icon: Flame,
       description:
@@ -97,7 +116,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       id: 'szkolenia',
       title: 'Odkłady Pszczele & Szkolenia',
       badge: 'Odkłady & Szkolenia',
-      price: 'od 350 zł',
+      price: `od ${minOdkladPrice} zł`,
       image: 'https://pasiekausza.pl/wp-content/uploads/2022/02/oferta-oklady-683x1024.jpg',
       icon: BookOpen,
       description:
@@ -110,7 +129,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ctaText: 'Szczegóły i rezerwacja',
       ctaLink: '/produkt/odklad-szkolenie-pszczele',
     },
-  ];
+  ], [minHoneyPrice, minPierzgaPrice, minPropolisPrice, minPylekPrice, minWoskPrice, minOdkladPrice]);
 
   return (
     <main className="min-h-screen bg-[#FAF7F2] pb-24">
