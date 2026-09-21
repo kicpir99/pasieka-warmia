@@ -377,24 +377,12 @@ export const Hero: React.FC<HeroProps> = ({
         }}
       />
 
-      {/* TOP BAR: REGIONALNY KLIMAT PASIEKI ORAZ SZYBKI PRZYCISK DO DOMOWEJ SPIŻARNI NA TELEFONIE */}
-      <div className={`relative z-30 adaptive-container ${activeContainerClass} px-3 sm:px-6 lg:px-8 2xl:px-10 pt-3 sm:pt-5 flex items-center justify-between gap-3`}>
+      {/* TOP BAR: REGIONALNY KLIMAT PASIEKI */}
+      <div className={`relative z-30 adaptive-container ${activeContainerClass} px-3 sm:px-6 lg:px-8 2xl:px-10 pt-3 sm:pt-5 flex items-center justify-start gap-3`}>
         <div className="flex items-center gap-2 text-xs text-[#C5BCAD] font-sans">
           <MapPin className="w-3.5 h-3.5 text-[#E0A94F] shrink-0" />
           <span className="text-[#FAF7F2] font-medium">{currentItem.terroirLocation}</span>
         </div>
-
-        {/* Na telefonach: Przycisk "Domowa spiżarnia" widoczny od razu na wejściu bez konieczności scrollowania */}
-        {onScrollToProducts && (
-          <button
-            onClick={onScrollToProducts}
-            className="flex sm:hidden items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1C251D]/90 border border-[#354837] text-xs font-semibold text-[#E0A94F] hover:bg-[#253427] transition-all shadow-md active:scale-95 cursor-pointer"
-            id="hero-mobile-btn-spizarnia"
-          >
-            <span>Domowa spiżarnia</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[#E0A94F]" />
-          </button>
-        )}
       </div>
 
       {/* CENTRAL STAGE: EDITORIAL 2-COLUMN BALANCED LAYOUT (ZOPTYMALIZOWANY POD EKRANY MOBILNE, 16:9 I 21:9) */}
@@ -580,7 +568,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className={`adaptive-container ${activeContainerClass} flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3`}>
           
           {/* Subtle Pasieka Note */}
-          <div className="hidden lg:flex items-center gap-2 text-xs text-[#B8AEA0]">
+          <div className="hidden lg:flex items-center gap-2 text-xs text-[#B8AEA0] min-w-[200px]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#E0A94F]/80" />
             <span className="font-light tracking-wide">Zbiory odmianowe Pasieki Usza</span>
           </div>
@@ -640,14 +628,8 @@ export const Hero: React.FC<HeroProps> = ({
             </button>
           </div>
 
-          {/* Scroll down trigger */}
-          <button
-            onClick={onScrollToProducts}
-            className="flex items-center gap-1.5 text-xs text-[#B8AEA0] hover:text-[#E0A94F] transition-colors py-1 group cursor-pointer"
-          >
-            <span>Domowa spiżarnia</span>
-            <ChevronDown className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-          </button>
+          {/* Spacer to balance Pasieka Note and keep track centered on desktop */}
+          <div className="hidden lg:block min-w-[200px]" />
         </div>
       </div>
     </section>

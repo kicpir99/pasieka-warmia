@@ -125,19 +125,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-wrap items-center gap-4">
+                <div className="pt-2">
                   <Link
                     to="/o-nas"
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all shadow-sm"
                   >
                     <span>Poznaj całą naszą historię</span>
                     <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <Link
-                    to="/sklep"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#FAF6EE] hover:bg-[#EFE3D0] text-[#3D3328] border border-[#DFCBB5] text-xs font-bold transition-all"
-                  >
-                    <span>Zobacz ofertę miodów</span>
                   </Link>
                 </div>
               </div>
