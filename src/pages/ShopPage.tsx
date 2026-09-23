@@ -283,6 +283,8 @@ export const ShopPage: React.FC<ShopPageProps> = ({
           onFilterChange={handleFilterChange}
           totalCount={HONEY_VARIETIES.length}
           filteredCount={filteredProducts.length}
+          totalProductsCount={HONEY_VARIETIES.length}
+          filteredProductsCount={filteredProducts.length}
         />
 
         {filteredProducts.length > 0 ? (

@@ -5,7 +5,7 @@ import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
 import { Search, Sparkles, X, ChevronDown, ChevronUp, ChevronRight, Check, RotateCcw, SlidersHorizontal } from 'lucide-react';
 
 const HEALTH_INTENTS: { id: HealthIntentFilter; label: string; icon: string; desc: string }[] = [
-  { id: 'wszystkie', label: 'Wszystkie miody', icon: '✨', desc: '11 surowych miodów odmianowych z Dolnego Śląska' },
+  { id: 'wszystkie', label: 'Wszystkie miody', icon: '✨', desc: `${HONEY_VARIETIES.length} surowych miodów odmianowych z Dolnego Śląska` },
   { id: 'odpornosc', label: 'Odporność & Infekcje', icon: '🛡️', desc: 'Miód lipowy, spadziowy, mniszkowy' },
   { id: 'lagodne', label: 'Łagodne & Dla Dzieci', icon: '🥞', desc: 'Miód rzepakowy, akacjowy, faceliowy, wielokwiat' },
   { id: 'koneser', label: 'Głębokie & Koneser', icon: '🌲', desc: 'Miód gryczany, wrzosowy, spadziowy' },
@@ -15,8 +15,10 @@ const HEALTH_INTENTS: { id: HealthIntentFilter; label: string; icon: string; des
 interface ProductFilterProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
-  totalProductsCount: number;
-  filteredProductsCount: number;
+  totalProductsCount?: number;
+  filteredProductsCount?: number;
+  totalCount?: number;
+  filteredCount?: number;
 }
 
 // Wybrane kluczowe nuty smakowe miodów odmianowych promowane w pierwszej linii
@@ -40,7 +42,12 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
   onFilterChange,
   totalProductsCount,
   filteredProductsCount,
+  totalCount,
+  filteredCount,
 }) => {
+  const effectiveTotalCount = totalProductsCount ?? totalCount ?? HONEY_VARIETIES.length;
+  const effectiveFilteredCount = filteredProductsCount ?? filteredCount ?? effectiveTotalCount;
+
   const [isFlavorFilterOpen, setIsFlavorFilterOpen] = useState(Boolean(filters.flavorNote));
   const [isAllNotesExpanded, setIsAllNotesExpanded] = useState(false);
 
@@ -160,7 +167,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
                     <span>{intent.label}</span>
                     {intent.id === 'wszystkie' && (
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-white/20 text-white' : 'bg-[#EAE0D2] text-[#6A5A4A]'}`}>
-                        15
+                        {effectiveTotalCount}
                       </span>
                     )}
                   </button>
@@ -372,7 +379,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
       <div className="flex items-center justify-between text-xs text-[#716656] px-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span>
-            Pokazujemy <strong>{filteredProductsCount}</strong> z {totalProductsCount} dostępnych miodów odmianowych
+            Pokazujemy <strong>{effectiveFilteredCount}</strong> z {effectiveTotalCount} dostępnych miodów odmianowych
           </span>
           {hasActiveFilters && (
             <span className="text-[#1B4332] font-semibold text-[11px] bg-[#1B4332]/10 px-2 py-0.5 rounded-md">
