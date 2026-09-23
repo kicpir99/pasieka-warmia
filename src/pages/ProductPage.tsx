@@ -53,6 +53,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
     setActiveTab('opis');
     setSelectedSizeIdx(0);
     setActiveImageIndex(0);
+    setIsSensoryExpandedMobile(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false);
 
     const resetScroll = () => {
       if (lenis) {
@@ -102,7 +103,12 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
   const [purchaseMode, setPurchaseMode] = useState<'one-time' | 'subscription'>('one-time');
   const [subscriptionInterval, setSubscriptionInterval] = useState<30 | 60 | 90>(60);
-  const [isSensoryExpandedMobile, setIsSensoryExpandedMobile] = useState(false);
+  const [isSensoryExpandedMobile, setIsSensoryExpandedMobile] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return false;
+  });
   
   // Knowledge card tabs horizontal scroll state & affordance
   const tabsContainerRef = useRef<HTMLDivElement>(null);
