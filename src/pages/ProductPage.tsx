@@ -638,53 +638,48 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
     // Default honey sensory card
     return (
-      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-3 sm:space-y-4">
-        {/* Header - clickable on mobile to toggle accordion */}
-        <div 
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D9821E]/25 shadow-sm overflow-hidden">
+        {/* Header - standard e-commerce accordion header with full row clickability & fixed top-right chevron button */}
+        <button
+          type="button"
           onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
-          className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3 cursor-pointer sm:cursor-default select-none"
+          className="w-full text-left flex items-center justify-between gap-3 cursor-pointer select-none pb-1"
+          aria-expanded={isSensoryExpandedMobile}
         >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] flex items-center justify-center text-sm shadow-2xs">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#FAF3E5] border border-[#D9821E]/20 flex items-center justify-center text-sm sm:text-base shrink-0 shadow-2xs">
               🍯
             </div>
-            <div>
-              <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight flex items-center gap-1.5">
-                <span>Profil sensoryczny odmiany</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-[#D9821E] transition-transform sm:hidden ${isSensoryExpandedMobile ? 'rotate-180' : ''}`} />
-              </h3>
-              <p className="text-[11px] text-[#7A6A5A]">Karta degustacyjna ulowego nektaru</p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-serif font-bold text-[#241D17] text-sm sm:text-base leading-tight">
+                  Profil sensoryczny odmiany
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider hidden xs:inline">
+                  Autentyczna Partia
+                </span>
+              </div>
+              <p className="text-[11px] sm:text-xs text-[#7A6A5A] truncate mt-0.5">
+                {isSensoryExpandedMobile 
+                  ? 'Karta degustacyjna ulowego nektaru' 
+                  : `Słodycz ${product.tasteProfile.sweetness}/5 • Rześkość ${product.tasteProfile.acidity}/5 • Aromat ${product.tasteProfile.aroma}/5`}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
-              Autentyczna Partia
-            </span>
-          </div>
-        </div>
 
-        {/* Mobile quick peek when collapsed: instant visual access to key metrics */}
-        {!isSensoryExpandedMobile && (
-          <div 
-            onClick={() => setIsSensoryExpandedMobile(true)}
-            className="flex sm:hidden items-center justify-between text-xs text-[#594D42] bg-[#FAF8F5] p-2.5 rounded-2xl border border-[#E7DDCE] cursor-pointer"
-          >
-            <div className="flex items-center gap-2 text-[11px]">
-              <span>🍯 Słodycz <strong>{product.tasteProfile.sweetness}/5</strong></span>
-              <span>•</span>
-              <span>Rześkość <strong>{product.tasteProfile.acidity}/5</strong></span>
-              <span>•</span>
-              <span>Aromat <strong>{product.tasteProfile.aroma}/5</strong></span>
-            </div>
-            <span className="text-[10.5px] font-bold text-[#D9821E] flex items-center gap-0.5 shrink-0 pl-1">
-              <span>Wykres</span>
-              <ChevronDown className="w-3 h-3" />
+          {/* Consistent Fixed-Position Toggle Button on Far Right (Standard Top-Tier Accordion) */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] font-bold text-[#D9821E] hidden sm:inline">
+              {isSensoryExpandedMobile ? 'Zwiń wykres' : 'Rozwiń wykres'}
             </span>
+            <div className={`w-8 h-8 rounded-full bg-[#FAF5ED] hover:bg-[#F3E7D3] border border-[#E7DCCE] flex items-center justify-center text-[#8C5815] transition-all duration-300 shadow-2xs ${isSensoryExpandedMobile ? 'bg-[#F2E4CF] border-[#D9821E]' : ''}`}>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isSensoryExpandedMobile ? 'rotate-180 text-[#D9821E]' : ''}`} />
+            </div>
           </div>
-        )}
+        </button>
 
         {/* Content: Always visible on desktop (sm:block), toggleable on mobile */}
-        <div className={`space-y-3 sm:space-y-4 ${isSensoryExpandedMobile ? 'block' : 'hidden sm:block'}`}>
+        <div className={`pt-3 border-t border-[#D9821E]/15 space-y-3 sm:space-y-4 ${isSensoryExpandedMobile ? 'block animate-in fade-in duration-200' : 'hidden sm:block'}`}>
           {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
           <div className="space-y-3 pt-1">
             {/* Poziom słodyczy */}
@@ -774,6 +769,18 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                 <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
               </div>
             </div>
+          </div>
+
+          {/* Mobile bottom close trigger button */}
+          <div className="pt-2 flex justify-center sm:hidden">
+            <button
+              type="button"
+              onClick={() => setIsSensoryExpandedMobile(false)}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs"
+            >
+              <span>Zwiń profil sensoryczny</span>
+              <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#D9821E]" />
+            </button>
           </div>
         </div>
       </div>
