@@ -369,7 +369,7 @@ export const HoneyCraftingJourney: React.FC = () => {
     <section 
       id="miodobranie"
       ref={containerRef}
-      className="relative w-full h-[450vh] bg-[#141B14] text-[#FAF7F2] select-none"
+      className="relative w-full h-[280vh] sm:h-[450vh] bg-[#141B14] text-[#FAF7F2] select-none"
     >
       {/* Sticky Fullscreen Viewport */}
       <div className="sticky top-0 w-full h-screen h-[100dvh] overflow-hidden flex items-center justify-center">

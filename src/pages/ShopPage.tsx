@@ -189,39 +189,70 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   return (
     <main className="min-h-screen bg-[#FAF7F2] pb-24">
       {/* Header Banner */}
-      <section className="bg-[#2D2821] text-[#FAF5ED] pt-12 pb-16 relative overflow-hidden">
+      <section className="bg-[#2D2821] text-[#FAF5ED] pt-8 pb-10 sm:pt-12 sm:pb-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(#D9821E_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
-        <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4`}>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#3F372C] text-[#E5983A] text-xs font-semibold">
+        <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-3 sm:space-y-4`}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3F372C] text-[#E5983A] text-xs font-semibold">
             <ShoppingBag className="w-3.5 h-3.5" />
             <span>Sklep Pasieki Wędrownej „Usza”</span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#FAF5ED] tracking-tight">
+          <h1 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#FAF5ED] tracking-tight">
             Prawdziwy miodowy zbiór z Dolnego Śląska
           </h1>
-          <p className="text-sm sm:text-base text-[#C7BDB0] max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base text-[#C7BDB0] max-w-2xl mx-auto leading-relaxed">
             Nie standaryzujemy miodu – każdy słoik to unikatowy zapis kwiatów, pożytków leśnych i pracy naszych pszczół. Wybierz swój ulubiony smak prosto z pasieki w Ciechowie.
           </p>
 
           {/* Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs text-[#E5983A]">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-2 sm:pt-4 text-[11px] sm:text-xs text-[#E5983A]">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4" /> 100% Surowy miód (RAW)
+              <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 100% Surowy miód (RAW)
             </span>
             <span className="flex items-center gap-1.5">
-              <Truck className="w-4 h-4" /> Bezpieczna dostawa w tekturowych tubach
+              <Truck className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Bezpieczna dostawa w tubach
             </span>
             <span className="flex items-center gap-1.5">
-              <RotateCcw className="w-4 h-4" /> Gwarancja świeżości i pochodzenia
+              <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Gwarancja świeżości
             </span>
           </div>
         </div>
       </section>
 
       {/* Catalog & Filter Section */}
-      <section id="katalog" className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 mt-10 space-y-8`}>
-        {/* Helper Banners: Quiz & Skarby Ula */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section id="katalog" className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 mt-5 sm:mt-10 space-y-4 sm:space-y-8`}>
+        {/* Mobile Compact Helper Bar: fast access to Quiz & Skarby Ula without taking screen height */}
+        <div className="grid grid-cols-2 gap-2.5 sm:hidden">
+          {onOpenQuiz && (
+            <button
+              type="button"
+              onClick={onOpenQuiz}
+              className="p-2.5 rounded-2xl bg-gradient-to-br from-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] flex items-center gap-2 text-left shadow-2xs cursor-pointer active:scale-98 transition-transform"
+            >
+              <div className="w-8 h-8 rounded-xl bg-[#1B4332] flex items-center justify-center shrink-0 text-white shadow-2xs">
+                <Sparkles className="w-4 h-4 text-[#E0A94F]" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold text-[#23201C] truncate">Quiz Doradca</p>
+                <p className="text-[10px] text-[#7A6A58] truncate">Dopasuj miód (60s) →</p>
+              </div>
+            </button>
+          )}
+          <Link
+            to="/oferta"
+            className="p-2.5 rounded-2xl bg-gradient-to-br from-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] flex items-center gap-2 text-left shadow-2xs cursor-pointer active:scale-98 transition-transform"
+          >
+            <div className="w-8 h-8 rounded-xl bg-[#2D2821] flex items-center justify-center shrink-0 text-[#E5983A] shadow-2xs">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold text-[#23201C] truncate">Skarby Ula</p>
+              <p className="text-[10px] text-[#7A6A58] truncate">Pierzga, kit, wosk →</p>
+            </div>
+          </Link>
+        </div>
+
+        {/* Desktop Helper Banners: Quiz & Skarby Ula */}
+        <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Card 1: Wirtualny Doradca / Quiz */}
           <div className="bg-gradient-to-br from-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs">
             <div className="flex items-start gap-3.5">

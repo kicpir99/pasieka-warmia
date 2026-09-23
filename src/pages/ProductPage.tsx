@@ -31,7 +31,8 @@ import {
   Info,
   ShieldAlert,
   Utensils,
-  Calendar
+  Calendar,
+  ChevronDown
 } from 'lucide-react';
 
 interface ProductPageProps {
@@ -99,6 +100,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
   const [purchaseMode, setPurchaseMode] = useState<'one-time' | 'subscription'>('one-time');
   const [subscriptionInterval, setSubscriptionInterval] = useState<30 | 60 | 90>(60);
+  const [isSensoryExpandedMobile, setIsSensoryExpandedMobile] = useState(false);
 
   const currentSize = product.sizesList[selectedSizeIdx] || product.sizesList[0];
   const images = product.images && product.images.length > 0 ? product.images : [product.imageUrl];
@@ -636,111 +638,141 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
     // Default honey sensory card
     return (
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-3 sm:space-y-4">
+        {/* Header - clickable on mobile to toggle accordion */}
+        <div 
+          onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
+          className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3 cursor-pointer sm:cursor-default select-none"
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] flex items-center justify-center text-sm shadow-2xs">
               🍯
             </div>
             <div>
-              <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
-                Profil sensoryczny odmiany
+              <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight flex items-center gap-1.5">
+                <span>Profil sensoryczny odmiany</span>
+                <ChevronDown className={`w-3.5 h-3.5 text-[#D9821E] transition-transform sm:hidden ${isSensoryExpandedMobile ? 'rotate-180' : ''}`} />
               </h3>
               <p className="text-[11px] text-[#7A6A5A]">Karta degustacyjna ulowego nektaru</p>
             </div>
           </div>
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
-            Autentyczna Partia
-          </span>
-        </div>
-
-        {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
-        <div className="space-y-3 pt-1">
-          {/* Poziom słodyczy */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-[#594D42]">Poziom słodyczy</span>
-              <span className="font-bold text-[#8C4609]">{product.tasteProfile.sweetness} / 5</span>
-            </div>
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((lvl) => (
-                <div
-                  key={lvl}
-                  className={`h-2 flex-1 rounded-full transition-all ${
-                    lvl <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-[10px] text-[#7A6A5A]">
-              {product.tasteProfile.sweetness <= 2 ? 'Wytrawny, mało słodki' : product.tasteProfile.sweetness <= 4 ? 'Umiarkowanie zbalansowany' : 'Głęboka, aksamitna słodycz'}
-            </p>
-          </div>
-
-          {/* Kwasowość / Rześkość */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-[#594D42]">Kwasowość / Rześkość</span>
-              <span className="font-bold text-[#1B4332]">{product.tasteProfile.acidity} / 5</span>
-            </div>
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((lvl) => (
-                <div
-                  key={lvl}
-                  className={`h-2 flex-1 rounded-full transition-all ${
-                    lvl <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#EADDC7]'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-[10px] text-[#7A6A5A]">
-              {product.tasteProfile.acidity <= 2 ? 'Łagodny, maślany finisz' : 'Rześka, świeża nuta cytrusowo-kwiatowa'}
-            </p>
-          </div>
-
-          {/* Intensywność aromatu */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-[#594D42]">Intensywność aromatu</span>
-              <span className="font-bold text-[#D9821E]">{product.tasteProfile.aroma} / 5</span>
-            </div>
-            <div className="flex gap-1.5">
-              {[1, 2, 3, 4, 5].map((lvl) => (
-                <div
-                  key={lvl}
-                  className={`h-2 flex-1 rounded-full transition-all ${
-                    lvl <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-[10px] text-[#7A6A5A]">
-              Wyraźny bukiet wyczuwalny natychmiast po odkręceniu słoika.
-            </p>
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
+              Autentyczna Partia
+            </span>
           </div>
         </div>
 
-        {/* Barwa & Krystalizacja - 2 kompaktowe boksy */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-          <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
-            <span className="font-bold text-[#8C4609] text-[11px] flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-[#D9821E]" />
-              Krystalizacja
+        {/* Mobile quick peek when collapsed: instant visual access to key metrics */}
+        {!isSensoryExpandedMobile && (
+          <div 
+            onClick={() => setIsSensoryExpandedMobile(true)}
+            className="flex sm:hidden items-center justify-between text-xs text-[#594D42] bg-[#FAF8F5] p-2.5 rounded-2xl border border-[#E7DDCE] cursor-pointer"
+          >
+            <div className="flex items-center gap-2 text-[11px]">
+              <span>🍯 Słodycz <strong>{product.tasteProfile.sweetness}/5</strong></span>
+              <span>•</span>
+              <span>Rześkość <strong>{product.tasteProfile.acidity}/5</strong></span>
+              <span>•</span>
+              <span>Aromat <strong>{product.tasteProfile.aroma}/5</strong></span>
+            </div>
+            <span className="text-[10.5px] font-bold text-[#D9821E] flex items-center gap-0.5 shrink-0 pl-1">
+              <span>Wykres</span>
+              <ChevronDown className="w-3 h-3" />
             </span>
-            <p className="text-[11px] text-[#594D42] leading-tight">{product.tasteProfile.crystallization}</p>
+          </div>
+        )}
+
+        {/* Content: Always visible on desktop (sm:block), toggleable on mobile */}
+        <div className={`space-y-3 sm:space-y-4 ${isSensoryExpandedMobile ? 'block' : 'hidden sm:block'}`}>
+          {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
+          <div className="space-y-3 pt-1">
+            {/* Poziom słodyczy */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-[#594D42]">Poziom słodyczy</span>
+                <span className="font-bold text-[#8C4609]">{product.tasteProfile.sweetness} / 5</span>
+              </div>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map((lvl) => (
+                  <div
+                    key={lvl}
+                    className={`h-2 flex-1 rounded-full transition-all ${
+                      lvl <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-[#7A6A5A]">
+                {product.tasteProfile.sweetness <= 2 ? 'Wytrawny, mało słodki' : product.tasteProfile.sweetness <= 4 ? 'Umiarkowanie zbalansowany' : 'Głęboka, aksamitna słodycz'}
+              </p>
+            </div>
+
+            {/* Kwasowość / Rześkość */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-[#594D42]">Kwasowość / Rześkość</span>
+                <span className="font-bold text-[#1B4332]">{product.tasteProfile.acidity} / 5</span>
+              </div>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map((lvl) => (
+                  <div
+                    key={lvl}
+                    className={`h-2 flex-1 rounded-full transition-all ${
+                      lvl <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#EADDC7]'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-[#7A6A5A]">
+                {product.tasteProfile.acidity <= 2 ? 'Łagodny, maślany finisz' : 'Rześka, świeża nuta cytrusowo-kwiatowa'}
+              </p>
+            </div>
+
+            {/* Intensywność aromatu */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-[#594D42]">Intensywność aromatu</span>
+                <span className="font-bold text-[#D9821E]">{product.tasteProfile.aroma} / 5</span>
+              </div>
+              <div className="flex gap-1.5">
+                {[1, 2, 3, 4, 5].map((lvl) => (
+                  <div
+                    key={lvl}
+                    className={`h-2 flex-1 rounded-full transition-all ${
+                      lvl <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-[10px] text-[#7A6A5A]">
+                Wyraźny bukiet wyczuwalny natychmiast po odkręceniu słoika.
+              </p>
+            </div>
           </div>
 
-          <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
-            <span className="font-bold text-[#1B4332] text-[11px] flex items-center gap-1">
-              <Droplet className="w-3.5 h-3.5 text-[#1B4332]" />
-              Barwa miodu
-            </span>
-            <div className="flex items-center gap-1.5 pt-0.5">
-              <span
-                className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
-                style={{ backgroundColor: product.colorHex }}
-              />
-              <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
+          {/* Barwa & Krystalizacja - 2 kompaktowe boksy */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+            <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
+              <span className="font-bold text-[#8C4609] text-[11px] flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-[#D9821E]" />
+                Krystalizacja
+              </span>
+              <p className="text-[11px] text-[#594D42] leading-tight">{product.tasteProfile.crystallization}</p>
+            </div>
+
+            <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
+              <span className="font-bold text-[#1B4332] text-[11px] flex items-center gap-1">
+                <Droplet className="w-3.5 h-3.5 text-[#1B4332]" />
+                Barwa miodu
+              </span>
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <span
+                  className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
+                  style={{ backgroundColor: product.colorHex }}
+                />
+                <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1448,20 +1480,35 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                 </div>
               </div>
 
-              {/* Trust & Safe Delivery Strip */}
-              <div className="pt-3 border-t border-[#D9821E]/15 grid grid-cols-3 gap-2 text-center text-[11px] text-[#594D42]">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
+              {/* Trust & Safe Delivery Strip: clean single line on mobile, grid on desktop */}
+              <div className="pt-3 border-t border-[#D9821E]/15 hidden sm:grid grid-cols-3 gap-2 text-center text-[11px] text-[#594D42]">
+                <div className="flex items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#1B4332] shrink-0" />
                   <span className="font-semibold">{prodType === 'bee-colony' ? 'Odbiór osobisty' : 'Wysyłka w 24h'}</span>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
+                <div className="flex items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#1B4332] shrink-0" />
                   <span className="font-semibold">{prodType === 'bee-colony' ? 'Transporter z wentylacją' : 'Zero stłuczek'}</span>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
+                <div className="flex items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <Truck className="w-3.5 h-3.5 text-[#D9821E] shrink-0" />
                   <span className="font-semibold">{prodType === 'bee-colony' ? 'Szkolenie przy ulu' : 'Paczkomat & DPD'}</span>
                 </div>
+              </div>
+
+              {/* Mobile compact trust indicators */}
+              <div className="pt-2.5 border-t border-[#D9821E]/15 flex sm:hidden items-center justify-around text-[10.5px] text-[#594D42] py-1 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]/80">
+                <span className="flex items-center gap-1 font-semibold text-[#1B4332]">
+                  <CheckCircle2 className="w-3 h-3" /> Wysyłka 24h
+                </span>
+                <span className="text-[#D9821E]/40">•</span>
+                <span className="flex items-center gap-1 font-semibold text-[#1B4332]">
+                  <ShieldCheck className="w-3 h-3" /> Pancerne tuby
+                </span>
+                <span className="text-[#D9821E]/40">•</span>
+                <span className="flex items-center gap-1 font-semibold text-[#D9821E]">
+                  <Truck className="w-3 h-3" /> Paczkomat
+                </span>
               </div>
             </div>
 

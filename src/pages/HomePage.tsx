@@ -158,20 +158,20 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               </div>
 
-              <div className="lg:col-span-6 grid grid-cols-2 gap-4">
+              <div className="lg:col-span-6 grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="rounded-2xl overflow-hidden border border-[#E7DCCE] shadow-md">
                   <img
                     src="https://pasiekausza.pl/wp-content/uploads/2022/02/DSC02154-683x1024.jpg"
                     alt="Praca przy ulach"
-                    className="w-full h-72 sm:h-80 object-cover"
+                    className="w-full h-48 sm:h-80 object-cover"
                     loading="lazy"
                   />
                 </div>
-                <div className="rounded-2xl overflow-hidden border border-[#E7DCCE] shadow-md mt-6">
+                <div className="rounded-2xl overflow-hidden border border-[#E7DCCE] shadow-md mt-3 sm:mt-6">
                   <img
                     src="https://pasiekausza.pl/wp-content/uploads/2022/02/DSC01985-683x1024.jpg"
                     alt="Plaster miodu w ulu"
-                    className="w-full h-72 sm:h-80 object-cover"
+                    className="w-full h-48 sm:h-80 object-cover"
                     loading="lazy"
                   />
                 </div>
