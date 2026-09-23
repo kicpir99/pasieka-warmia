@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense } from 'react';
-import { HashRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,6 +11,7 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { Check, X, Scale } from 'lucide-react';
 import { CartItem, HoneyProduct } from './types';
 import { useDisplayResolution } from './hooks/useDisplayResolution';
+import { HIVE_TREASURE_IDS } from './data/honeyProducts';
 
 // Lazy-loaded heavy overlay components & secondary pages
 const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
@@ -49,6 +50,85 @@ function GlobalQuizModal({
   );
 }
 
+interface FloatingCompareBarProps {
+  compareList: HoneyProduct[];
+  isCompareModalOpen: boolean;
+  onRemove: (product: HoneyProduct) => void;
+  onClear: () => void;
+  onOpenModal: () => void;
+}
+
+function FloatingCompareBar({
+  compareList,
+  isCompareModalOpen,
+  onRemove,
+  onClear,
+  onOpenModal,
+}: FloatingCompareBarProps) {
+  const location = useLocation();
+  const isShop = location.pathname.startsWith('/sklep');
+
+  // Pigułka widoczna jest tylko w sekcji sklepu z miodami
+  if (!isShop || compareList.length === 0 || isCompareModalOpen) {
+    return null;
+  }
+
+  return (
+    <aside 
+      aria-label="Pasek porównywania odmian miodów"
+      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-fit bg-[#FAF8F5]/95 backdrop-blur-md border border-[#D9821E]/35 rounded-2xl sm:rounded-full shadow-[0_12px_40px_rgba(35,32,28,0.2)] px-3.5 py-2.5 sm:px-5 sm:py-2.5 animate-in slide-in-from-bottom-6 duration-300 ring-1 ring-[#1B4332]/10"
+    >
+      <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4">
+        <div className="flex items-center gap-2.5 flex-wrap justify-center sm:justify-start">
+          <div className="w-7 h-7 rounded-full bg-[#1B4332] text-[#E6C065] flex items-center justify-center shadow-xs shrink-0">
+            <Scale className="w-3.5 h-3.5" />
+          </div>
+          <span className="font-serif font-bold text-[#23201C] text-xs sm:text-sm whitespace-nowrap">
+            Porównaj ({compareList.length}/3):
+          </span>
+          <div className="flex gap-1.5 flex-wrap items-center justify-center">
+            {compareList.map(p => (
+              <div 
+                key={p.id} 
+                className="flex items-center gap-1.5 bg-white border border-[#D9821E]/25 rounded-full pl-1 pr-2 py-0.5 text-[11px] font-semibold text-[#4A4033] shadow-xs"
+              >
+                <img src={p.imageUrl} alt="" className="w-4 h-4 rounded-full object-cover bg-[#EFE7DA]" />
+                <span className="max-w-[90px] sm:max-w-[120px] truncate">{p.name}</span>
+                <button 
+                  onClick={() => onRemove(p)} 
+                  className="text-[#9C8E7D] hover:text-[#8E5116] transition-colors cursor-pointer p-0.5"
+                  title={`Usuń ${p.name} z porównania`}
+                  aria-label={`Usuń ${p.name}`}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#D9821E]/15">
+          <button 
+            onClick={onClear}
+            className="px-2.5 py-1.5 rounded-full text-xs font-bold text-[#786C5B] hover:text-[#23201C] hover:bg-[#EFE7DA] transition-colors cursor-pointer"
+            title="Wyczyść listę porównania"
+          >
+            Wyczyść
+          </button>
+          <button 
+            onClick={onOpenModal}
+            className="flex-1 sm:flex-none px-4 py-2 rounded-full bg-[#1B4332] text-white text-xs font-bold hover:bg-[#143326] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+            id="btn-otworz-porownywarke-floating"
+          >
+            <Scale className="w-3.5 h-3.5 text-[#E6C065]" />
+            <span>Porównaj odmiany</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 function App() {
   const displayResolution = useDisplayResolution();
 
@@ -67,7 +147,27 @@ function App() {
     } catch {}
   }, []);
 
+  const handleRemoveFromCompare = (product: HoneyProduct) => {
+    setCompareList(prev => prev.filter(p => p.id !== product.id));
+  };
+
+  const handleAddToCompare = (product: HoneyProduct) => {
+    if (HIVE_TREASURE_IDS.includes(product.id)) return;
+    setCompareList(prev => {
+      if (prev.find(p => p.id === product.id)) return prev;
+      if (prev.length >= 3) {
+        return [prev[0], prev[1], product];
+      }
+      return [...prev, product];
+    });
+  };
+
   const toggleCompare = (product: HoneyProduct) => {
+    if (HIVE_TREASURE_IDS.includes(product.id)) {
+      setToastMessage('Porównywarka służy wyłącznie do zestawiania odmian miodów.');
+      setTimeout(() => setToastMessage(null), 3000);
+      return;
+    }
     setCompareList(prev => {
       const exists = prev.find(p => p.id === product.id);
       if (exists) return prev.filter(p => p.id !== product.id);
@@ -80,18 +180,18 @@ function App() {
     });
   };
 
-  const handleAddToCart = (product: HoneyProduct, weightGrams: number, pricePln: number) => {
+  const handleAddToCart = (product: HoneyProduct, weightGrams: number, pricePln: number, subscriptionInterval?: number) => {
     setCartItems((prev) => {
       const existing = prev.find(
         (item) => {
           const itemW = item.weightGrams ?? item.selectedWeightGrams ?? item.product.sizes[0]?.weightGrams;
-          return item.product.id === product.id && itemW === weightGrams;
+          return item.product.id === product.id && itemW === weightGrams && item.subscriptionInterval === subscriptionInterval;
         }
       );
       if (existing) {
         return prev.map((item) => {
           const itemW = item.weightGrams ?? item.selectedWeightGrams ?? item.product.sizes[0]?.weightGrams;
-          return item.product.id === product.id && itemW === weightGrams
+          return item.product.id === product.id && itemW === weightGrams && item.subscriptionInterval === subscriptionInterval
             ? { ...item, quantity: item.quantity + 1 }
             : item;
         });
@@ -103,11 +203,13 @@ function App() {
           weightGrams, 
           selectedWeightGrams: weightGrams, 
           pricePln, 
-          quantity: 1 
+          quantity: 1,
+          subscriptionInterval,
         }
       ];
     });
-    setToastMessage(`Dodano ${product.name} (${weightGrams}g) do koszyka!`);
+    const subText = subscriptionInterval ? ` (autouzupełnianie co ${subscriptionInterval} dni)` : '';
+    setToastMessage(`Dodano ${product.name} (${weightGrams}g)${subText} do koszyka!`);
     setTimeout(() => setToastMessage(null), 3000);
   };
 
@@ -304,7 +406,8 @@ function App() {
               isOpen={isCompareModalOpen}
               onClose={() => setIsCompareModalOpen(false)}
               products={compareList}
-              onRemove={toggleCompare}
+              onRemove={handleRemoveFromCompare}
+              onAdd={handleAddToCompare}
               onAddToCart={handleAddToCart}
             />
           </Suspense>
@@ -330,60 +433,13 @@ function App() {
           onClose={() => setIsQuizOpen(false)}
         />
 
-        {compareList.length > 0 && !isCompareModalOpen && (
-          <aside 
-            aria-label="Pasek porównywania odmian miodów"
-            className="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-fit bg-[#FAF8F5]/95 backdrop-blur-md border border-[#D9821E]/35 rounded-2xl sm:rounded-full shadow-[0_12px_40px_rgba(35,32,28,0.2)] px-3.5 py-2.5 sm:px-5 sm:py-2.5 animate-in slide-in-from-bottom-6 duration-300 ring-1 ring-[#1B4332]/10"
-          >
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4">
-              <div className="flex items-center gap-2.5 flex-wrap justify-center sm:justify-start">
-                <div className="w-7 h-7 rounded-full bg-[#1B4332] text-[#E6C065] flex items-center justify-center shadow-xs shrink-0">
-                  <Scale className="w-3.5 h-3.5" />
-                </div>
-                <span className="font-serif font-bold text-[#23201C] text-xs sm:text-sm whitespace-nowrap">
-                  Porównaj ({compareList.length}/3):
-                </span>
-                <div className="flex gap-1.5 flex-wrap items-center justify-center">
-                  {compareList.map(p => (
-                    <div 
-                      key={p.id} 
-                      className="flex items-center gap-1.5 bg-white border border-[#D9821E]/25 rounded-full pl-1 pr-2 py-0.5 text-[11px] font-semibold text-[#4A4033] shadow-xs"
-                    >
-                      <img src={p.imageUrl} alt="" className="w-4 h-4 rounded-full object-cover bg-[#EFE7DA]" />
-                      <span className="max-w-[90px] sm:max-w-[120px] truncate">{p.name}</span>
-                      <button 
-                        onClick={() => toggleCompare(p)} 
-                        className="text-[#9C8E7D] hover:text-[#8E5116] transition-colors cursor-pointer p-0.5"
-                        title={`Usuń ${p.name} z porównania`}
-                        aria-label={`Usuń ${p.name}`}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-[#D9821E]/15">
-                <button 
-                  onClick={() => setCompareList([])}
-                  className="px-2.5 py-1.5 rounded-full text-xs font-bold text-[#786C5B] hover:text-[#23201C] hover:bg-[#EFE7DA] transition-colors cursor-pointer"
-                  title="Wyczyść listę porównania"
-                >
-                  Wyczyść
-                </button>
-                <button 
-                  onClick={() => setIsCompareModalOpen(true)}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-full bg-[#1B4332] text-white text-xs font-bold hover:bg-[#143326] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
-                  id="btn-otworz-porownywarke-floating"
-                >
-                  <Scale className="w-3.5 h-3.5 text-[#E6C065]" />
-                  <span>Porównaj odmiany</span>
-                </button>
-              </div>
-            </div>
-          </aside>
-        )}
+        <FloatingCompareBar
+          compareList={compareList}
+          isCompareModalOpen={isCompareModalOpen}
+          onRemove={handleRemoveFromCompare}
+          onClear={() => setCompareList([])}
+          onOpenModal={() => setIsCompareModalOpen(true)}
+        />
       </div>
     </HashRouter>
   );

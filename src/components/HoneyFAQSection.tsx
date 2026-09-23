@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronDown, HelpCircle, Sparkles, ShieldCheck, Mail, Phone } from 'lucide-react';
 
 interface FAQItem {
@@ -138,8 +139,8 @@ export const HoneyFAQSection: React.FC<HoneyFAQSectionProps> = ({ containerClass
         </div>
 
         {/* Dolna belka wsparcia z pszczelarzem */}
-        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#1B4332] to-[#143326] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
-          <div className="flex items-center gap-3.5 text-center sm:text-left">
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-[#1B4332] to-[#143326] text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-md">
+          <div className="flex items-center gap-3.5 text-center md:text-left">
             <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-xl shrink-0">
               🐝
             </div>
@@ -148,19 +149,26 @@ export const HoneyFAQSection: React.FC<HoneyFAQSectionProps> = ({ containerClass
                 Masz inne pytanie o nasze miody lub pasiekę?
               </p>
               <p className="text-xs text-[#D8E6DE] mt-0.5">
-                Mistrz Pszczelarski Jan chętnie doradzi odpowiedni zbiór dla Twojej rodziny.
+                Magdalena i Piotr chętnie doradzą odpowiedni zbiór dla Twojej rodziny.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
             <a
-              href="tel:+48604123456"
+              href="tel:+48697512103"
               className="px-4 py-2.5 rounded-xl bg-[#E5983A] hover:bg-[#D9821E] text-[#24211D] font-bold text-xs transition-colors flex items-center gap-1.5 shadow-sm"
             >
               <Phone className="w-3.5 h-3.5" />
-              <span>Zadzwoń do pasieki</span>
+              <span>Zadzwoń: +48 697 512 103</span>
             </a>
+            <Link
+              to="/kontakt"
+              className="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-[#FAF5ED] font-bold text-xs transition-colors flex items-center gap-1.5 border border-white/20 shadow-2xs"
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Napisz przez formularz →</span>
+            </Link>
           </div>
         </div>
 

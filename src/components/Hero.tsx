@@ -350,9 +350,9 @@ export const Hero: React.FC<HeroProps> = ({
 
   return (
     <section
-      className="relative min-h-[calc(100vh-80px)] w-full bg-[#121813] text-[#FAF7F2] overflow-hidden flex flex-col justify-between select-none border-b border-[#232F24]"
+      className="relative min-h-[calc(100vh-80px)] w-full bg-[#1A1511] text-[#FAF7F2] overflow-hidden flex flex-col justify-between select-none border-b border-[#362B22]"
     >
-      {/* Ambient Forest & Raw Honey Glow - Delikatne rozświetlenie miodem w leśnej głębi */}
+      {/* Ambient Apiary & Raw Honey Glow - Ciepłe rozświetlenie miodem w głębi pasieki */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.75] transition-colors duration-700"
         style={{
@@ -361,7 +361,7 @@ export const Hero: React.FC<HeroProps> = ({
       />
 
       {/* Dolny gradient miękko łączący Hero z sekcją 3D scrollingu */}
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#141B14] via-[#141B14]/70 to-transparent pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#1A1511] via-[#1A1511]/70 to-transparent pointer-events-none z-10" />
 
       {/* Subtelna organiczna tekstura lnu / drewna */}
       <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
@@ -390,17 +390,17 @@ export const Hero: React.FC<HeroProps> = ({
         
         {/* RIGHT COLUMN (NA MOBILE NA GÓRZE): Duża centralna scenografia 3D z obracającym się słoikiem i dynamicznymi dymkami */}
         <div className="order-1 lg:order-2 lg:col-span-7 xl:col-span-7 relative flex items-center justify-center w-full min-h-[300px] sm:min-h-[500px]">
-          {/* Szlachetny leśno-bursztynowy portal w tle słoika */}
+          {/* Szlachetny ciepły miodowo-bursztynowy portal w tle słoika */}
           <div 
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] max-w-[500px] aspect-[1/1.2] rounded-full blur-[60px] opacity-75 pointer-events-none"
             style={{
-              background: `radial-gradient(ellipse at 50% 50%, #1B261D 0%, ${currentItem.ambientToneHex}30 40%, transparent 70%)`
+              background: `radial-gradient(ellipse at 50% 50%, #2B2119 0%, ${currentItem.ambientToneHex}30 40%, transparent 70%)`
             }}
           />
           <div 
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] max-w-[400px] aspect-[1/1.2] rounded-full blur-[40px] opacity-85 pointer-events-none"
             style={{
-              background: `radial-gradient(ellipse at 50% 50%, #0F1610 0%, #1A241C 50%, transparent 70%)`
+              background: `radial-gradient(ellipse at 50% 50%, #15100C 0%, #241D17 50%, transparent 70%)`
             }}
           />
 
@@ -425,7 +425,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="order-2 lg:order-1 lg:col-span-5 xl:col-span-5 text-center lg:text-left space-y-3 sm:space-y-4 md:space-y-5">
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 sm:gap-2">
             <div 
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold border shadow-sm bg-[#182119]/80 backdrop-blur-sm"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold border shadow-sm bg-[#261E17]/80 backdrop-blur-sm"
               style={{
                 borderColor: `${currentItem.ambientToneHex}45`,
                 color: currentItem.ambientToneHex
@@ -435,7 +435,7 @@ export const Hero: React.FC<HeroProps> = ({
               <span>{currentItem.badge}</span>
             </div>
 
-            <span className="text-[11px] sm:text-xs text-[#C5BCAD] font-sans px-2.5 py-1 rounded-full bg-[#1C251D]/80 border border-[#334435]">
+            <span className="text-[11px] sm:text-xs text-[#C5BCAD] font-sans px-2.5 py-1 rounded-full bg-[#2A221A]/80 border border-[#44362A]">
               {currentItem.vintageYear} • Zbiór Dolnośląski
             </span>
           </div>
@@ -473,7 +473,7 @@ export const Hero: React.FC<HeroProps> = ({
                     className={`py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-xl text-xs font-semibold flex flex-col items-start justify-between gap-1 transition-all border text-left cursor-pointer ${
                       isSizeActive
                         ? 'bg-[#E0A94F]/20 border-[#E0A94F] text-[#FAF7F2] shadow-md shadow-black/40 ring-1 ring-[#E0A94F]/40'
-                        : 'bg-[#182119]/80 border-[#304031] text-[#D8CEBF] hover:border-[#4B634D] hover:bg-[#1E281F]'
+                        : 'bg-[#261E17]/80 border-[#3E3024] text-[#D8CEBF] hover:border-[#6B533E] hover:bg-[#33281F]'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
@@ -503,7 +503,7 @@ export const Hero: React.FC<HeroProps> = ({
                       selectedSize.pricePln
                     )
                   }
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-2xl bg-[#E0A94F] hover:bg-[#E8B663] text-[#121813] font-bold text-xs sm:text-sm shadow-lg shadow-black/30 transition-all active:scale-98 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-2xl bg-[#E0A94F] hover:bg-[#E8B663] text-[#1A1511] font-bold text-xs sm:text-sm shadow-lg shadow-black/30 transition-all active:scale-98 cursor-pointer"
                   id="hero-btn-dodaj-koszyk"
                 >
                   <ShoppingBag className="w-4 h-4" />
@@ -520,7 +520,7 @@ export const Hero: React.FC<HeroProps> = ({
                     sessionStorage.setItem('pasieka_from_hero', 'true');
                   } catch {}
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-2xl bg-[#18231A]/90 hover:bg-[#233125] border border-[#384C3A] hover:border-[#E0A94F]/70 text-[#FAF7F2] font-bold text-xs sm:text-sm shadow-md transition-all group cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-2xl bg-[#282018]/90 hover:bg-[#382C22] border border-[#4A3B2D] hover:border-[#E0A94F]/70 text-[#FAF7F2] font-bold text-xs sm:text-sm shadow-md transition-all group cursor-pointer"
                 id="hero-btn-karta-miodu"
                 title={`Otwórz pełną podstronę miodu: ${currentProduct.name}`}
               >
@@ -574,12 +574,12 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Floating Editorial Selector Track */}
-          <div className="inline-flex max-w-[calc(100vw-1.5rem)] items-center gap-1 p-1 sm:p-1.5 rounded-full bg-[#182119]/90 backdrop-blur-md border border-[#314233]/90 shadow-2xl overflow-hidden">
+          <div className="inline-flex max-w-[calc(100vw-1.5rem)] items-center gap-1 p-1 sm:p-1.5 rounded-full bg-[#241D16]/90 backdrop-blur-md border border-[#443629]/90 shadow-2xl overflow-hidden">
             {/* Left Chevron */}
             <button
               onClick={handlePrevVariety}
               aria-label="Poprzedni miód"
-              className="p-1 sm:p-1.5 rounded-full text-[#B0A697] hover:text-[#FAF7F2] hover:bg-[#253326] transition-colors shrink-0 cursor-pointer"
+              className="p-1 sm:p-1.5 rounded-full text-[#B0A697] hover:text-[#FAF7F2] hover:bg-[#382C22] transition-colors shrink-0 cursor-pointer"
             >
               <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -597,8 +597,8 @@ export const Hero: React.FC<HeroProps> = ({
                     title={p.name}
                     className={`relative w-[130px] h-8 px-2.5 rounded-full text-xs transition-all flex items-center justify-center gap-2 shrink-0 select-none cursor-pointer ${
                       isSelected
-                        ? 'text-[#FAF7F2] font-semibold bg-[#263528] border border-[#E0A94F]/70 shadow-md'
-                        : 'text-[#9E9485] hover:text-[#FAF7F2] hover:bg-[#1F2B20]/60 border border-transparent font-medium'
+                        ? 'text-[#FAF7F2] font-semibold bg-[#3A2D20] border border-[#E0A94F]/70 shadow-md'
+                        : 'text-[#9E9485] hover:text-[#FAF7F2] hover:bg-[#30241A]/60 border border-transparent font-medium'
                     }`}
                   >
                     <span
@@ -622,7 +622,7 @@ export const Hero: React.FC<HeroProps> = ({
             <button
               onClick={handleNextVariety}
               aria-label="Następny miód"
-              className="p-1 sm:p-1.5 rounded-full text-[#B0A697] hover:text-[#FAF7F2] hover:bg-[#253326] transition-colors shrink-0 cursor-pointer"
+              className="p-1 sm:p-1.5 rounded-full text-[#B0A697] hover:text-[#FAF7F2] hover:bg-[#382C22] transition-colors shrink-0 cursor-pointer"
             >
               <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>

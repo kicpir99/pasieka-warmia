@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -481,22 +483,27 @@ export const HoneyCraftingJourney: React.FC = () => {
                 Zamknęliśmy dzikie łąki w szklanym słoju. Poczuj aromat prawdziwej pasieki na swoim stole.
               </p>
 
-              {/* Action Link Button */}
-              <div className="flex items-center gap-4">
-                <a 
-                  href="#katalog" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const el = document.getElementById('katalog');
-                    if (el) {
-                      el.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="pointer-events-auto px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#E0A94F] text-[#161D16] font-semibold text-xs uppercase tracking-wider hover:bg-[#F2BC66] transition-all shadow-[0_4px_20px_rgba(224,169,79,0.35)] hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
+              {/* Action Link Buttons */}
+              <div className="flex flex-wrap items-center gap-3 pointer-events-auto">
+                <Link 
+                  to="/sklep" 
+                  className="px-5 py-2 sm:px-6 sm:py-2.5 rounded-full bg-[#E0A94F] text-[#161D16] font-bold text-xs uppercase tracking-wider hover:bg-[#F2BC66] transition-all shadow-[0_4px_20px_rgba(224,169,79,0.35)] hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  id="btn-wybierz-miod-3d"
+                  title="Przejdź do sklepu z miodami"
                 >
                   <span>Wybierz Miód</span>
-                  <span>↓</span>
-                </a>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+
+                <Link 
+                  to="/skarby-ula" 
+                  className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-[#FAF7F2] font-semibold text-xs uppercase tracking-wider border border-white/20 backdrop-blur-md transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-md"
+                  id="btn-skarby-ula-3d"
+                  title="Zobacz produkty pszczelego pochodzenia (pyłek, pierzga, propolis)"
+                >
+                  <span>Skarby Ula</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#E0A94F]" />
+                </Link>
               </div>
             </div>
           </div>

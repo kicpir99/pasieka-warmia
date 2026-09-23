@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { HoneyProduct } from '../types';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Star, Droplet, Sparkles, MapPin, Scale } from 'lucide-react';
+import { ShoppingBag, Star, Droplet, Sparkles, MapPin, Scale, Flame, Clock, Leaf } from 'lucide-react';
+import { HIVE_TREASURE_IDS } from '../data/honeyProducts';
+import { getProductBadges } from '../utils/honeyHelpers';
 
 interface ProductCardProps {
   product: HoneyProduct;
@@ -27,6 +29,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   );
 
   const currentSize = product.sizes.find((s) => s.weightGrams === selectedWeight) || product.sizes[0];
+  const badges = getProductBadges(product);
 
   const handleProductClick = () => {
     try {
@@ -60,27 +63,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Subtle gradient vignette */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
-          {product.isBestseller && (
-            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#8E5116] text-white shadow-sm tracking-wide">
-              Polecamy
+        {/* Top Badges (Automated) */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start z-10 pointer-events-none">
+          {badges.map((b) => (
+            <span
+              key={b.type}
+              title={b.tooltip}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide shadow-sm backdrop-blur-[2px] ${b.bgClass} ${b.textClass}`}
+            >
+              {b.iconType === 'flame' && <Flame className="w-3 h-3 text-[#FFE3B8] fill-[#FFE3B8]" />}
+              {b.iconType === 'sparkles' && <Sparkles className="w-3 h-3 text-[#B7E4C7]" />}
+              {b.iconType === 'clock' && <Clock className="w-3 h-3 text-[#EFE7DA]" />}
+              {b.iconType === 'leaf' && <Leaf className="w-3 h-3 text-[#C8E6C9]" />}
+              <span>{b.label}</span>
             </span>
-          )}
-          {product.isLimitedBatch && (
-            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#3A332A] text-white shadow-sm tracking-wide">
-              Krótka partia
-            </span>
-          )}
-          {product.isNewHarvest && !product.isLimitedBatch && (
-            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#445E3B] text-white shadow-sm tracking-wide">
-              Zbiór {product.harvestYear}
-            </span>
-          )}
+          ))}
         </div>
 
         {/* Compare Button */}
-        {onToggleCompare && (
+        {onToggleCompare && !HIVE_TREASURE_IDS.includes(product.id) && (
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -99,12 +100,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Color preview pill */}
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/95 text-[11px] text-[#4A4033] shadow-sm font-semibold">
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/95 text-[11px] text-[#4A4033] shadow-sm font-semibold border border-black/5 backdrop-blur-[2px]">
           <span
-            className="w-2.5 h-2.5 rounded-full border border-black/10"
+            className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
             style={{ backgroundColor: product.colorHex }}
           />
-          <span className="capitalize">{product.colorName}</span>
+          <span className="whitespace-nowrap">{product.colorName}</span>
         </div>
 
         {/* Bottom batch on image */}
@@ -121,7 +122,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-bold tracking-wider">
             <Link
-              to={`/?kategoria=${product.category}#katalog`}
+              to={`/sklep?kategoria=${product.category}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 text-[#8C531B] hover:text-[#1B4332] hover:underline transition-colors uppercase"
               title={`Filtruj zbiory: ${product.category}`}
@@ -130,7 +131,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </Link>
             <div className="flex items-center gap-1 text-[#554C3F]">
               <Star className="w-3.5 h-3.5 fill-[#F3C06B] text-[#F3C06B]" />
-              <span>4.9</span>
+              <span>{product.rating ? product.rating.toFixed(1) : '4.9'}</span>
             </div>
           </div>
           
@@ -148,9 +149,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </p>
         </div>
 
-        {/* Dominujące nuty smakowe */}
+        {/* Dominujące nuty bukietu */}
         {product.flavorNotes && product.flavorNotes.length > 0 && (
-          <div className="pt-0.5">
+          <div className="pt-0.5 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#8C7A6B] uppercase tracking-wider">
+              <Sparkles className="w-2.5 h-2.5 text-[#D9821E]" />
+              <span>Bukiet smakowy:</span>
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {product.flavorNotes.map((note) => {
                 const isSelected = activeFlavorNote?.toLowerCase() === note.toLowerCase();
@@ -170,7 +175,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     }`}
                     title={`Filtruj miody o nucie: ${note}`}
                   >
-                    <Sparkles className={`w-2.5 h-2.5 ${isSelected ? 'text-[#F3C06B]' : 'text-[#D9821E]'}`} />
                     <span>{note}</span>
                   </button>
                 );
@@ -238,7 +242,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               Do zapłaty:
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="font-serif font-black text-2xl text-[#1B4332] leading-none tracking-tight">
+              <span className="font-sans font-black text-2xl text-[#1B4332] leading-none tracking-tight tabular-nums">
                 {currentSize.pricePln}
               </span>
               <span className="text-xs font-bold text-[#8C7A6B]">zł</span>

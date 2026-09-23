@@ -13,7 +13,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const [isDone, setIsDone] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
-  const [statusText, setStatusText] = useState('Inicjalizacja Pasieki Wędrownej Usza...');
+  const [statusText, setStatusText] = useState('Pszczoły wyruszają na dolnośląskie pożytki...');
 
   const progressRef = useRef(0);
 
@@ -142,17 +142,19 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
 
       setProgress(currentVisualP);
 
-      // Aktualizacja statusu
-      if (currentVisualP < 25) {
-        setStatusText('Inicjalizacja Pasieki Wędrownej Usza...');
-      } else if (currentVisualP < 55) {
-        setStatusText('Kalibracja modeli 3D i obrotów słoików...');
+      // Aktualizacja statusu: etapy miodobrania i przygotowania słoików 3D
+      if (currentVisualP < 18) {
+        setStatusText('Pszczoły wyruszają na dolnośląskie pożytki...');
+      } else if (currentVisualP < 40) {
+        setStatusText('Znoszenie nektaru i odwirowywanie plastrów...');
+      } else if (currentVisualP < 65) {
+        setStatusText('Kalibracja obrotowych słoików 360° w karuzeli...');
       } else if (currentVisualP < 85) {
-        setStatusText('Przygotowywanie widoku 3D miodobrania...');
-      } else if (currentVisualP < 100) {
-        setStatusText('Napełnianie słoików świeżym miodem...');
+        setStatusText('Nalewanie świeżego miodu pod sam rant słoika...');
+      } else if (currentVisualP < 98) {
+        setStatusText('Dokręcanie wieczek i pieczętowanie pasieki...');
       } else {
-        setStatusText('Świeży miód gotowy do degustacji!');
+        setStatusText('Miód z Pasieki Usza gotowy do degustacji! 🍯');
       }
 
       if (currentVisualP >= 100 && isReadyToComplete && !finished) {
@@ -185,7 +187,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D140E] select-none transition-all duration-700 ease-out ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#140F0C] select-none transition-all duration-700 ease-out ${
         isDone 
           ? 'opacity-0 scale-[1.03] blur-md pointer-events-none' 
           : 'opacity-100 scale-100 blur-0 pointer-events-auto'
@@ -193,9 +195,9 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
     >
       {/* TŁO: Ciepła bursztynowa aura i subtelny raster plastra miodu */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-45 transition-opacity duration-1000"
+        className="absolute inset-0 pointer-events-none opacity-50 transition-opacity duration-1000"
         style={{
-          background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(224, 169, 79, 0.22) 0%, rgba(27, 67, 50, 0.25) 45%, transparent 75%)'
+          background: 'radial-gradient(ellipse 65% 55% at 50% 50%, rgba(224, 169, 79, 0.28) 0%, rgba(45, 34, 25, 0.50) 45%, transparent 75%)'
         }}
       />
       <div 
@@ -296,7 +298,7 @@ export const PagePreloader: React.FC<PagePreloaderProps> = ({ onComplete }) => {
 
         {/* PASEK POSTĘPU Z EFEKTEM BLASKU */}
         <div className="w-full max-w-[280px] sm:max-w-[320px] space-y-2.5">
-          <div className="relative w-full h-2 rounded-full bg-[#18231A] overflow-hidden border border-[#334636] shadow-inner">
+          <div className="relative w-full h-2 rounded-full bg-[#241D17] overflow-hidden border border-[#44362A] shadow-inner">
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#B7791F] via-[#E0A94F] to-[#FCE09B] transition-all duration-150 ease-out shadow-[0_0_12px_rgba(224,169,79,0.7)]"
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}

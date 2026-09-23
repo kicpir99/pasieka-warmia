@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HoneyProduct } from '../types';
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { HONEY_PRODUCTS, HONEY_VARIETIES, HIVE_TREASURE_IDS } from '../data/honeyProducts';
 import { getEnrichedProduct } from '../utils/honeyHelpers';
 import { 
   X, 
   Scale, 
-  ArrowLeftRight, 
   Check, 
   ShoppingBag, 
   Sparkles, 
@@ -26,6 +25,7 @@ interface ComparisonModalProps {
   onClose: () => void;
   products?: HoneyProduct[];
   onRemove?: (product: HoneyProduct) => void;
+  onAdd?: (product: HoneyProduct) => void;
   productA?: HoneyProduct | null;
   productB?: HoneyProduct | null;
   onAddToCart?: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
@@ -41,20 +41,25 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
   productA: initialProductA,
   productB: initialProductB,
   onRemove,
+  onAdd,
   onAddToCart,
   onOpenProductDetail,
 }) => {
   const navigate = useNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Wybierz domyślne produkty A i B
-  const defaultA = initialProductA || products[0] || HONEY_PRODUCTS[0];
-  const defaultB = initialProductB || products[1] || (
-    HONEY_PRODUCTS.find(p => p.id !== defaultA.id && p.category === 'lesne-spadz') || 
-    HONEY_PRODUCTS.find(p => p.id !== defaultA.id) ||
-    HONEY_PRODUCTS[1]
+  // Wybierz domyślne produkty A i B - TYLKO odmiany miodów!
+  const validProducts = (products || []).filter(p => !HIVE_TREASURE_IDS.includes(p.id));
+  const validInitialA = (initialProductA && !HIVE_TREASURE_IDS.includes(initialProductA.id)) ? initialProductA : null;
+  const validInitialB = (initialProductB && !HIVE_TREASURE_IDS.includes(initialProductB.id)) ? initialProductB : null;
+
+  const defaultA = validInitialA || validProducts[0] || HONEY_VARIETIES[0];
+  const defaultB = validInitialB || validProducts[1] || (
+    HONEY_VARIETIES.find(p => p.id !== defaultA.id && p.category === 'lesne-spadz') || 
+    HONEY_VARIETIES.find(p => p.id !== defaultA.id) ||
+    HONEY_VARIETIES[1]
   );
-  const defaultC = products[2] || null;
+  const defaultC = validProducts[2] || null;
 
   const [currentAId, setCurrentAId] = useState<string>(defaultA.id);
   const [currentBId, setCurrentBId] = useState<string>(defaultB.id);
@@ -63,27 +68,29 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
   // Synchronizacja przy otwarciu lub zmianie parametrów
   useEffect(() => {
-    if (products.length >= 3) {
-      setCurrentAId(products[0].id);
-      setCurrentBId(products[1].id);
-      setCurrentCId(products[2].id);
-    } else if (products.length === 2) {
-      setCurrentAId(products[0].id);
-      setCurrentBId(products[1].id);
+    if (!isOpen) return;
+    const cleanList = (products || []).filter(p => !HIVE_TREASURE_IDS.includes(p.id));
+    if (cleanList.length >= 3) {
+      setCurrentAId(cleanList[0].id);
+      setCurrentBId(cleanList[1].id);
+      setCurrentCId(cleanList[2].id);
+    } else if (cleanList.length === 2) {
+      setCurrentAId(cleanList[0].id);
+      setCurrentBId(cleanList[1].id);
       setCurrentCId(null);
-    } else if (products.length === 1) {
-      setCurrentAId(products[0].id);
-      const other = HONEY_PRODUCTS.find(p => p.id !== products[0].id) || HONEY_PRODUCTS[1];
+    } else if (cleanList.length === 1) {
+      setCurrentAId(cleanList[0].id);
+      const other = HONEY_VARIETIES.find(p => p.id !== cleanList[0].id) || HONEY_VARIETIES[1];
       setCurrentBId(other.id);
       setCurrentCId(null);
-    } else if (initialProductA) {
+    } else if (initialProductA && !HIVE_TREASURE_IDS.includes(initialProductA.id)) {
       setCurrentAId(initialProductA.id);
-      if (initialProductB) {
+      if (initialProductB && !HIVE_TREASURE_IDS.includes(initialProductB.id)) {
         setCurrentBId(initialProductB.id);
       }
       setCurrentCId(null);
     }
-  }, [isOpen, products, initialProductA, initialProductB]);
+  }, [isOpen, initialProductA, initialProductB]);
 
   // Reset scroll on tab change or when switching to 'all' (pełne zestawienie)
   useEffect(() => {
@@ -92,9 +99,9 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
     }
   }, [activeTab]);
 
-  const rawA = HONEY_PRODUCTS.find(p => p.id === currentAId) || defaultA;
-  const rawB = HONEY_PRODUCTS.find(p => p.id === currentBId) || defaultB;
-  const rawC = currentCId ? (HONEY_PRODUCTS.find(p => p.id === currentCId) || null) : null;
+  const rawA = HONEY_VARIETIES.find(p => p.id === currentAId) || defaultA;
+  const rawB = HONEY_VARIETIES.find(p => p.id === currentBId) || defaultB;
+  const rawC = currentCId ? (HONEY_VARIETIES.find(p => p.id === currentCId) || null) : null;
 
   const currentA = getEnrichedProduct(rawA);
   const currentB = getEnrichedProduct(rawB);
@@ -114,27 +121,15 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSwap = () => {
-    if (currentCId) {
-      const temp = currentAId;
-      setCurrentAId(currentBId);
-      setCurrentBId(currentCId);
-      setCurrentCId(temp);
-    } else {
-      const temp = currentAId;
-      setCurrentAId(currentBId);
-      setCurrentBId(temp);
-    }
-  };
 
   const handleAddThird = (suggestedId?: string) => {
-    if (suggestedId) {
-      setCurrentCId(suggestedId);
-      return;
-    }
-    const nextAvailable = HONEY_PRODUCTS.find(p => p.id !== currentAId && p.id !== currentBId);
-    if (nextAvailable) {
-      setCurrentCId(nextAvailable.id);
+    const targetId = suggestedId || HONEY_VARIETIES.find(p => p.id !== currentAId && p.id !== currentBId)?.id;
+    if (targetId && !HIVE_TREASURE_IDS.includes(targetId)) {
+      setCurrentCId(targetId);
+      const prodObj = HONEY_VARIETIES.find(p => p.id === targetId);
+      if (prodObj && onAdd) {
+        onAdd(prodObj);
+      }
     }
   };
 
@@ -231,16 +226,6 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={handleSwap}
-              className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold text-[#594D42] hover:text-[#1B4332] bg-white border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer shadow-2xs"
-              title={hasThreeProducts ? "Rotuj kolejność miodów (A → B → C)" : "Zamień kolejność miodów (A ↔ B)"}
-              id="btn-zamien-miody"
-            >
-              <ArrowLeftRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D9821E]" />
-              <span className="hidden sm:inline">{hasThreeProducts ? 'Rotuj pozycje' : 'Zamień miejscami'}</span>
-            </button>
 
             <button 
               type="button"
@@ -281,25 +266,29 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                 id="select-porownaj-a"
               >
-                {HONEY_PRODUCTS.map((p) => (
+                {HONEY_VARIETIES.map((p) => (
                   <option key={p.id} value={p.id} disabled={p.id === currentBId || p.id === currentCId}>
                     {p.name} ({p.sizes[0]?.pricePln} zł)
                   </option>
                 ))}
               </select>
 
-              <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
+              <div 
+                onClick={() => handleOpenDetail(rawA)}
+                className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1 cursor-pointer group/link hover:opacity-95 transition-all text-left"
+                title={`Przejdź do pełnej karty: ${currentA.name}`}
+              >
                 <img 
                   src={currentA.images?.[0] || currentA.imageUrl} 
                   alt={currentA.name}
-                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white group-hover/link:border-[#D9821E] group-hover/link:scale-105 transition-all shadow-2xs"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = currentA.imageUrl;
                   }}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1 sm:gap-1.5">
-                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif group-hover/link:text-[#D9821E] group-hover/link:underline transition-colors">
                       {currentA.name}
                     </h3>
                     {currentA.badge && (
@@ -315,16 +304,17 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                     <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
                     <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentA.rating.toFixed(1)}</span>
                     <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentA.reviewsCount})</span>
+                    <span className="hidden sm:inline text-[10px] text-[#D9821E] font-semibold ml-1">Karta →</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* COLUMN B HEADER */}
-            <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#D9821E]/40 shadow-2xs space-y-1.5 sm:space-y-2 relative">
+            <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#1B4332]/30 shadow-2xs space-y-1.5 sm:space-y-2 relative">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] sm:text-[11px] font-bold text-[#D9821E] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
-                  <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#D9821E] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">B</span>
+                <label className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                  <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">B</span>
                   <span className="hidden xs:inline">Miód B:</span>
                 </label>
                 <button
@@ -342,25 +332,29 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                 className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                 id="select-porownaj-b"
               >
-                {HONEY_PRODUCTS.map((p) => (
+                {HONEY_VARIETIES.map((p) => (
                   <option key={p.id} value={p.id} disabled={p.id === currentAId || p.id === currentCId}>
                     {p.name} ({p.sizes[0]?.pricePln} zł)
                   </option>
                 ))}
               </select>
 
-              <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
+              <div 
+                onClick={() => handleOpenDetail(rawB)}
+                className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1 cursor-pointer group/link hover:opacity-95 transition-all text-left"
+                title={`Przejdź do pełnej karty: ${currentB.name}`}
+              >
                 <img 
                   src={currentB.images?.[0] || currentB.imageUrl} 
                   alt={currentB.name}
-                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                  className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white group-hover/link:border-[#D9821E] group-hover/link:scale-105 transition-all shadow-2xs"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = currentB.imageUrl;
                   }}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1 sm:gap-1.5">
-                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                    <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif group-hover/link:text-[#D9821E] group-hover/link:underline transition-colors">
                       {currentB.name}
                     </h3>
                     {currentB.badge && (
@@ -376,6 +370,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                     <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
                     <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentB.rating.toFixed(1)}</span>
                     <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentB.reviewsCount})</span>
+                    <span className="hidden sm:inline text-[10px] text-[#D9821E] font-semibold ml-1">Karta →</span>
                   </div>
                 </div>
               </div>
@@ -383,10 +378,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
             {/* COLUMN C HEADER (IF PRESENT) OR ADD THIRD BUTTON */}
             {hasThreeProducts && currentC && rawC ? (
-              <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#2D6A4F]/40 shadow-2xs space-y-1.5 sm:space-y-2 relative">
+              <div className="bg-white p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-[#1B4332]/30 shadow-2xs space-y-1.5 sm:space-y-2 relative">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] sm:text-[11px] font-bold text-[#2D6A4F] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
-                    <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">C</span>
+                  <label className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                    <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[9px] sm:text-[10px] font-mono">C</span>
                     <span className="hidden xs:inline">Miód C:</span>
                   </label>
                   <div className="flex items-center gap-1 sm:gap-2">
@@ -410,33 +405,47 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
 
                 <select
                   value={currentCId || ''}
-                  onChange={(e) => setCurrentCId(e.target.value)}
+                  onChange={(e) => {
+                    const newId = e.target.value;
+                    if (rawC && onRemove) {
+                      onRemove(rawC);
+                    }
+                    setCurrentCId(newId);
+                    const newProd = HONEY_VARIETIES.find(p => p.id === newId);
+                    if (newProd && onAdd) {
+                      onAdd(newProd);
+                    }
+                  }}
                   className="w-full bg-[#FAF6EE] text-[11px] sm:text-xs font-bold text-[#241D17] py-1 sm:py-2 px-1.5 sm:px-2.5 rounded-lg sm:rounded-xl border border-[#D9821E]/30 focus:outline-[#1B4332] cursor-pointer truncate"
                   id="select-porownaj-c"
                 >
-                  {HONEY_PRODUCTS.map((p) => (
+                  {HONEY_VARIETIES.map((p) => (
                     <option key={p.id} value={p.id} disabled={p.id === currentAId || p.id === currentBId}>
                       {p.name} ({p.sizes[0]?.pricePln} zł)
                     </option>
                   ))}
                 </select>
 
-                <div className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1">
+                <div 
+                  onClick={() => handleOpenDetail(rawC)}
+                  className="flex gap-1.5 sm:gap-3 items-center pt-0.5 sm:pt-1 cursor-pointer group/link hover:opacity-95 transition-all text-left"
+                  title={`Przejdź do pełnej karty: ${currentC.name}`}
+                >
                   <img 
                     src={currentC.images?.[0] || currentC.imageUrl} 
                     alt={currentC.name}
-                    className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white"
+                    className="w-7 h-7 sm:w-11 sm:h-11 object-cover rounded-lg sm:rounded-xl border border-[#D9821E]/20 shrink-0 bg-white group-hover/link:border-[#D9821E] group-hover/link:scale-105 transition-all shadow-2xs"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = currentC.imageUrl;
                     }}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1 sm:gap-1.5">
-                      <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif">
+                      <h3 className="text-[11px] sm:text-sm font-bold text-[#241D17] leading-snug truncate font-serif group-hover/link:text-[#D9821E] group-hover/link:underline transition-colors">
                         {currentC.name}
                       </h3>
                       {currentC.badge && (
-                        <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#2D6A4F] text-white shrink-0">
+                        <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-[#D9821E] text-white shrink-0">
                           {currentC.badge}
                         </span>
                       )}
@@ -448,23 +457,47 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-amber-400 text-amber-400 shrink-0" />
                       <span className="font-bold text-[#241D17] text-[9px] sm:text-[10px]">{currentC.rating.toFixed(1)}</span>
                       <span className="hidden sm:inline text-[9px] text-[#7A6A5A]">({currentC.reviewsCount})</span>
+                      <span className="hidden sm:inline text-[10px] text-[#D9821E] font-semibold ml-1">Karta →</span>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="hidden lg:flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-dashed border-[#D9821E]/30 bg-white/70 hover:bg-white transition-colors text-center">
-                <p className="text-xs font-bold text-[#241D17] mb-1">Chcesz porównać 3 odmiany?</p>
-                <p className="text-[11px] text-[#7A6A5A] mb-2">Dodaj trzeci miód do pełnego zestawienia</p>
-                <button
-                  type="button"
-                  onClick={() => handleAddThird()}
-                  className="px-3 py-1.5 rounded-xl bg-[#1B4332] text-white text-xs font-bold hover:bg-[#143326] transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
-                  id="btn-dodaj-trzeci-miod"
-                >
-                  <Plus className="w-3.5 h-3.5 text-[#E6C065]" />
-                  <span>Dodaj 3. miód</span>
-                </button>
+              <div className="hidden lg:flex flex-col justify-between p-3 rounded-2xl border-2 border-dashed border-[#1B4332]/25 bg-white/80 hover:bg-white transition-all text-center">
+                <div className="flex items-center justify-between w-full">
+                  <label className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
+                    <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#1B4332]/15 text-[#1B4332] flex items-center justify-center text-[9px] sm:text-[10px] font-mono font-bold">C</span>
+                    <span>3. Miód (opcjonalny)</span>
+                  </label>
+                  <span className="text-[10px] text-[#8C7A6B] font-semibold">+ Wybierz</span>
+                </div>
+
+                <div className="py-2.5 space-y-1.5 w-full">
+                  <p className="text-xs font-bold text-[#241D17]">
+                    Chcesz porównać 3 odmiany?
+                  </p>
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleAddThird(e.target.value);
+                      }
+                    }}
+                    className="w-full bg-[#FAF6EE] text-xs font-bold text-[#1B4332] py-2 px-2.5 rounded-xl border border-[#1B4332]/35 hover:border-[#D9821E] focus:outline-[#1B4332] cursor-pointer shadow-2xs transition-colors"
+                    id="select-dodaj-trzeci-miod"
+                  >
+                    <option value="" disabled>🍯 Wybierz miód do porównania...</option>
+                    {HONEY_VARIETIES.filter(p => p.id !== currentAId && p.id !== currentBId).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.sizes[0]?.pricePln} zł)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <p className="text-[10px] text-[#7A6A5A] italic">
+                  Możesz w każdej chwili usunąć lub zmienić 3. pozycję
+                </p>
               </div>
             )}
 
@@ -496,15 +529,31 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
             </div>
 
             {!hasThreeProducts && (
-              <button
-                type="button"
-                onClick={() => handleAddThird()}
-                className="lg:hidden shrink-0 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#FAF6EE] text-[#1B4332] border border-[#1B4332]/30 text-[11px] sm:text-xs font-bold flex items-center gap-1 hover:bg-[#1B4332] hover:text-white transition-colors cursor-pointer"
-                title="Dodaj 3. miód do porównania"
-              >
-                <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                <span>+ 3. miód</span>
-              </button>
+              <div className="lg:hidden relative shrink-0">
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleAddThird(e.target.value);
+                    }
+                  }}
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                  aria-label="Wybierz trzeci miód do porównania"
+                >
+                  <option value="" disabled>Wybierz 3. miód do porównania...</option>
+                  {HONEY_VARIETIES.filter(p => p.id !== currentAId && p.id !== currentBId).map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.sizes[0]?.pricePln} zł)
+                    </option>
+                  ))}
+                </select>
+                <div
+                  className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg sm:rounded-xl bg-[#FAF6EE] text-[#1B4332] border border-[#1B4332]/30 text-[11px] sm:text-xs font-bold flex items-center gap-1 hover:bg-[#1B4332] hover:text-white transition-colors cursor-pointer shadow-2xs"
+                >
+                  <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D9821E]" />
+                  <span>+ Wybierz 3. miód</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -538,16 +587,16 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       <span>{currentA.name}</span>
                     </div>
                   </th>
-                  <th className={`${hasThreeProducts ? 'w-[26%]' : 'w-3/8'} p-3.5 px-4 border-l border-[#D9821E]/20 text-[#D9821E] font-serif text-sm`}>
+                  <th className={`${hasThreeProducts ? 'w-[26%]' : 'w-3/8'} p-3.5 px-4 border-l border-[#D9821E]/20 text-[#1B4332] font-serif text-sm`}>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-3.5 h-3.5 rounded-full bg-[#D9821E] text-white flex items-center justify-center text-[9px] font-sans font-bold">B</span>
+                      <span className="w-3.5 h-3.5 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[9px] font-sans font-bold">B</span>
                       <span>{currentB.name}</span>
                     </div>
                   </th>
                   {hasThreeProducts && currentC && (
-                    <th className="w-[26%] p-3.5 px-4 border-l border-[#D9821E]/20 text-[#2D6A4F] font-serif text-sm">
+                    <th className="w-[26%] p-3.5 px-4 border-l border-[#D9821E]/20 text-[#1B4332] font-serif text-sm">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3.5 h-3.5 rounded-full bg-[#2D6A4F] text-white flex items-center justify-center text-[9px] font-sans font-bold">C</span>
+                        <span className="w-3.5 h-3.5 rounded-full bg-[#1B4332] text-white flex items-center justify-center text-[9px] font-sans font-bold">C</span>
                         <span>{currentC.name}</span>
                       </div>
                     </th>
@@ -596,7 +645,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                               key={lvl} 
                               className={`h-2.5 flex-1 rounded-full ${
                                 lvl <= currentB.tasteProfile.sweetness 
-                                  ? 'bg-[#D9821E]' 
+                                  ? 'bg-[#1B4332]' 
                                   : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                               }`} 
                             />
@@ -614,7 +663,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                                 key={lvl} 
                                 className={`h-2.5 flex-1 rounded-full ${
                                   lvl <= currentC.tasteProfile.sweetness 
-                                    ? 'bg-[#2D6A4F]' 
+                                    ? 'bg-[#1B4332]' 
                                     : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                                 }`} 
                               />
@@ -656,7 +705,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                               key={lvl} 
                               className={`h-2.5 flex-1 rounded-full ${
                                 lvl <= currentB.tasteProfile.acidity 
-                                  ? 'bg-[#D9821E]' 
+                                  ? 'bg-[#1B4332]' 
                                   : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                               }`} 
                             />
@@ -674,7 +723,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                                 key={lvl} 
                                 className={`h-2.5 flex-1 rounded-full ${
                                   lvl <= currentC.tasteProfile.acidity 
-                                    ? 'bg-[#2D6A4F]' 
+                                    ? 'bg-[#1B4332]' 
                                     : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                                 }`} 
                               />
@@ -716,7 +765,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                               key={lvl} 
                               className={`h-2.5 flex-1 rounded-full ${
                                 lvl <= currentB.tasteProfile.aroma 
-                                  ? 'bg-[#D9821E]' 
+                                  ? 'bg-[#1B4332]' 
                                   : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                               }`} 
                             />
@@ -734,7 +783,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                                 key={lvl} 
                                 className={`h-2.5 flex-1 rounded-full ${
                                   lvl <= currentC.tasteProfile.aroma 
-                                    ? 'bg-[#2D6A4F]' 
+                                    ? 'bg-[#1B4332]' 
                                     : 'bg-[#FAF6EE] border border-[#D9821E]/20'
                                 }`} 
                               />
@@ -763,7 +812,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                               type="button"
                               onClick={() => {
                                 onClose();
-                                navigate(`/?nuta=${encodeURIComponent(n)}#katalog`);
+                                navigate(`/sklep?nuta=${encodeURIComponent(n)}`);
                               }}
                               className="px-2 py-0.5 rounded-full bg-[#FAF6EE] hover:bg-[#1B4332] text-[10px] font-bold text-[#1B4332] hover:text-white border border-[#D9821E]/20 transition-all cursor-pointer shadow-2xs flex items-center gap-1 group"
                               title={`Filtruj katalog po nucie: ${n}`}
@@ -782,9 +831,9 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                               type="button"
                               onClick={() => {
                                 onClose();
-                                navigate(`/?nuta=${encodeURIComponent(n)}#katalog`);
+                                navigate(`/sklep?nuta=${encodeURIComponent(n)}`);
                               }}
-                              className="px-2 py-0.5 rounded-full bg-[#FAF6EE] hover:bg-[#D9821E] text-[10px] font-bold text-[#8E5116] hover:text-white border border-[#D9821E]/20 transition-all cursor-pointer shadow-2xs flex items-center gap-1 group"
+                              className="px-2 py-0.5 rounded-full bg-[#FAF6EE] hover:bg-[#1B4332] text-[10px] font-bold text-[#1B4332] hover:text-white border border-[#D9821E]/20 transition-all cursor-pointer shadow-2xs flex items-center gap-1 group"
                               title={`Filtruj katalog po nucie: ${n}`}
                             >
                               <span>{n}</span>
@@ -802,9 +851,9 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                                 type="button"
                                 onClick={() => {
                                   onClose();
-                                  navigate(`/?nuta=${encodeURIComponent(n)}#katalog`);
+                                  navigate(`/sklep?nuta=${encodeURIComponent(n)}`);
                                 }}
-                                className="px-2 py-0.5 rounded-full bg-[#FAF6EE] hover:bg-[#2D6A4F] text-[10px] font-bold text-[#2D6A4F] hover:text-white border border-[#D9821E]/20 transition-all cursor-pointer shadow-2xs flex items-center gap-1 group"
+                                className="px-2 py-0.5 rounded-full bg-[#FAF6EE] hover:bg-[#1B4332] text-[10px] font-bold text-[#1B4332] hover:text-white border border-[#D9821E]/20 transition-all cursor-pointer shadow-2xs flex items-center gap-1 group"
                                 title={`Filtruj katalog po nucie: ${n}`}
                               >
                                 <span>{n}</span>
@@ -868,7 +917,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <div className="space-y-1.5">
                           {currentB.sizesList.map((s, idx) => (
                             <div key={idx} className="flex items-baseline justify-between bg-[#FAF6EE] px-2.5 py-1.5 rounded-lg border border-[#D9821E]/10">
-                              <span className="font-bold text-[#241D17]">{s.gram}: <strong className="text-[#D9821E]">{s.price} zł</strong></span>
+                              <span className="font-bold text-[#241D17]">{s.gram}: <strong className="text-[#1B4332]">{s.price} zł</strong></span>
                               <span className="text-[10px] text-[#7A6A5A] font-mono">({Math.round((s.price / s.weightGrams) * 1000)} zł/kg)</span>
                             </div>
                           ))}
@@ -879,7 +928,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           <div className="space-y-1.5">
                             {currentC.sizesList.map((s, idx) => (
                               <div key={idx} className="flex items-baseline justify-between bg-[#FAF6EE] px-2.5 py-1.5 rounded-lg border border-[#D9821E]/10">
-                                <span className="font-bold text-[#241D17]">{s.gram}: <strong className="text-[#2D6A4F]">{s.price} zł</strong></span>
+                                <span className="font-bold text-[#241D17]">{s.gram}: <strong className="text-[#1B4332]">{s.price} zł</strong></span>
                                 <span className="text-[10px] text-[#7A6A5A] font-mono">({Math.round((s.price / s.weightGrams) * 1000)} zł/kg)</span>
                               </div>
                             ))}
@@ -888,127 +937,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       )}
                     </tr>
 
-                    {/* Szybki Zakup */}
-                    <tr className="bg-white">
-                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
-                        Szybki Zakup z Porównywarki
-                      </td>
-                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <div className="space-y-2">
-                          <div className="flex gap-1.5">
-                            {currentA.sizesList.map((g, i) => (
-                              <button
-                                key={i}
-                                type="button"
-                                onClick={() => setSelectedSizeAIdx(i)}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                                  selectedSizeAIdx === i 
-                                    ? 'bg-[#1B4332] text-white shadow-xs ring-1 ring-[#1B4332]' 
-                                    : 'bg-[#FAF6EE] text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
-                                }`}
-                              >
-                                {g.gram}
-                              </button>
-                            ))}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleAddCartA}
-                            className="w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-[#1B4332] hover:bg-[#143326] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                          >
-                            {addedA ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-[#E6C065]" />
-                                <span>Dodano do koszyka!</span>
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="w-3.5 h-3.5" />
-                                <span>Kup {sizeA?.price} zł ({sizeA?.gram})</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </td>
 
-                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <div className="space-y-2">
-                          <div className="flex gap-1.5">
-                            {currentB.sizesList.map((g, i) => (
-                              <button
-                                key={i}
-                                type="button"
-                                onClick={() => setSelectedSizeBIdx(i)}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                                  selectedSizeBIdx === i 
-                                    ? 'bg-[#D9821E] text-white shadow-xs ring-1 ring-[#D9821E]' 
-                                    : 'bg-[#FAF6EE] text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
-                                }`}
-                              >
-                                {g.gram}
-                              </button>
-                            ))}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleAddCartB}
-                            className="w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-[#D9821E] hover:bg-[#B36814] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                          >
-                            {addedB ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-white" />
-                                <span>Dodano do koszyka!</span>
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="w-3.5 h-3.5" />
-                                <span>Kup {sizeB?.price} zł ({sizeB?.gram})</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </td>
-
-                      {hasThreeProducts && currentC && (
-                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                          <div className="space-y-2">
-                            <div className="flex gap-1.5">
-                              {currentC.sizesList.map((g, i) => (
-                                <button
-                                  key={i}
-                                  type="button"
-                                  onClick={() => setSelectedSizeCIdx(i)}
-                                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                                    selectedSizeCIdx === i 
-                                      ? 'bg-[#2D6A4F] text-white shadow-xs ring-1 ring-[#2D6A4F]' 
-                                      : 'bg-[#FAF6EE] text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
-                                  }`}
-                                >
-                                  {g.gram}
-                                </button>
-                              ))}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={handleAddCartC}
-                              className="w-full py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-[#2D6A4F] hover:bg-[#1E4D38] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                            >
-                              {addedC ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-[#E6C065]" />
-                                  <span>Dodano do koszyka!</span>
-                                </>
-                              ) : (
-                                <>
-                                  <ShoppingBag className="w-3.5 h-3.5" />
-                                  <span>Kup {sizeC?.price} zł ({sizeC?.gram})</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
                   </>
                 )}
 
@@ -1041,7 +970,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <ul className="space-y-1.5">
                           {currentB.healthBenefits.map((benefit, i) => (
                             <li key={i} className="flex items-start gap-1.5 leading-tight">
-                              <Check className="w-3.5 h-3.5 text-[#D9821E] shrink-0 mt-0.5" />
+                              <Check className="w-3.5 h-3.5 text-[#1B4332] shrink-0 mt-0.5" />
                               <span>{benefit}</span>
                             </li>
                           ))}
@@ -1052,7 +981,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           <ul className="space-y-1.5">
                             {currentC.healthBenefits.map((benefit, i) => (
                               <li key={i} className="flex items-start gap-1.5 leading-tight">
-                                <Check className="w-3.5 h-3.5 text-[#2D6A4F] shrink-0 mt-0.5" />
+                                <Check className="w-3.5 h-3.5 text-[#1B4332] shrink-0 mt-0.5" />
                                 <span>{benefit}</span>
                               </li>
                             ))}
@@ -1071,12 +1000,12 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                       </td>
                       <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.waterContent}</span>
+                        <span className="font-bold text-[#1B4332] text-sm">{currentB.labAnalysis.waterContent}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                       </td>
                       {hasThreeProducts && currentC && (
                         <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                          <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.waterContent}</span>
+                          <span className="font-bold text-[#1B4332] text-sm">{currentC.labAnalysis.waterContent}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 20% – bezpieczny, dojrzały)</span>
                         </td>
                       )}
@@ -1092,12 +1021,12 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                       </td>
                       <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.diastaseNumber}</span>
+                        <span className="font-bold text-[#1B4332] text-sm">{currentB.labAnalysis.diastaseNumber}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                       </td>
                       {hasThreeProducts && currentC && (
                         <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                          <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.diastaseNumber}</span>
+                          <span className="font-bold text-[#1B4332] text-sm">{currentC.labAnalysis.diastaseNumber}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: min 8.0 – enzymy zachowane)</span>
                         </td>
                       )}
@@ -1113,34 +1042,13 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
                       </td>
                       <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <span className="font-bold text-[#D9821E] text-sm">{currentB.labAnalysis.hmf}</span>
+                        <span className="font-bold text-[#1B4332] text-sm">{currentB.labAnalysis.hmf}</span>
                         <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
                       </td>
                       {hasThreeProducts && currentC && (
                         <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                          <span className="font-bold text-[#2D6A4F] text-sm">{currentC.labAnalysis.hmf}</span>
+                          <span className="font-bold text-[#1B4332] text-sm">{currentC.labAnalysis.hmf}</span>
                           <span className="text-[10px] text-[#7A6A5A] block">(Norma PN: max 40 mg/kg – niepodgrzewany)</span>
-                        </td>
-                      )}
-                    </tr>
-
-                    {/* Region */}
-                    <tr>
-                      <td className="p-2.5 sm:p-3.5 px-2 sm:px-4 font-semibold text-[#241D17] sticky left-0 bg-[#FAF8F5] z-10 border-r border-[#D9821E]/20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] text-[11px] sm:text-xs">
-                        Pochodzenie & Zbiory
-                      </td>
-                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <p className="font-bold text-[#241D17]">{currentA.region}</p>
-                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentA.harvestYear} • 100% Pasieka Usza</p>
-                      </td>
-                      <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                        <p className="font-bold text-[#241D17]">{currentB.region}</p>
-                        <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentB.harvestYear} • 100% Pasieka Usza</p>
-                      </td>
-                      {hasThreeProducts && currentC && (
-                        <td className="p-2.5 sm:p-3.5 px-2.5 sm:px-4 border-l border-[#D9821E]/15 text-[11px] sm:text-xs">
-                          <p className="font-bold text-[#241D17]">{currentC.region}</p>
-                          <p className="text-[10px] text-[#7A6A5A]">Zbiór {currentC.harvestYear} • 100% Pasieka Usza</p>
                         </td>
                       )}
                     </tr>
@@ -1167,29 +1075,41 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <span className="text-[11px] text-[#7A6A5A]">Do czego najlepiej pasuje?</span>
                       </td>
                       <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
-                        <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
-                          „{currentA.pairing}”
-                        </div>
-                        <div className="mt-2 text-[11px] text-[#594D42]">
-                          <strong className="text-[#241D17]">Wskazówka mistrza:</strong> Idealnie komponuje się z białymi serami, chrupiącym żytnim pieczywem oraz naparami ziołowymi.
-                        </div>
+                        {(currentA.pairing || currentA.detailedUsage?.culinaryIdeas?.[0]) && (
+                          <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
+                            „{currentA.pairing || currentA.detailedUsage?.culinaryIdeas?.[0]}”
+                          </div>
+                        )}
+                        {currentA.masterTip && (
+                          <div className="mt-2 text-[11px] text-[#594D42]">
+                            <strong className="text-[#1B4332]">Wskazówka mistrza:</strong> {currentA.masterTip}
+                          </div>
+                        )}
                       </td>
                       <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
-                        <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
-                          „{currentB.pairing}”
-                        </div>
-                        <div className="mt-2 text-[11px] text-[#594D42]">
-                          <strong className="text-[#241D17]">Wskazówka mistrza:</strong> Znakomity do dojrzewających serów, deserów orzechowych oraz wieczornej herbaty (do 40°C).
-                        </div>
+                        {(currentB.pairing || currentB.detailedUsage?.culinaryIdeas?.[0]) && (
+                          <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
+                            „{currentB.pairing || currentB.detailedUsage?.culinaryIdeas?.[0]}”
+                          </div>
+                        )}
+                        {currentB.masterTip && (
+                          <div className="mt-2 text-[11px] text-[#594D42]">
+                            <strong className="text-[#1B4332]">Wskazówka mistrza:</strong> {currentB.masterTip}
+                          </div>
+                        )}
                       </td>
                       {hasThreeProducts && currentC && (
                         <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/15 bg-white align-top text-[11px] sm:text-xs">
-                          <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
-                            „{currentC.pairing}”
-                          </div>
-                          <div className="mt-2 text-[11px] text-[#594D42]">
-                            <strong className="text-[#241D17]">Wskazówka mistrza:</strong> Świetny do owoców, sałatek oraz jako naturalny słodzik do koktajli i dressingu.
-                          </div>
+                          {(currentC.pairing || currentC.detailedUsage?.culinaryIdeas?.[0]) && (
+                            <div className="bg-[#FAF6EE]/80 p-3 rounded-xl border border-[#D9821E]/15 text-[#241D17] font-serif italic text-xs leading-relaxed">
+                              „{currentC.pairing || currentC.detailedUsage?.culinaryIdeas?.[0]}”
+                            </div>
+                          )}
+                          {currentC.masterTip && (
+                            <div className="mt-2 text-[11px] text-[#594D42]">
+                              <strong className="text-[#1B4332]">Wskazówka mistrza:</strong> {currentC.masterTip}
+                            </div>
+                          )}
                         </td>
                       )}
                     </tr>
@@ -1235,10 +1155,10 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                       <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-2.5 sm:space-y-3">
                         <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#D9821E]/25 shadow-2xs">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#D9821E]">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1B4332]">
                               Kiedy wybrać {currentB.name}:
                             </span>
-                            <span className="w-2 h-2 rounded-full bg-[#D9821E]" />
+                            <span className="w-2 h-2 rounded-full bg-[#1B4332]" />
                           </div>
                           <p className="text-xs text-[#3A332A] leading-relaxed font-medium">
                             {currentB.advisorVerdict}
@@ -1248,23 +1168,23 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                         <button
                           type="button"
                           onClick={() => handleOpenDetail(rawB)}
-                          className="w-full py-3 px-4 rounded-xl bg-[#D9821E] hover:bg-[#B36814] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+                          className="w-full py-3 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
                           id={`btn-pelny-opis-${currentB.id}`}
                         >
                           <span>Zobacz pełny opis odmiany</span>
-                          <ExternalLink className="w-3.5 h-3.5 text-white group-hover:translate-x-0.5 transition-transform" />
+                          <ExternalLink className="w-3.5 h-3.5 text-[#E6C065] group-hover:translate-x-0.5 transition-transform" />
                         </button>
                       </td>
 
                       {/* Werdykt Miód C (if present) */}
                       {hasThreeProducts && currentC && rawC && (
                         <td className="p-2.5 sm:p-4 px-2.5 sm:px-4 border-l border-[#D9821E]/20 bg-white align-top space-y-2.5 sm:space-y-3">
-                          <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#2D6A4F]/30 shadow-2xs">
+                          <div className="bg-[#FAF6EE] p-3.5 rounded-2xl border border-[#D9821E]/25 shadow-2xs">
                             <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2D6A4F]">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-[#1B4332]">
                                 Kiedy wybrać {currentC.name}:
                               </span>
-                              <span className="w-2 h-2 rounded-full bg-[#2D6A4F]" />
+                              <span className="w-2 h-2 rounded-full bg-[#1B4332]" />
                             </div>
                             <p className="text-xs text-[#3A332A] leading-relaxed font-medium">
                               {currentC.advisorVerdict}
@@ -1274,7 +1194,7 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
                           <button
                             type="button"
                             onClick={() => handleOpenDetail(rawC)}
-                            className="w-full py-3 px-4 rounded-xl bg-[#2D6A4F] hover:bg-[#1E4D38] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
+                            className="w-full py-3 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm group"
                             id={`btn-pelny-opis-${currentC.id}`}
                           >
                             <span>Zobacz pełny opis odmiany</span>
@@ -1308,6 +1228,177 @@ export const ComparisonModal: React.FC<ComparisonModalProps> = ({
             </button>
           </div>
 
+        </div>
+
+        {/* PERSISTENT STICKY QUICK BUY FOOTER BAR - ALWAYS VISIBLE ACROSS ALL TABS */}
+        <div className="bg-white border-t border-[#D9821E]/25 p-2.5 sm:p-3.5 shrink-0 shadow-[0_-6px_25px_rgba(0,0,0,0.06)] z-20">
+          <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2 text-[10px] sm:text-xs">
+            <span className="font-bold uppercase tracking-wider text-[#1B4332] flex items-center gap-1.5">
+              <ShoppingBag className="w-3.5 h-3.5 text-[#D9821E]" />
+              <span>Szybki zakup porównywanych miodów:</span>
+            </span>
+            <span className="text-[10px] text-[#7A6A5A] hidden sm:inline">
+              Wybierz gramaturę i dodaj bezpośrednio do koszyka
+            </span>
+          </div>
+
+          <div className={`grid ${hasThreeProducts ? 'grid-cols-3 gap-1.5' : 'grid-cols-2 lg:grid-cols-3 gap-2'} sm:gap-4 items-stretch`}>
+            {/* BUY ACTION A */}
+            <div className="bg-[#FAF8F5] p-1.5 sm:p-2.5 rounded-xl border border-[#D9821E]/20 flex flex-col justify-between gap-1.5">
+              <div className="flex items-center justify-between gap-1 min-w-0">
+                <span className="text-[10px] sm:text-xs font-bold text-[#241D17] truncate font-serif">
+                  A: {currentA.name}
+                </span>
+                <span className="text-[10px] font-bold text-[#1B4332] shrink-0">
+                  {sizeA?.price} zł
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                <div className="flex gap-1 shrink-0">
+                  {currentA.sizesList.map((g, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedSizeAIdx(i)}
+                      className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
+                        selectedSizeAIdx === i
+                          ? 'bg-[#1B4332] text-white shadow-2xs'
+                          : 'bg-white text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
+                      }`}
+                    >
+                      {g.gram}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddCartA}
+                  className="flex-1 py-1 sm:py-1.5 px-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold text-white bg-[#1B4332] hover:bg-[#143326] transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer active:scale-95 min-w-0"
+                  id={`btn-kup-modal-${currentA.id}`}
+                >
+                  {addedA ? (
+                    <>
+                      <Check className="w-3 h-3 text-[#E6C065] shrink-0" />
+                      <span className="truncate">Dodano!</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-3 h-3 text-[#E6C065] shrink-0" />
+                      <span className="truncate">Do koszyka</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* BUY ACTION B */}
+            <div className="bg-[#FAF8F5] p-1.5 sm:p-2.5 rounded-xl border border-[#D9821E]/20 flex flex-col justify-between gap-1.5">
+              <div className="flex items-center justify-between gap-1 min-w-0">
+                <span className="text-[10px] sm:text-xs font-bold text-[#241D17] truncate font-serif">
+                  B: {currentB.name}
+                </span>
+                <span className="text-[10px] font-bold text-[#1B4332] shrink-0">
+                  {sizeB?.price} zł
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                <div className="flex gap-1 shrink-0">
+                  {currentB.sizesList.map((g, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedSizeBIdx(i)}
+                      className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
+                        selectedSizeBIdx === i
+                          ? 'bg-[#1B4332] text-white shadow-2xs'
+                          : 'bg-white text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
+                      }`}
+                    >
+                      {g.gram}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddCartB}
+                  className="flex-1 py-1 sm:py-1.5 px-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold text-white bg-[#1B4332] hover:bg-[#143326] transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer active:scale-95 min-w-0"
+                  id={`btn-kup-modal-${currentB.id}`}
+                >
+                  {addedB ? (
+                    <>
+                      <Check className="w-3 h-3 text-[#E6C065] shrink-0" />
+                      <span className="truncate">Dodano!</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-3 h-3 text-[#E6C065] shrink-0" />
+                      <span className="truncate">Do koszyka</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* BUY ACTION C (IF 3 PRODUCTS) */}
+            {hasThreeProducts && currentC && rawC ? (
+              <div className="bg-[#FAF8F5] p-1.5 sm:p-2.5 rounded-xl border border-[#D9821E]/20 flex flex-col justify-between gap-1.5">
+                <div className="flex items-center justify-between gap-1 min-w-0">
+                  <span className="text-[10px] sm:text-xs font-bold text-[#241D17] truncate font-serif">
+                    C: {currentC.name}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#1B4332] shrink-0">
+                    {sizeC?.price} zł
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1 sm:gap-1.5">
+                  <div className="flex gap-1 shrink-0">
+                    {currentC.sizesList.map((g, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setSelectedSizeCIdx(i)}
+                        className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
+                          selectedSizeCIdx === i
+                            ? 'bg-[#1B4332] text-white shadow-2xs'
+                            : 'bg-white text-[#594D42] border border-[#D9821E]/20 hover:border-[#D9821E]'
+                        }`}
+                      >
+                        {g.gram}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddCartC}
+                    className="flex-1 py-1 sm:py-1.5 px-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold text-white bg-[#1B4332] hover:bg-[#143326] transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer active:scale-95 min-w-0"
+                    id={`btn-kup-modal-${currentC.id}`}
+                  >
+                    {addedC ? (
+                      <>
+                        <Check className="w-3 h-3 text-[#E6C065] shrink-0" />
+                        <span className="truncate">Dodano!</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag className="w-3 h-3 text-[#E6C065] shrink-0" />
+                        <span className="truncate">Do koszyka</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="hidden lg:flex items-center justify-center p-2 rounded-xl border border-dashed border-[#D9821E]/25 text-[11px] text-[#7A6A5A]">
+                <span>Wybierz 3. miód u góry, aby porównać zakup</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

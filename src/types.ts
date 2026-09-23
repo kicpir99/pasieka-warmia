@@ -112,6 +112,7 @@ export interface CartItem {
   weightGrams?: number;
   pricePln: number;
   quantity: number;
+  subscriptionInterval?: number;
 }
 
 export type HealthIntentFilter = 'wszystkie' | 'odpornosc' | 'lagodne' | 'koneser' | 'prezent';

@@ -41,11 +41,28 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ displayResolution }) =
               <span>Nadzór Powiatowego Lekarza Weterynarii</span>
             </div>
           </div>
+
+          {/* Szybki skok do wizualizacji 3D */}
+          <div className="pt-2 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                document.getElementById('wizualna-droga-miodu')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D9821E] to-[#E5983A] hover:from-[#C77316] hover:to-[#D9821E] text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md hover:shadow-lg active:scale-[0.98] ring-2 ring-[#E5983A]/30"
+              id="btn-skok-droga-3d"
+              title="Przejdź bezpośrednio do interaktywnej drogi miodu 3D"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+              <span>Zobacz Wizualną Drogę Miodu 3D</span>
+              <span className="text-white/80">↓</span>
+            </button>
+          </div>
         </div>
       </section>
 
       {/* Main Story Content */}
-      <section className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 -mt-8 relative z-20`}>
+      <section id="historia-pasieki" className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 scroll-mt-24`}>
         <div className="bg-white rounded-3xl p-6 sm:p-12 border border-[#E7DCCE] shadow-xl space-y-10">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -128,7 +145,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ displayResolution }) =
       </section>
 
       {/* 3D Scrollytelling Section: HoneyCraftingJourney */}
-      <section className="mt-16">
+      <section id="wizualna-droga-miodu" className="mt-16 scroll-mt-24">
         <div className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 mb-6 text-center space-y-2`}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFE4D2] text-[#713F0C] text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-[#A05C12]" />

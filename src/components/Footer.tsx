@@ -14,19 +14,19 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
           
           {/* Brand & Mission */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-3.5 group cursor-pointer">
-              <div className="w-14 h-14 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-1.5 shadow-sm border border-[#E7DCCE] group-hover:border-[#E5983A] transition-colors shrink-0">
+            <Link to="/" className="flex items-center gap-4 group cursor-pointer">
+              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-2 shadow-md border border-[#E7DCCE] group-hover:border-[#E5983A] group-hover:scale-105 transition-all shrink-0">
                 <img 
                   src="/assets/footer-pasieka-usza.png" 
                   alt="Pasieka Usza - Logo" 
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div>
-                <span className="font-serif text-xl font-bold tracking-tight text-[#FAF5ED] group-hover:text-[#E5983A] transition-colors block">
+              <div className="space-y-1">
+                <span className="font-serif text-2xl font-bold tracking-tight text-[#FAF5ED] group-hover:text-[#E5983A] transition-colors block leading-tight">
                   Pasieka Usza
                 </span>
-                <span className="block text-[11px] text-[#B5A896]">
+                <span className="block text-xs text-[#B5A896]">
                   Pasieka Wędrowna • Ciechów
                 </span>
               </div>

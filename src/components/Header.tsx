@@ -19,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [treasuresMenuOpen, setTreasuresMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navigateToCatalog = (category?: string, intent?: string) => {
     setMegaMenuOpen(false);
+    setTreasuresMenuOpen(false);
     setMobileMenuOpen(false);
 
     const searchParams = new URLSearchParams();
@@ -114,60 +116,29 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Mega Menu Dropdown */}
               {megaMenuOpen && (
-                <div className="absolute top-full -left-20 w-[780px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="grid grid-cols-4 gap-5 pb-5 border-b border-[#EADFCF]">
+                <div className="absolute top-full -left-12 w-[680px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-6 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="grid grid-cols-3 gap-6 pb-5 border-b border-[#EADFCF]">
                     
-                    {/* Kolumna 1: Miody Odmianowe */}
+                    {/* Kolumna 1: Miody Wiosenne */}
                     <div className="space-y-2.5">
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog('wszystkie')}
+                        onClick={() => navigateToCatalog('wiosenne')}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🍯 Odmianowe
+                        🌸 Zbiory Wiosenne
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/miod-lipowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Lipowy
+                          <Link to="/produkt/miod-rzepakowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Rzepakowy (kremowany)
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/miod-wrzosowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Wrzosowy
+                          <Link to="/produkt/miod-mniszkowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Mniszkowy
                           </Link>
                         </li>
-                        <li>
-                          <Link to="/produkt/miod-ze-spadzi-iglastej" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód ze Spadzi Iglastej
-                          </Link>
-                        </li>
-                        <li>
-                          <Link to="/produkt/miod-gryczany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Gryczany
-                          </Link>
-                        </li>
-                      </ul>
-                      <button
-                        type="button"
-                        onClick={() => navigateToCatalog('wszystkie')}
-                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>Wszystkie 12 odmian</span>
-                        <span>→</span>
-                      </button>
-                    </div>
-
-                    {/* Kolumna 2: Kwiatowe & Leśne */}
-                    <div className="space-y-2.5">
-                      <button
-                        type="button"
-                        onClick={() => navigateToCatalog('letnie')}
-                        className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
-                      >
-                        🌸 Kwiatowe & Leśne
-                      </button>
-                      <ul className="space-y-1.5 text-xs">
                         <li>
                           <Link to="/produkt/miod-akacjowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
                             Miód Akacjowy
@@ -178,9 +149,30 @@ export const Header: React.FC<HeaderProps> = ({
                             Miód Wielokwiatowy
                           </Link>
                         </li>
+                      </ul>
+                      <button
+                        type="button"
+                        onClick={() => navigateToCatalog('wiosenne')}
+                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer pt-1"
+                      >
+                        <span>Zobacz zbiory wiosenne</span>
+                        <span>→</span>
+                      </button>
+                    </div>
+
+                    {/* Kolumna 2: Miody Letnie */}
+                    <div className="space-y-2.5">
+                      <button
+                        type="button"
+                        onClick={() => navigateToCatalog('letnie')}
+                        className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
+                      >
+                        ☀️ Zbiory Letnie
+                      </button>
+                      <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/miod-lesny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Miód Leśny
+                          <Link to="/produkt/miod-lipowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Lipowy (Aleje Ciechów)
                           </Link>
                         </li>
                         <li>
@@ -188,88 +180,64 @@ export const Header: React.FC<HeaderProps> = ({
                             Miód Malinowy
                           </Link>
                         </li>
+                        <li>
+                          <Link to="/produkt/miod-faceliowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Faceliowy
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/produkt/miod-nawlociowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Nawłociowy
+                          </Link>
+                        </li>
                       </ul>
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog('wiosenne')}
-                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                        onClick={() => navigateToCatalog('letnie')}
+                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer pt-1"
                       >
-                        <span>Zbiory wiosenne & letnie</span>
+                        <span>Zobacz zbiory letnie</span>
                         <span>→</span>
                       </button>
                     </div>
 
-                    {/* Kolumna 3: Skarby Ula (Apiterapia) */}
+                    {/* Kolumna 3: Miody Leśne & Spadziowe */}
                     <div className="space-y-2.5">
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog(undefined, 'odpornosc')}
+                        onClick={() => navigateToCatalog('lesne-spadz')}
                         className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
                       >
-                        🛡️ Skarby Ula (Apiterapia)
+                        🌲 Leśne & Spadź
                       </button>
                       <ul className="space-y-1.5 text-xs">
                         <li>
-                          <Link to="/produkt/pierzga-pszczela" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Pierzga Pszczela
+                          <Link to="/produkt/miod-ze-spadzi-iglastej" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód ze Spadzi Iglastej
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/propolis-kit" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Propolis (Kit pszczeli)
+                          <Link to="/produkt/miod-lesny" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Leśny
                           </Link>
                         </li>
                         <li>
-                          <Link to="/produkt/pylek-pszczeli" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
-                            Pyłek kwiatowy pszczeli
-                          </Link>
-                        </li>
-                      </ul>
-                      <Link
-                        to="/oferta"
-                        onClick={() => setMegaMenuOpen(false)}
-                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>Przewodnik po apiterapii</span>
-                        <span>→</span>
-                      </Link>
-                    </div>
-
-                    {/* Kolumna 4: Manufaktura & Edukacja */}
-                    <div className="space-y-2.5">
-                      <Link
-                        to="/oferta"
-                        onClick={() => setMegaMenuOpen(false)}
-                        className="text-[11px] uppercase font-bold text-[#8C7A6B] hover:text-[#1B4332] tracking-wider block text-left transition-colors cursor-pointer"
-                      >
-                        🐝 Manufaktura & Oferta
-                      </Link>
-                      <ul className="space-y-1.5 text-xs">
-                        <li>
-                          <Link
-                            to="/produkt/swieca-wosk-pszczeli"
-                            onClick={() => setMegaMenuOpen(false)}
-                            className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
-                          >
-                            Świece z Wosku Pszczelego
+                          <Link to="/produkt/miod-gryczany" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Gryczany
                           </Link>
                         </li>
                         <li>
-                          <Link
-                            to="/produkt/odklad-szkolenie-pszczele"
-                            onClick={() => setMegaMenuOpen(false)}
-                            className="text-[#3D3428] hover:text-[#8B5337] font-medium block text-left cursor-pointer"
-                          >
-                            Odkłady Pszczele i Szkolenia
+                          <Link to="/produkt/miod-wrzosowy" onClick={() => setMegaMenuOpen(false)} className="text-[#3D3428] hover:text-[#8B5337] font-medium block">
+                            Miód Wrzosowy
                           </Link>
                         </li>
                       </ul>
                       <button
                         type="button"
-                        onClick={() => navigateToCatalog(undefined, 'prezent')}
-                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                        onClick={() => navigateToCatalog('lesne-spadz')}
+                        className="text-[11px] font-bold text-[#1B4332] hover:underline inline-flex items-center gap-1 cursor-pointer pt-1"
                       >
-                        <span>Oferta upominkowa</span>
+                        <span>Zobacz leśne & spadź</span>
                         <span>→</span>
                       </button>
                     </div>
@@ -277,35 +245,145 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
 
                   {/* Mega Menu Footer Banner */}
-                  <div className="pt-3 flex items-center justify-between text-xs">
-                    <span className="text-[#695D4E] flex items-center gap-1.5 font-medium">
-                      <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
-                      Nie masz pewności, który miód odpowiada Twoim potrzebom?
-                    </span>
+                  <div className="pt-3.5 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#695D4E] font-medium">
+                        Szukasz propolisu, pierzgi lub świec?
+                      </span>
+                      <Link
+                        to="/oferta"
+                        onClick={() => setMegaMenuOpen(false)}
+                        className="font-bold text-[#8B5337] hover:text-[#6A3D27] hover:underline inline-flex items-center gap-1 bg-[#F1E6D8] hover:bg-[#E8DCCB] px-2.5 py-1 rounded-lg transition-colors"
+                      >
+                        <span>Skarby Ula</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => {
                         setMegaMenuOpen(false);
                         onOpenQuiz();
                       }}
-                      className="text-xs font-bold text-[#1B4332] hover:text-[#8B5337] transition-colors flex items-center gap-1 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-[#DFCBB5] shadow-2xs hover:shadow-xs"
+                      className="text-xs font-bold text-[#1B4332] hover:text-[#8B5337] transition-colors flex items-center gap-1.5 cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-[#DFCBB5] shadow-2xs hover:shadow-xs"
                     >
-                      <span>Uruchom Quiz Doboru Miodu</span>
-                      <ArrowRight className="w-3 h-3" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+                      <span>Quiz Doboru Miodu</span>
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            <Link
-              to="/oferta"
-              className={`text-sm font-semibold transition-colors py-1 ${
-                isActive('/oferta') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
-              }`}
+            {/* Skarby Ula z dedykowanym Dropdown Menu */}
+            <div 
+              className="relative py-6"
+              onMouseEnter={() => setTreasuresMenuOpen(true)}
+              onMouseLeave={() => setTreasuresMenuOpen(false)}
             >
-              Skarby Ula
-            </Link>
+              <Link
+                to="/oferta"
+                className={`text-sm font-semibold transition-colors flex items-center gap-1 cursor-pointer py-1 ${
+                  isActive('/oferta') ? 'text-[#8B5337] font-bold' : 'text-[#484138] hover:text-[#8B5337]'
+                }`}
+              >
+                <span>Skarby Ula</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${treasuresMenuOpen ? 'rotate-180 text-[#8B5337]' : 'text-[#8C7A6B]'}`} />
+              </Link>
+
+              {treasuresMenuOpen && (
+                <div className="absolute top-full -left-12 w-[370px] bg-[#FAF7F2] rounded-2xl border border-[#E4D9CA] shadow-2xl p-5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 space-y-3">
+                  <div className="border-b border-[#EADFCF] pb-2.5">
+                    <span className="text-[11px] uppercase font-bold text-[#8C7A6B] tracking-wider block">
+                      🛡️ Apiterapia & Rzemiosło
+                    </span>
+                    <p className="text-[11px] text-[#695D4E] mt-0.5">
+                      Najcenniejsze dary ula z naszej pasieki
+                    </p>
+                  </div>
+
+                  <ul className="space-y-1 text-xs">
+                    <li>
+                      <Link 
+                        to="/produkt/pierzga-pszczela" 
+                        onClick={() => setTreasuresMenuOpen(false)} 
+                        className="p-2 rounded-xl hover:bg-[#F2E8DC] transition-colors flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="font-bold text-[#24211D] group-hover:text-[#8B5337] block">Pierzga Pszczela (Bee Bread)</span>
+                          <span className="text-[10px] text-[#7A6B5B]">Naturalny probiotyk i superfood</span>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#8B5337] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/produkt/propolis-kit" 
+                        onClick={() => setTreasuresMenuOpen(false)} 
+                        className="p-2 rounded-xl hover:bg-[#F2E8DC] transition-colors flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="font-bold text-[#24211D] group-hover:text-[#8B5337] block">Propolis (Kit pszczeli)</span>
+                          <span className="text-[10px] text-[#7A6B5B]">Naturalna tarcza antybakteryjna</span>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#8B5337] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/produkt/pylek-pszczeli" 
+                        onClick={() => setTreasuresMenuOpen(false)} 
+                        className="p-2 rounded-xl hover:bg-[#F2E8DC] transition-colors flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="font-bold text-[#24211D] group-hover:text-[#8B5337] block">Pyłek Pszczeli Kwiatowy</span>
+                          <span className="text-[10px] text-[#7A6B5B]">Bomba witaminowa i minerały</span>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#8B5337] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/produkt/swieca-wosk-pszczeli" 
+                        onClick={() => setTreasuresMenuOpen(false)} 
+                        className="p-2 rounded-xl hover:bg-[#F2E8DC] transition-colors flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="font-bold text-[#24211D] group-hover:text-[#8B5337] block">Świece ze 100% Wosku Pszczelego</span>
+                          <span className="text-[10px] text-[#7A6B5B]">Czysty wosk bez parafiny</span>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#8B5337] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/produkt/odklad-szkolenie-pszczele" 
+                        onClick={() => setTreasuresMenuOpen(false)} 
+                        className="p-2 rounded-xl hover:bg-[#F2E8DC] transition-colors flex items-center justify-between group"
+                      >
+                        <div>
+                          <span className="font-bold text-[#24211D] group-hover:text-[#8B5337] block">Odkłady Pszczele & Szkolenia</span>
+                          <span className="text-[10px] text-[#7A6B5B]">Zdrowe rodziny z matkami</span>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#8B5337] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    </li>
+                  </ul>
+
+                  <div className="pt-2 border-t border-[#EADFCF]">
+                    <Link
+                      to="/oferta"
+                      onClick={() => setTreasuresMenuOpen(false)}
+                      className="w-full py-2 px-3 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs"
+                    >
+                      <span>Przejdź do pełnej oferty Skarbów Ula</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <Link
               to="/blog"

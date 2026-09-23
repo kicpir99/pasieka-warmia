@@ -4,7 +4,7 @@ import { ProductFilter } from '../components/ProductFilter';
 import { FilterState, HoneyCategory, HoneyProduct, HealthIntentFilter } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
-import { getEnrichedProduct } from '../utils/honeyHelpers';
+import { getEnrichedProduct, isProductBestseller, isProductRecommended } from '../utils/honeyHelpers';
 import { Sparkles, ArrowUp, ShoppingBag, ShieldCheck, Truck, RotateCcw, ArrowRight } from 'lucide-react';
 
 const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
@@ -141,7 +141,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
           case 'koneser':
             return p.flavorIntensity === 'wyrazisty' || p.category === 'lesne-spadz' || p.id.includes('grycz') || p.id.includes('spadz') || p.id.includes('wrzos');
           case 'prezent':
-            return p.isBestseller || p.isLimitedBatch || p.category === 'z-dodatkami' || p.category === 'zestawy';
+            return isProductBestseller(p) || isProductRecommended(p) || p.isLimitedBatch || p.category === 'z-dodatkami' || p.category === 'zestawy';
           default:
             return true;
         }
@@ -174,7 +174,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({
         break;
       case 'popular':
       default:
-        result.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));
+        result.sort((a, b) => {
+          const aScore = (isProductBestseller(a) ? 2 : 0) + (isProductRecommended(a) ? 1 : 0);
+          const bScore = (isProductBestseller(b) ? 2 : 0) + (isProductRecommended(b) ? 1 : 0);
+          if (bScore !== aScore) return bScore - aScore;
+          return (b.reviewsCount || 0) - (a.reviewsCount || 0);
+        });
         break;
     }
 
@@ -215,28 +220,62 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
       {/* Catalog & Filter Section */}
       <section id="katalog" className={`adaptive-container ${displayResolution.containerClass} px-4 sm:px-6 lg:px-8 mt-10 space-y-8`}>
-        {/* Banner: Skarby Ula Link */}
-        <div className="bg-gradient-to-r from-[#FAF3EA] via-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-center gap-3.5 text-left">
-            <div className="w-10 h-10 rounded-xl bg-[#2D2821] flex items-center justify-center text-lg shrink-0 shadow-2xs">
-              <Sparkles className="w-5 h-5 text-[#E5983A]" />
+        {/* Helper Banners: Quiz & Skarby Ula */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Card 1: Wirtualny Doradca / Quiz */}
+          <div className="bg-gradient-to-br from-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[#1B4332] flex items-center justify-center shrink-0 shadow-2xs text-white">
+                <Sparkles className="w-5 h-5 text-[#E0A94F]" />
+              </div>
+              <div>
+                <h3 className="font-serif text-sm sm:text-base font-bold text-[#23201C]">
+                  Wirtualny Doradca Miodowy
+                </h3>
+                <p className="text-xs text-[#6B5E4F] mt-0.5 leading-relaxed">
+                  Odpowiedz na 3 proste pytania o Twoje potrzeby i smak – wskażemy idealny słoik dla Ciebie lub na prezent.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-serif text-sm sm:text-base font-bold text-[#23201C]">
-                Szukasz pierzgi, propolisu, pyłku lub świec z wosku?
-              </h3>
-              <p className="text-xs text-[#6B5E4F]">
-                Poznaj dary ula o wybitnych właściwościach prozdrowotnych i regenerujących.
-              </p>
+            <div className="pt-1 flex justify-end">
+              {onOpenQuiz && (
+                <button
+                  type="button"
+                  onClick={onOpenQuiz}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+                >
+                  <span>Rozwiąż Quiz (60 sek.)</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
-          <Link
-            to="/oferta"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all shrink-0 shadow-xs cursor-pointer"
-          >
-            <span>Poznaj Skarby Ula</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+
+          {/* Card 2: Skarby Ula */}
+          <div className="bg-gradient-to-br from-[#FDFBF7] to-[#FAF3EA] border border-[#E7DCCE] rounded-2xl p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-[#2D2821] flex items-center justify-center shrink-0 shadow-2xs text-[#E5983A]">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-serif text-sm sm:text-base font-bold text-[#23201C]">
+                  Szukasz propolisu, pierzgi lub świec?
+                </h3>
+                <p className="text-xs text-[#6B5E4F] mt-0.5 leading-relaxed">
+                  Poznaj naturalne dary ula o wybitnych właściwościach regenerujących, probiotycznych i prozdrowotnych.
+                </p>
+              </div>
+            </div>
+            <div className="pt-1 flex justify-end">
+              <Link
+                to="/oferta"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white text-xs font-bold transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+              >
+                <span>Poznaj Skarby Ula</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
         </div>
 
         <ProductFilter

@@ -161,7 +161,11 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
                 className="bg-white rounded-3xl overflow-hidden border border-[#E7DCCE] shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group"
               >
                 {/* Card Image */}
-                <div className="h-56 overflow-hidden relative">
+                <Link
+                  to={item.ctaLink}
+                  aria-label={`Zobacz szczegóły: ${item.title}`}
+                  className="block h-56 overflow-hidden relative cursor-pointer"
+                >
                   <img 
                     src={item.image} 
                     alt={item.title} 
@@ -175,13 +179,18 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
                       <span>{item.badge}</span>
                     </span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Card Content */}
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
                   <div className="space-y-3">
                     <h3 className="font-serif text-xl font-bold text-[#23201C] tracking-tight">
-                      {item.title}
+                      <Link
+                        to={item.ctaLink}
+                        className="hover:text-[#8B5337] transition-colors"
+                      >
+                        {item.title}
+                      </Link>
                     </h3>
                     <p className="text-xs text-[#615444] leading-relaxed">
                       {item.description}
@@ -232,12 +241,15 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
           <p className="text-xs sm:text-sm text-[#CFC2B0] leading-relaxed">
             Wszystkie nasze produkty pszczele – zarówno miód, jak i pyłek, pierzga oraz propolis – pochodzą wyłącznie z naszych rodzin pszczelich będących pod stałą opieką Powiatowego Lekarza Weterynarii. Kupując u nas, wspierasz polskie pszczelarstwo wędrowne.
           </p>
+          <p className="text-xs text-[#E5983A]/90 font-medium">
+            Chcesz dobrać do zamówienia tradycyjny miód odmianowy? Sprawdź nasze zbiory z Dolnego Śląska.
+          </p>
           <div className="pt-2">
             <Link 
               to="/sklep" 
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#E5983A] hover:bg-[#D4892A] text-[#24211D] text-xs font-bold transition-all shadow-md"
             >
-              <span>Przejdź do zamawiania w sklepie</span>
+              <span>Przejdź do sklepu z miodami</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

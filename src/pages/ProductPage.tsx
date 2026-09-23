@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
-import { HONEY_PRODUCTS } from '../data/honeyProducts';
+import { HONEY_PRODUCTS, HONEY_VARIETIES, HIVE_TREASURES } from '../data/honeyProducts';
 import { HoneyProduct } from '../types';
 import { getEnrichedProduct, CATEGORY_METADATA } from '../utils/honeyHelpers';
 import { ProductReviews } from '../components/ProductReviews';
@@ -14,7 +14,6 @@ import {
   Sparkles, 
   ShieldCheck, 
   Award, 
-  MapPin, 
   Leaf, 
   Star, 
   FileText, 
@@ -30,11 +29,13 @@ import {
   Scale,
   HelpCircle,
   Info,
-  ShieldAlert
+  ShieldAlert,
+  Utensils,
+  Calendar
 } from 'lucide-react';
 
 interface ProductPageProps {
-  onAddToCart: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
+  onAddToCart: (product: HoneyProduct, weightGrams: number, pricePln: number, subscriptionInterval?: number) => void;
   onOpenCompare?: (product: HoneyProduct) => void;
 }
 
@@ -85,6 +86,8 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
   }
 
   const product = getEnrichedProduct(rawProduct);
+  const isTreasure = product.productType !== 'honey';
+  const prodType = product.productType;
 
   const [selectedSizeIdx, setSelectedSizeIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -95,6 +98,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
   const [showConsistencyExplainer, setShowConsistencyExplainer] = useState(false);
 
   const [purchaseMode, setPurchaseMode] = useState<'one-time' | 'subscription'>('one-time');
+  const [subscriptionInterval, setSubscriptionInterval] = useState<30 | 60 | 90>(60);
 
   const currentSize = product.sizesList[selectedSizeIdx] || product.sizesList[0];
   const images = product.images && product.images.length > 0 ? product.images : [product.imageUrl];
@@ -103,17 +107,16 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
   const basePrice = currentSize?.price || 0;
   const effectivePrice = purchaseMode === 'subscription' ? Math.round(basePrice * 0.9) : basePrice;
 
-  // Sibling products for Next / Prev navigation
-  const currentIndex = HONEY_PRODUCTS.findIndex(p => p.id === rawProduct.id);
-  const prevProduct = currentIndex > 0 ? HONEY_PRODUCTS[currentIndex - 1] : HONEY_PRODUCTS[HONEY_PRODUCTS.length - 1];
-  const nextProduct = currentIndex < HONEY_PRODUCTS.length - 1 ? HONEY_PRODUCTS[currentIndex + 1] : HONEY_PRODUCTS[0];
-
-  // Related products - prioritize honeys sharing flavor notes or same category
-  const relatedProducts = [...HONEY_PRODUCTS]
+  // Related products - strictly isolate honey varieties vs. hive treasures
+  const candidatePool = isTreasure ? HIVE_TREASURES : HONEY_VARIETIES;
+  const relatedProducts = [...candidatePool]
     .filter(p => p.id !== rawProduct.id)
     .sort((a, b) => {
-      const aSharedNotes = a.flavorNotes.filter(n => rawProduct.flavorNotes.includes(n)).length;
-      const bSharedNotes = b.flavorNotes.filter(n => rawProduct.flavorNotes.includes(n)).length;
+      const aNotes = a.flavorNotes || [];
+      const rawNotes = rawProduct.flavorNotes || [];
+      const aSharedNotes = aNotes.filter(n => rawNotes.includes(n)).length;
+      const bNotes = b.flavorNotes || [];
+      const bSharedNotes = bNotes.filter(n => rawNotes.includes(n)).length;
       if (bSharedNotes !== aSharedNotes) return bSharedNotes - aSharedNotes;
       const aCat = a.category === rawProduct.category ? 1 : 0;
       const bCat = b.category === rawProduct.category ? 1 : 0;
@@ -124,7 +127,12 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
   const handleAddToCart = () => {
     if (!currentSize) return;
-    onAddToCart(rawProduct, currentSize.weightGrams, effectivePrice);
+    onAddToCart(
+      rawProduct, 
+      currentSize.weightGrams, 
+      effectivePrice,
+      purchaseMode === 'subscription' ? subscriptionInterval : undefined
+    );
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 1800);
   };
@@ -139,39 +147,62 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
   const handleBackToCatalog = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (window.history.length > 1) {
+    if (isTreasure) {
+      navigate('/skarby-ula');
+    } else if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate('/#katalog');
+      navigate('/sklep');
     }
   };
 
-  const pricePerKg = currentSize ? Math.round((effectivePrice / currentSize.weightGrams) * 1000) : 0;
-  const catInfo = CATEGORY_METADATA[product.category] || {
-    label: product.category,
-    shortLabel: product.category,
-    icon: '🍯',
-  };
+  const pricePerKg = currentSize && currentSize.weightGrams > 10 ? Math.round((effectivePrice / currentSize.weightGrams) * 1000) : 0;
+  const catInfo = isTreasure
+    ? {
+        label: 'Skarby Ula',
+        shortLabel: 'Skarby Ula',
+        icon: prodType === 'bee-colony' ? '🐝' : prodType === 'candle' ? '🕯️' : '🌿',
+      }
+    : (CATEGORY_METADATA[product.category] || {
+        label: product.category,
+        shortLabel: product.category,
+        icon: '🍯',
+      });
 
   // Reusable Product Header (Category badge, Region, Title, Botanical source, Rating stars)
   const renderProductHeader = () => (
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-2.5">
-        <Link
-          to={`/?kategoria=${product.category}#katalog`}
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#1B4332]/10 hover:bg-[#1B4332] text-[#1B4332] hover:text-white border border-[#1B4332]/25 transition-all shadow-2xs cursor-pointer group"
-          title={`Zobacz wszystkie miody w kategorii: ${catInfo.label}`}
-        >
-          <span>{catInfo.icon}</span>
-          <span>{catInfo.label}</span>
-          <span className="text-[10px] opacity-60 group-hover:opacity-100 ml-0.5">→</span>
-        </Link>
-
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20">
-          <MapPin className="w-3.5 h-3.5 text-[#D9821E]" />
-          <span>{product.region}</span>
-          <span className="text-[#D9821E]/50">•</span>
-          <span className="text-[#1B4332]">Zbiór {product.harvestYear}</span>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/25 shadow-2xs">
+          {prodType === 'bee-colony' ? (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              <span>Pasieka hodowlana</span>
+              <span className="text-[#D9821E]/50">•</span>
+              <span className="text-[#1B4332] font-semibold">Sezon 2026</span>
+            </>
+          ) : prodType === 'candle' ? (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              <span>100% naturalny wosk pszczeli</span>
+              <span className="text-[#D9821E]/50">•</span>
+              <span className="text-[#1B4332] font-semibold">Rękodzieło</span>
+            </>
+          ) : prodType === 'apitherapy' ? (
+            <>
+              <Leaf className="w-3.5 h-3.5 text-[#1B4332]" />
+              <span>Czysty dar ula</span>
+              <span className="text-[#D9821E]/50">•</span>
+              <span className="text-[#1B4332] font-semibold">Świeży zbiór {product.harvestYear}</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              <span>Miód surowy (raw)</span>
+              <span className="text-[#D9821E]/50">•</span>
+              <span className="text-[#1B4332] font-semibold">Świeży zbiór {product.harvestYear}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -180,7 +211,14 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
       </h1>
 
       <p className="text-xs sm:text-sm italic text-[#7A6A5A] mb-2.5 sm:mb-3">
-        Nektar botaniczny: <span className="font-serif font-semibold text-[#594D42] not-italic">{product.botanicalSource}</span>
+        {prodType === 'bee-colony' 
+          ? 'Rasa i linia pszczół: ' 
+          : prodType === 'candle' 
+          ? 'Surowiec manufaktury: ' 
+          : prodType === 'apitherapy' 
+          ? 'Pochodzenie i surowiec: ' 
+          : 'Nektar botaniczny: '}
+        <span className="font-serif font-semibold text-[#594D42] not-italic">{product.botanicalSource}</span>
       </p>
 
       {/* Rating & Reviews anchor */}
@@ -215,9 +253,107 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
     </div>
   );
 
-  // Reusable Flavor Notes Chips
-  const renderFlavorNotes = () => (
-    product.flavorNotes && product.flavorNotes.length > 0 ? (
+  // Reusable Flavor Notes Chips or Specification Chips
+  const renderSpecificationBadges = () => {
+    if (prodType === 'bee-colony') {
+      const colonyHighlights = [
+        '5 ramek wielkopolskich',
+        'Matka unasieniona 2026',
+        'Zwarte, zdrowe czerwienie',
+        'Wysoka łagodność pszczół',
+        'Szkolenie przy ulu w cenie',
+        'Nadzór PLW: WNI 28143502',
+      ];
+      return (
+        <div className="bg-[#FAF3E5]/70 p-4 rounded-2xl border border-[#D9821E]/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#594D42] uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              Specyfikacja rodziny i pakietu:
+            </span>
+            <span className="text-[11px] text-[#1B4332] font-semibold hidden sm:inline">Gotowy do zasiedlenia ula</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {colonyHighlights.map((feat, idx) => (
+              <span
+                key={idx}
+                className="px-3.5 py-1.5 bg-white text-[#1B4332] border border-[#1B4332]/25 rounded-full text-xs font-semibold shadow-2xs flex items-center gap-1.5"
+              >
+                <Check className="w-3 h-3 text-[#D9821E]" />
+                <span>{feat}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (prodType === 'candle') {
+      const candleHighlights = [
+        'Ujemna jonizacja powietrza',
+        '100% czysty wosk pszczeli',
+        'Brak syntetycznej parafiny',
+        'Knot z surowej bawełny',
+        'Miodowo-propolisowy zapach',
+        'Czyste, bezdymne spalanie',
+      ];
+      return (
+        <div className="bg-[#FAF3E5]/70 p-4 rounded-2xl border border-[#D9821E]/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#594D42] uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              Zalety naturalnego wosku pszczelego:
+            </span>
+            <span className="text-[11px] text-[#8C4609] font-semibold hidden sm:inline">Zdrowy mikroklimat w domu</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {candleHighlights.map((feat, idx) => (
+              <span
+                key={idx}
+                className="px-3.5 py-1.5 bg-white text-[#8C4609] border border-[#D9821E]/30 rounded-full text-xs font-semibold shadow-2xs flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3 h-3 text-[#D9821E]" />
+                <span>{feat}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (prodType === 'apitherapy') {
+      const apitherapyHighlights = product.id === 'propolis-kit'
+        ? ['Ponad 300 bioflawonoidów', 'Naturalny antybiotyk ula', 'Estry kwasu kawowego (CAPE)', 'Działanie przeciwbakteryjne', 'Regeneracja tkanek']
+        : product.id === 'pierzga-pszczela'
+        ? ['Kwas mlekowy z plastra', '3x wyższa przyswajalność', 'Bomba witamin i enzymów', 'Komplet aminokwasów', 'Wzmocnienie krwi i hemoglobiny']
+        : ['Bomba witaminowa i białkowa', 'Ponad 250 biopierwiastków', 'Wsparcie serca i naczyń', 'Likwidacja chronicznego zmęczenia', '100% obnóża pyłkowe'];
+
+      return (
+        <div className="bg-[#FAF3E5]/70 p-4 rounded-2xl border border-[#D9821E]/20 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#594D42] uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+              Aktywne związki biologiczne & działanie:
+            </span>
+            <span className="text-[11px] text-[#1B4332] font-semibold hidden sm:inline">100% czysta apiterapia</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {apitherapyHighlights.map((feat, idx) => (
+              <span
+                key={idx}
+                className="px-3.5 py-1.5 bg-white text-[#594D42] border border-[#D9821E]/25 rounded-full text-xs font-semibold shadow-2xs flex items-center gap-1.5"
+              >
+                <Leaf className="w-3 h-3 text-[#1B4332]" />
+                <span>{feat}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Default honey flavor notes
+    return product.flavorNotes && product.flavorNotes.length > 0 ? (
       <div className="bg-[#FAF3E5]/70 p-4 rounded-2xl border border-[#D9821E]/20 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-[#594D42] uppercase tracking-wider flex items-center gap-1.5">
@@ -231,7 +367,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
             <button 
               key={idx}
               type="button"
-              onClick={() => navigate(`/?nuta=${encodeURIComponent(note)}#katalog`)}
+              onClick={() => navigate(`/sklep?nuta=${encodeURIComponent(note)}`)}
               className="px-3.5 py-1.5 bg-white hover:bg-[#1B4332] text-[#594D42] hover:text-white border border-[#D9821E]/30 hover:border-[#1B4332] rounded-full text-xs font-semibold shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer group"
               title={`Zobacz wszystkie miody z nutą: ${note}`}
             >
@@ -242,28 +378,281 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
           ))}
         </div>
       </div>
-    ) : null
-  );
+    ) : null;
+  };
 
-  // Reusable Sensory Profile Card
-  const renderSensoryAndShipping = () => (
-    <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
-      <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] flex items-center justify-center text-sm shadow-2xs">
-            🍯
+  // Reusable Sensory Profile or Specification Card
+  const renderSensoryAndShipping = () => {
+    if (prodType === 'bee-colony') {
+      return (
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#1B4332]/25 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#1B4332]/15 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center text-sm shadow-2xs font-bold">
+                🐝
+              </div>
+              <div>
+                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
+                  Karta Specyfikacji Odkładu Pszczelego
+                </h3>
+                <p className="text-[11px] text-[#7A6A5A]">Pasieka Zarodowo-Produkcyjna Ciechów</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
+              Nadzór Weterynaryjny PLW
+            </span>
           </div>
-          <div>
-            <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
-              Profil sensoryczny odmiany
-            </h3>
-            <p className="text-[11px] text-[#7A6A5A]">Karta degustacyjna ulowego nektaru</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
+                <span>Format gniazda i ramki</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                <strong>5 ramek wielkopolskich</strong> (3 ramki z czerwiem krytym i odkrytym w różnym wieku, 2 ramki osłonowe z miodem i pierzgą).
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#D9821E]" />
+                <span>Matka pszczela (Królowa)</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Młoda, znakowana opalitkiem rocznika 2026, <strong>unasieniona naturalnie</strong>, po teście plenności (zwarty, równomierny czerw).
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
+                <span>Cechy linii pszczół</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Linia Krainka / Buckfast selekcjonowana na <strong>wyjątkową łagodność</strong>, nierojliwość oraz dynamiczny rozwój i wysoką miodność.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-[#8C4609]" />
+                <span>Instruktaż w pasiece</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                W cenie odkładu: <strong>1-godzinne szkolenie praktyczne</strong> przy otwartym ulu podczas odbioru. Pomoc i doradztwo dla początkujących.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2">
+            <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+            <div className="text-[11px] leading-relaxed">
+              <strong>Termin i warunki odbioru:</strong> Czerwiec – Lipiec 2026. Odbiór osobisty w pasiece Ciechów w bezpiecznym, wentylowanym kartonie transportowym.
+            </div>
           </div>
         </div>
-        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
-          Autentyczna Partia
-        </span>
-      </div>
+      );
+    }
+
+    if (prodType === 'candle') {
+      return (
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center text-sm shadow-2xs font-bold">
+                🕯️
+              </div>
+              <div>
+                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
+                  Karta Manufaktury Świec Woskowych
+                </h3>
+                <p className="text-[11px] text-[#7A6A5A]">100% Czysty Wosk Pszczeli z Pasieki</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#D9821E]/15 text-[#8C4609] border border-[#D9821E]/25 uppercase tracking-wider">
+              Zero Parafiny
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#1B4332]" />
+                <span>Ujemna jonizacja powietrza</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Płomień wosku pszczelego emituje jony ujemne, które oczyszczają powietrze z kurzu, smogu elektromagnetycznego i alergenów.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-[#D9821E]" />
+                <span>Wydłużony czas palenia</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Wosk pszczeli pali się do 3x dłużej niż syntetyczna parafina. Płomień jest jasny, ciepły i nie wydziela szkodliwego dymu.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                <Droplet className="w-4 h-4 text-[#8C4609]" />
+                <span>100% Naturalny surowiec</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Pochodzi z dziewiczej węzy i odsklepin naszej pasieki. Brak sztucznych barwników, substancji ropopochodnych i ołowianych knotów.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                <Heart className="w-4 h-4 text-[#C1382B]" />
+                <span>Naturalny zapach ula</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                Podczas palenia w pokoju unosi się kojący, delikatny zapach naturalnego miodu i propolisu, ułatwiający relaks i sen.
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (prodType === 'apitherapy') {
+      const isPropolis = product.id === 'propolis-kit';
+      const isPierzga = product.id === 'pierzga-pszczela';
+
+      const cardTitle = isPropolis
+        ? 'Karta Czystości & Mocy Propolisu'
+        : isPierzga
+        ? 'Karta Biologiczna Pierzgi Pszczelej'
+        : 'Karta Witaminowa Obnóży Pyłkowych';
+
+      const cardSubtitle = isPropolis
+        ? 'Surowy kit pszczeli z żywic drzew leśnych'
+        : isPierzga
+        ? 'Chleb pszczeli – fermentowany pyłek z komórek plastra'
+        : 'Wielobarwne ziarna pyłkowe z kwitnących łąk Warmii';
+
+      const cardBadge = isPropolis
+        ? '100% Kit Pszczeli'
+        : isPierzga
+        ? 'Najwyższa Biodostępność'
+        : 'Bogactwo Biopierwiastków';
+
+      const box1Title = isPropolis ? 'Flawonoidy i CAPE' : isPierzga ? 'Fermentacja mlekowa' : '22% Białka roślinnego';
+      const box1Text = isPropolis
+        ? 'Ponad 300 związków fenolowych i estrów kwasu kawowego o silnym działaniu antybakteryjnym.'
+        : isPierzga
+        ? 'Naturalnie zakiszona w cieple ula. Kwas mlekowy rozpuszcza twarde otoczki pyłku.'
+        : 'Komplet aminokwasów egzogennych i biopierwiastków niezbędnych do odbudowy tkanek.';
+
+      const box2Title = isPropolis ? 'Baza do nalewki 20%' : isPierzga ? 'Przyswajalność > 85%' : 'Reżim suszenia < 38°C';
+      const box2Text = isPropolis
+        ? 'Idealny surowiec do sporządzenia domowej nalewki spirytusowej (maceracja 2-3 tygodnie).'
+        : isPierzga
+        ? '3-krotnie szybsze i pełniejsze wchłanianie witamin i mikroelementów niż ze zwykłego pyłku.'
+        : 'Powolne suszenie mikronawiewem – żywe enzymy ulowe zachowują 100% aktywności.';
+
+      const box3Title = isPropolis ? 'Naturalny antybiotyk' : isPierzga ? 'Odbudowa hemoglobiny' : 'Zasada namaczania';
+      const box3Text = isPropolis
+        ? 'Skuteczna ochrona jamy ustnej i gardła bez wywoływania zjawiska lekooporności bakterii.'
+        : isPierzga
+        ? 'Potężna dawka łatwo przyswajalnego żelaza przy anemii, rekonwalescencji i wyczerpaniu.'
+        : 'Namoczenie w letniej wodzie na noc (min. 6h) powoduje pęknięcie ziaren i uwolnienie witamin.';
+
+      const box4Title = isPropolis ? 'Przechowywanie kitu' : isPierzga ? 'Rytuał przyjmowania' : 'Zalecany cykl kuracji';
+      const box4Text = isPropolis
+        ? 'Szczelny słój, suche i ciemne miejsce poniżej 20°C. Kit nie traci właściwości przez lata.'
+        : isPierzga
+        ? '1 łyżeczka rano na czczo – powoli rozgryzać, by enzymy wchłaniały się już pod językiem.'
+        : '1-2 łyżeczki dziennie w cyklach 30-dniowych, szczególnie w okresach przesilenia.';
+
+      return (
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-900 flex items-center justify-center text-sm shadow-2xs font-bold">
+                {isPropolis ? '🛡️' : isPierzga ? '👑' : '🌸'}
+              </div>
+              <div>
+                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
+                  {cardTitle}
+                </h3>
+                <p className="text-[11px] text-[#7A6A5A]">{cardSubtitle}</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
+              {cardBadge}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
+                <span>{box1Title}</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                {box1Text}
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#D9821E]" />
+                <span>{box2Title}</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                {box2Text}
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-[#8C4609]" />
+                <span>{box3Title}</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                {box3Text}
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
+                <span>{box4Title}</span>
+              </div>
+              <p className="text-[11px] text-[#594D42] leading-relaxed">
+                {box4Text}
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Default honey sensory card
+    return (
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] flex items-center justify-center text-sm shadow-2xs">
+              🍯
+            </div>
+            <div>
+              <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
+                Profil sensoryczny odmiany
+              </h3>
+              <p className="text-[11px] text-[#7A6A5A]">Karta degustacyjna ulowego nektaru</p>
+            </div>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
+            Autentyczna Partia
+          </span>
+        </div>
 
         {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
         <div className="space-y-3 pt-1">
@@ -346,14 +735,21 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               <Droplet className="w-3.5 h-3.5 text-[#1B4332]" />
               Barwa miodu
             </span>
-            <p className="text-[11px] text-[#594D42] leading-tight">{product.tasteProfile.color}</p>
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <span
+                className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
+                style={{ backgroundColor: product.colorHex }}
+              />
+              <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
+            </div>
           </div>
         </div>
       </div>
-  );
+    );
+  };
 
   return (
-    <div className="w-full bg-[#FAF6EE] min-h-screen pt-4 pb-20 animate-in fade-in duration-300">
+    <div className="w-full bg-[#FAF6EE] min-h-screen pt-4 pb-28 lg:pb-16 animate-in fade-in duration-300">
       
       {/* Top Breadcrumb & Quick Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-3 sm:mb-6">
@@ -361,36 +757,18 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
         {/* MOBILE ONLY (< sm): Single sleek row with Back button on left + Quick Actions on right */}
         <div className="flex sm:hidden items-center justify-between gap-2 py-2 border-b border-[#D9821E]/15">
           <Link
-            to="/#katalog"
+            to={isTreasure ? '/skarby-ula' : '/sklep'}
             onClick={handleBackToCatalog}
             className="inline-flex items-center gap-1.5 font-bold text-xs text-[#1B4332] hover:text-[#D9821E] transition-colors bg-white px-3 py-1.5 rounded-xl border border-[#D9821E]/20 shadow-2xs shrink-0"
             id="btn-powrot-katalog-mobile"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Katalog miodów</span>
+            <span>{isTreasure ? 'Skarby Ula' : 'Katalog miodów'}</span>
           </Link>
 
           {/* Compact Action Icons Group on Mobile */}
           <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => navigate(`/produkt/${prevProduct.id}`)}
-              className="p-1.5 text-[#594D42] hover:text-[#241D17] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer shadow-2xs"
-              title={`Poprzedni: ${prevProduct.name}`}
-              aria-label="Poprzedni miód"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(`/produkt/${nextProduct.id}`)}
-              className="p-1.5 text-[#594D42] hover:text-[#241D17] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer shadow-2xs"
-              title={`Kolejny: ${nextProduct.name}`}
-              aria-label="Kolejny miód"
-            >
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            {onOpenCompare && (
+            {!isTreasure && onOpenCompare && (
               <button
                 type="button"
                 onClick={() => onOpenCompare(rawProduct)}
@@ -406,7 +784,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               type="button"
               onClick={handleShare}
               className="p-1.5 text-[#594D42] hover:text-[#D9821E] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer relative shadow-2xs"
-              title="Kopiuj link do tego miodu"
+              title="Kopiuj link do tego produktu"
               aria-label="Kopiuj link"
             >
               {copiedLink ? <Check className="w-3.5 h-3.5 text-[#1B4332]" /> : <Share2 className="w-3.5 h-3.5" />}
@@ -423,18 +801,18 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
         <div className="hidden sm:flex items-center justify-between gap-4 py-3 border-b border-[#D9821E]/20">
           <div className="flex items-center flex-wrap gap-2 text-sm text-[#7A6A5A]">
             <Link
-              to="/#katalog"
+              to={isTreasure ? '/skarby-ula' : '/sklep'}
               onClick={handleBackToCatalog}
               className="inline-flex items-center gap-1.5 font-bold text-[#1B4332] hover:text-[#D9821E] transition-colors bg-white px-3.5 py-1.5 rounded-xl border border-[#D9821E]/20 shadow-xs"
               id="btn-powrot-katalog-desktop"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Katalog miodów</span>
+              <span>{isTreasure ? 'Skarby Ula' : 'Katalog miodów'}</span>
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-[#D9821E]/60" />
             
             <Link
-              to={`/?kategoria=${product.category}#katalog`}
+              to={isTreasure ? '/skarby-ula' : `/sklep?kategoria=${product.category}`}
               className="inline-flex items-center gap-1.5 font-semibold text-[#594D42] hover:text-[#1B4332] hover:bg-white bg-white/70 px-3 py-1.5 rounded-xl border border-[#D9821E]/20 hover:border-[#1B4332]/30 shadow-2xs transition-all cursor-pointer group"
               title={`Filtruj zbiory: ${catInfo.label}`}
             >
@@ -449,27 +827,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => navigate(`/produkt/${prevProduct.id}`)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-[#594D42] hover:text-[#241D17] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer"
-              title={`Poprzedni: ${prevProduct.name}`}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Poprzedni miód</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate(`/produkt/${nextProduct.id}`)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-[#594D42] hover:text-[#241D17] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer"
-              title={`Kolejny: ${nextProduct.name}`}
-            >
-              <span>Kolejny miód</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-
-            {onOpenCompare && (
+            {!isTreasure && onOpenCompare && (
               <button
                 type="button"
                 onClick={() => onOpenCompare(rawProduct)}
@@ -485,7 +843,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               type="button"
               onClick={handleShare}
               className="p-2 text-[#594D42] hover:text-[#D9821E] bg-white rounded-xl border border-[#D9821E]/20 hover:border-[#D9821E] transition-colors cursor-pointer relative"
-              title="Kopiuj link do tego miodu"
+              title="Kopiuj link do tego produktu"
             >
               {copiedLink ? <Check className="w-4 h-4 text-[#1B4332]" /> : <Share2 className="w-4 h-4" />}
               {copiedLink && (
@@ -514,12 +872,18 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               {/* Badges on main photo */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 items-start">
                 {product.badge && (
-                  <span className="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-[#D9821E] text-white shadow-sm">
+                  <span className={`px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${product.badgeClass || 'bg-[#D9821E] text-white'} shadow-sm`}>
                     {product.badge}
                   </span>
                 )}
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/95 text-[#1B4332] border border-[#1B4332]/20 backdrop-blur-xs shadow-2xs">
-                  100% Surowy i Nieprażony
+                  {prodType === 'bee-colony'
+                    ? 'Nadzór Weterynaryjny PLW'
+                    : prodType === 'candle'
+                    ? '100% Czysty Wosk Pszczeli'
+                    : prodType === 'apitherapy'
+                    ? '100% Czysta Apiterapia'
+                    : '100% Surowy i Nieprażony'}
                 </span>
               </div>
 
@@ -563,7 +927,13 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                       }}
                     />
                     <div className="absolute bottom-1 right-1 text-[9px] font-bold bg-black/65 text-white px-1.5 py-0.5 rounded">
-                      {idx === 0 ? 'Słoik' : idx === 1 ? 'Patoka' : idx === 2 ? 'Pasieka' : 'Struktura'}
+                      {prodType === 'bee-colony'
+                        ? (idx === 0 ? 'Rodzina' : 'Ramki')
+                        : prodType === 'candle'
+                        ? (idx === 0 ? 'Świeca' : 'Wosk')
+                        : prodType === 'apitherapy'
+                        ? (idx === 0 ? 'Produkt' : 'Struktura')
+                        : (idx === 0 ? 'Słoik' : idx === 1 ? 'Patoka' : idx === 2 ? 'Pasieka' : 'Struktura')}
                     </div>
                   </button>
                 ))}
@@ -589,75 +959,229 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               „{product.tagline}”
             </div>
 
-            {/* DESKTOP ONLY: Quick Tasting Notes Tags directly under header */}
+            {/* DESKTOP ONLY: Quick Tasting Notes or Specs Tags directly under header */}
             <div className="hidden lg:block">
-              {renderFlavorNotes()}
+              {renderSpecificationBadges()}
             </div>
 
             {/* Purchase Card: Gramature Selector, Price, Add to Cart */}
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/30 shadow-md space-y-5">
               
-              {/* Kompaktowa Metryka Partii & Żywych Enzymów (Nowoczesna, przejrzysta karta z rozwijaniem detali) */}
-              <div className="bg-[#FAF8F5] rounded-2xl p-3.5 border border-[#E7DDCE] space-y-2.5">
-                <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-[#594D42] uppercase text-[10px] tracking-wider flex items-center gap-1">
-                      <Droplet className="w-3.5 h-3.5 text-[#D9821E]" />
-                      Partia:
-                    </span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${product.consistencyInfo.badgeClass}`}>
-                      {product.consistencyInfo.label}
-                    </span>
-                  </div>
+              {/* Kompaktowa Metryka Partii & Żywych Enzymów / Specyfikacja produktu */}
+              {prodType === 'bee-colony' ? (
+                <div className="bg-[#FAF8F5] rounded-2xl p-3.5 border border-emerald-200 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-[#594D42] uppercase text-[10px] tracking-wider flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1B4332]" />
+                        Status hodowlany:
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold border bg-emerald-50 text-emerald-800 border-emerald-300">
+                        Rezerwacja Sezon 2026
+                      </span>
+                    </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20" title="Chroń żywe enzymy ula">
-                      🌡️ Reżim ula: max 40°C
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-[#7A6A5A] pt-1.5 border-t border-[#EFE7DA]">
-                  <span className="truncate pr-2">
-                    {product.consistencyInfo.shortExplanation}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setShowConsistencyExplainer(!showConsistencyExplainer)}
-                    className="text-[#D9821E] hover:text-[#8C4609] font-bold shrink-0 cursor-pointer text-[11px] underline"
-                  >
-                    {showConsistencyExplainer ? 'Zwiń wyjaśnienie ▲' : 'Więcej o krysztale i enzymach ▼'}
-                  </button>
-                </div>
-
-                {/* Rozwijane szczegóły partii i enzymów (dla dociekliwych, nie zapycha głównego widoku) */}
-                {showConsistencyExplainer && (
-                  <div className="pt-2.5 border-t border-[#EFE7DA] space-y-2 text-xs text-[#524637] animate-in fade-in duration-200">
-                    {product.consistencyInfo.hasGlucoseBloom && (
-                      <div className="p-3 bg-white rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
-                        <strong className="text-[#8C4609] block font-bold">Biały nalot na ściankach słoika („kwiat miodu”):</strong>
-                        <p className="leading-relaxed">{product.consistencyInfo.glucoseBloomInfo}</p>
-                      </div>
-                    )}
-                    <div className="p-3 bg-[#FAF3E5] rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
-                      <strong className="text-[#1B4332] block font-bold">Żelazna zasada 40°C (Ochrona enzymów ula):</strong>
-                      <p className="leading-relaxed">
-                        Miód zachowuje pełną moc biologiczną (diastazę, lizozym i inhibinę) wyłącznie do temperatury 40°C. 
-                        Dodawaj go do lekko przestudzonej herbaty lub letniej wody.
-                      </p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20" title="Rejestr PLW">
+                        🏥 Nadzór PLW: WNI 28143502
+                      </span>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Gramature selection */}
+                  <div className="flex items-center justify-between text-[11px] text-[#7A6A5A] pt-1.5 border-t border-[#EFE7DA]">
+                    <span className="truncate pr-2">
+                      5 ramek wielkopolskich + matka unasieniona 2026 + szkolenie przy ulu
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowConsistencyExplainer(!showConsistencyExplainer)}
+                      className="text-[#D9821E] hover:text-[#8C4609] font-bold shrink-0 cursor-pointer text-[11px] underline"
+                    >
+                      {showConsistencyExplainer ? 'Zwiń szczegóły ▲' : 'Warunki odbioru ▼'}
+                    </button>
+                  </div>
+
+                  {showConsistencyExplainer && (
+                    <div className="pt-2.5 border-t border-[#EFE7DA] space-y-2 text-xs text-[#524637] animate-in fade-in duration-200">
+                      <div className="p-3 bg-white rounded-xl border border-emerald-200 text-[11px] space-y-1 shadow-2xs">
+                        <strong className="text-[#1B4332] block font-bold">Odbiór w bezpiecznym pudle transportowym:</strong>
+                        <p className="leading-relaxed">
+                          Odkłady wydawane są w specjalistycznych, wentylowanych transporterach z podwójną siatką. Odbiór wczesnym rankiem lub o zmroku.
+                        </p>
+                      </div>
+                      <div className="p-3 bg-[#FAF3E5] rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
+                        <strong className="text-[#8C4609] block font-bold">Praktyczne szkolenie w pasiece w cenie:</strong>
+                        <p className="leading-relaxed">
+                          Podczas odbioru wspólnie otwieramy gniazdo, oceniamy czerwienie matki i omawiamy pierwsze kroki po przesiedleniu do Twojego ula.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : prodType === 'candle' ? (
+                <div className="bg-[#FAF8F5] rounded-2xl p-3.5 border border-[#E7DDCE] space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-[#594D42] uppercase text-[10px] tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
+                        Manufaktura:
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold border bg-amber-50 text-amber-900 border-amber-300">
+                        100% Czysty Wosk Pszczeli
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20">
+                        🕯️ Knot bawełniany
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-[#7A6A5A] pt-1.5 border-t border-[#EFE7DA]">
+                    <span className="truncate pr-2">
+                      Rękodzieło z węzy pasiecznej • Zero parafiny i chemicznych wybielaczy
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowConsistencyExplainer(!showConsistencyExplainer)}
+                      className="text-[#D9821E] hover:text-[#8C4609] font-bold shrink-0 cursor-pointer text-[11px] underline"
+                    >
+                      {showConsistencyExplainer ? 'Zwiń wskazówki ▲' : 'Wskazówki palenia ▼'}
+                    </button>
+                  </div>
+
+                  {showConsistencyExplainer && (
+                    <div className="pt-2.5 border-t border-[#EFE7DA] space-y-2 text-xs text-[#524637] animate-in fade-in duration-200">
+                      <div className="p-3 bg-white rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
+                        <strong className="text-[#8C4609] block font-bold">Zasada pierwszego palenia:</strong>
+                        <p className="leading-relaxed">
+                          Pal świecę jednorazowo min. 2 godziny, by wosk roztopił się po brzegi – zapobiegnie to tunelowaniu i zapewni maksymalny czas palenia.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : prodType === 'apitherapy' ? (
+                <div className="bg-[#FAF8F5] rounded-2xl p-3.5 border border-[#E7DDCE] space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-[#594D42] uppercase text-[10px] tracking-wider flex items-center gap-1">
+                        <Leaf className="w-3.5 h-3.5 text-[#1B4332]" />
+                        Apiterapia:
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold border bg-amber-100 text-amber-900 border-amber-300">
+                        100% Czysty Surowiec
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20">
+                        🌡️ Reżim suszenia: max 38°C
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-[#7A6A5A] pt-1.5 border-t border-[#EFE7DA]">
+                    <span className="truncate pr-2">
+                      Żywy surowiec biologiczny o pełnej aktywności enzymatycznej
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowConsistencyExplainer(!showConsistencyExplainer)}
+                      className="text-[#D9821E] hover:text-[#8C4609] font-bold shrink-0 cursor-pointer text-[11px] underline"
+                    >
+                      {showConsistencyExplainer ? 'Zwiń zasady ▲' : 'Więcej o kuracji ▼'}
+                    </button>
+                  </div>
+
+                  {showConsistencyExplainer && (
+                    <div className="pt-2.5 border-t border-[#EFE7DA] space-y-2 text-xs text-[#524637] animate-in fade-in duration-200">
+                      <div className="p-3 bg-[#FAF3E5] rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
+                        <strong className="text-[#1B4332] block font-bold">Zasada ochrony enzymów (max 40°C):</strong>
+                        <p className="leading-relaxed">
+                          Nigdy nie dodawaj produktów apiterapeutycznych do gorących napojów. Cenne enzymy pszczele ulegają denaturacji powyżej 40°C.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-[#FAF8F5] rounded-2xl p-3.5 border border-[#E7DDCE] space-y-2.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-[#594D42] uppercase text-[10px] tracking-wider flex items-center gap-1">
+                        <Droplet className="w-3.5 h-3.5 text-[#D9821E]" />
+                        Partia:
+                      </span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${product.consistencyInfo.badgeClass}`}>
+                        {product.consistencyInfo.label}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-[#FAF3E5] text-[#8C4609] border border-[#D9821E]/20" title="Chroń żywe enzymy ula">
+                        🌡️ Reżim ula: max 40°C
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-[#7A6A5A] pt-1.5 border-t border-[#EFE7DA]">
+                    <span className="truncate pr-2">
+                      {product.consistencyInfo.shortExplanation}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowConsistencyExplainer(!showConsistencyExplainer)}
+                      className="text-[#D9821E] hover:text-[#8C4609] font-bold shrink-0 cursor-pointer text-[11px] underline"
+                    >
+                      {showConsistencyExplainer ? 'Zwiń wyjaśnienie ▲' : 'Więcej o krysztale i enzymach ▼'}
+                    </button>
+                  </div>
+
+                  {/* Rozwijane szczegóły partii i enzymów (dla dociekliwych, nie zapycha głównego widoku) */}
+                  {showConsistencyExplainer && (
+                    <div className="pt-2.5 border-t border-[#EFE7DA] space-y-2 text-xs text-[#524637] animate-in fade-in duration-200">
+                      {product.consistencyInfo.hasGlucoseBloom && (
+                        <div className="p-3 bg-white rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
+                          <strong className="text-[#8C4609] block font-bold">Biały nalot na ściankach słoika („kwiat miodu”):</strong>
+                          <p className="leading-relaxed">{product.consistencyInfo.glucoseBloomInfo}</p>
+                        </div>
+                      )}
+                      <div className="p-3 bg-[#FAF3E5] rounded-xl border border-[#D9821E]/25 text-[11px] space-y-1 shadow-2xs">
+                        <strong className="text-[#1B4332] block font-bold">Żelazna zasada 40°C (Ochrona enzymów ula):</strong>
+                        <p className="leading-relaxed">
+                          Miód zachowuje pełną moc biologiczną (diastazę, lizozym i inhibinę) wyłącznie do temperatury 40°C. 
+                          Dodawaj go do lekko przestudzonej herbaty lub letniej wody.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Gramature / Variant selection */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-[#594D42]">
-                    Wybierz gramaturę słoika:
+                    {prodType === 'bee-colony'
+                      ? 'Wybierz pakiet odkładu:'
+                      : prodType === 'candle'
+                      ? 'Wybierz rodzaj świecy:'
+                      : prodType === 'apitherapy'
+                      ? 'Wybierz gramaturę opakowania:'
+                      : 'Wybierz gramaturę słoika:'}
                   </label>
                   <span className="text-xs text-[#7A6A5A]">
-                    Cena jednostkowa: <strong className="text-[#1B4332]">{pricePerKg} zł / kg</strong>
+                    {prodType === 'bee-colony' ? (
+                      <strong className="text-[#1B4332]">Pakiet ze szkoleniem w pasiece</strong>
+                    ) : prodType === 'candle' ? (
+                      <strong className="text-[#1B4332]">Cena za 1 sztukę</strong>
+                    ) : prodType === 'apitherapy' ? (
+                      <span>Cena: <strong className="text-[#1B4332]">{currentSize ? Math.round((effectivePrice / currentSize.weightGrams) * 100) : 0} zł / 100g</strong></span>
+                    ) : (
+                      <span>Cena jednostkowa: <strong className="text-[#1B4332]">{pricePerKg} zł / kg</strong></span>
+                    )}
                   </span>
                 </div>
 
@@ -681,17 +1205,23 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                           <span className={`absolute -top-2.5 left-1/2 -translate-x-1/2 z-10 text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-xs ${
                             isSelected ? 'bg-[#E5983A] text-[#14100C] ring-1 ring-white/40' : 'bg-[#1B4332] text-white'
                           }`}>
-                            Najtaniej / kg
+                            {prodType === 'apitherapy' || prodType === 'honey' ? 'Najtaniej' : 'Wybór'}
                           </span>
                         )}
-                        <div className="font-serif text-base font-bold tracking-tight leading-tight">
+                        <div className="text-base font-bold tracking-tight leading-tight tabular-nums">
                           {size.gram}
                         </div>
                         <div className={`text-xs font-bold mt-1 ${isSelected ? 'text-[#F3C06B]' : 'text-[#8C5815]'}`}>
                           {purchaseMode === 'subscription' ? Math.round(size.price * 0.9) : size.price} zł
                         </div>
                         <div className={`text-[10px] font-mono mt-0.5 ${isSelected ? 'text-white/65' : 'text-[#8C7A6B]'}`}>
-                          {Math.round(((purchaseMode === 'subscription' ? Math.round(size.price * 0.9) : size.price) / size.weightGrams) * 1000)} zł/kg
+                          {prodType === 'bee-colony'
+                            ? '5 ramek + szkolenie'
+                            : prodType === 'candle'
+                            ? '100% wosk pszczeli'
+                            : prodType === 'apitherapy'
+                            ? `${Math.round((size.price / size.weightGrams) * 100)} zł / 100g`
+                            : `${Math.round(((purchaseMode === 'subscription' ? Math.round(size.price * 0.9) : size.price) / size.weightGrams) * 1000)} zł/kg`}
                         </div>
                       </button>
                     );
@@ -699,68 +1229,128 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                 </div>
               </div>
 
-              {/* Model zakupu: Jednorazowy vs Autouzupełnianie spiżarni */}
-              <div className="pt-2 border-t border-[#D9821E]/15 space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-[#594D42]">
-                    Wybierz model zakupu:
-                  </label>
+              {/* Model zakupu: Jednorazowy vs Autouzupełnianie spiżarni (wyłącznie dla miodu i apiterapii) */}
+              {(prodType === 'honey' || prodType === 'apitherapy') && (
+                <div className="pt-2 border-t border-[#D9821E]/15 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-wider text-[#594D42]">
+                      Wybierz model zakupu:
+                    </label>
+                    {purchaseMode === 'subscription' && (
+                      <span className="text-[10px] font-bold text-[#1B4332] bg-[#1B4332]/10 px-2 py-0.5 rounded-full">
+                        ✓ Aktywny stały rabat -10%
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setPurchaseMode('one-time')}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        purchaseMode === 'one-time'
+                          ? 'bg-[#1B4332]/5 border-[#1B4332] text-[#1B4332] ring-1 ring-[#1B4332]'
+                          : 'bg-[#FAF8F5] border-[#DFCBB5] text-[#594D42] hover:bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between font-bold">
+                        <span>Zakup jednorazowy</span>
+                        <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                          purchaseMode === 'one-time' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-[#A69784]'
+                        }`}>
+                          {purchaseMode === 'one-time' && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#7A6A5A] block mt-1">
+                        Cena standardowa ({basePrice} zł)
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPurchaseMode('subscription')}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
+                        purchaseMode === 'subscription'
+                          ? 'bg-[#E5983A]/10 border-[#D9821E] text-[#8C4609] ring-1 ring-[#D9821E]'
+                          : 'bg-[#FAF8F5] border-[#DFCBB5] text-[#594D42] hover:bg-white'
+                      }`}
+                    >
+                      <span className="absolute top-0 right-0 bg-[#D9821E] text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-bl-lg">
+                        -10% Rabat
+                      </span>
+                      <div className="flex items-center justify-between font-bold">
+                        <span>Autouzupełnianie</span>
+                        <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                          purchaseMode === 'subscription' ? 'border-[#D9821E] bg-[#D9821E]' : 'border-[#A69784]'
+                        }`}>
+                          {purchaseMode === 'subscription' && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#7A6A5A] block mt-1">
+                        Dostawa co {subscriptionInterval} dni • <strong>{effectivePrice} zł</strong> • Bez umowy
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Rozwijany elastyczny selektor częstotliwości autouzupełniania */}
                   {purchaseMode === 'subscription' && (
-                    <span className="text-[10px] font-bold text-[#1B4332] bg-[#1B4332]/10 px-2 py-0.5 rounded-full">
-                      ✓ Aktywny stały rabat -10%
-                    </span>
+                    <div className="p-3 bg-[#FFFDF9] rounded-2xl border border-[#D9821E]/30 space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-[#3B2D20] flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#D9821E]" />
+                          Częstotliwość dostaw spiżarni:
+                        </span>
+                        <span className="text-[10px] text-[#1B4332] font-semibold bg-[#1B4332]/10 px-2 py-0.5 rounded-full">
+                          Stały rabat -10%
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { days: 30, label: 'Co 30 dni', sub: 'Codzienna herbata' },
+                          { days: 60, label: 'Co 60 dni', sub: 'Rekomendowane', badge: 'Popularne' },
+                          { days: 90, label: 'Co 90 dni', sub: 'Okazjonalnie' },
+                        ].map((opt) => {
+                          const isActive = subscriptionInterval === opt.days;
+                          return (
+                            <button
+                              key={opt.days}
+                              type="button"
+                              onClick={() => setSubscriptionInterval(opt.days as 30 | 60 | 90)}
+                              className={`py-2 px-1.5 rounded-xl text-center border transition-all cursor-pointer relative ${
+                                isActive
+                                  ? 'bg-[#1B4332] text-white border-[#1B4332] shadow-xs'
+                                  : 'bg-white text-[#524637] border-[#DFD3C2] hover:bg-[#FAF6EE] hover:border-[#D9821E]/50'
+                              }`}
+                            >
+                              {opt.badge && (
+                                <span className={`absolute -top-1.5 right-1.5 text-[8px] font-black uppercase px-1 rounded-full ${
+                                  isActive ? 'bg-[#E5983A] text-[#1B4332]' : 'bg-[#1B4332] text-white'
+                                }`}>
+                                  {opt.badge}
+                                </span>
+                              )}
+                              <span className="block font-bold text-xs sm:text-[13px] leading-tight">
+                                {opt.label}
+                              </span>
+                              <span className={`block text-[9px] mt-0.5 leading-tight ${
+                                isActive ? 'text-[#E0D8CB]' : 'text-[#8C7A6B]'
+                              }`}>
+                                {opt.sub}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <p className="text-[10.5px] text-[#7A6A5A] flex items-center gap-1.5 pt-0.5">
+                        <Check className="w-3 h-3 text-[#1B4332] shrink-0" />
+                        <span>Możesz przesunąć termin, wstrzymać lub anulować w dowolnym momencie w 1 kliknięcie bez umów.</span>
+                      </p>
+                    </div>
                   )}
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setPurchaseMode('one-time')}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
-                      purchaseMode === 'one-time'
-                        ? 'bg-[#1B4332]/5 border-[#1B4332] text-[#1B4332] ring-1 ring-[#1B4332]'
-                        : 'bg-[#FAF8F5] border-[#DFCBB5] text-[#594D42] hover:bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between font-bold">
-                      <span>Zakup jednorazowy</span>
-                      <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                        purchaseMode === 'one-time' ? 'border-[#1B4332] bg-[#1B4332]' : 'border-[#A69784]'
-                      }`}>
-                        {purchaseMode === 'one-time' && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-[#7A6A5A] block mt-1">
-                      Cena standardowa ({basePrice} zł)
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setPurchaseMode('subscription')}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
-                      purchaseMode === 'subscription'
-                        ? 'bg-[#E5983A]/10 border-[#D9821E] text-[#8C4609] ring-1 ring-[#D9821E]'
-                        : 'bg-[#FAF8F5] border-[#DFCBB5] text-[#594D42] hover:bg-white'
-                    }`}
-                  >
-                    <span className="absolute top-0 right-0 bg-[#D9821E] text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-bl-lg">
-                      -10% Rabat
-                    </span>
-                    <div className="flex items-center justify-between font-bold">
-                      <span>Autouzupełnianie</span>
-                      <span className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
-                        purchaseMode === 'subscription' ? 'border-[#D9821E] bg-[#D9821E]' : 'border-[#A69784]'
-                      }`}>
-                        {purchaseMode === 'subscription' && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-[#7A6A5A] block mt-1">
-                      Dostawa co 60 dni • <strong>{effectivePrice} zł</strong> • Bez umowy
-                    </span>
-                  </button>
-                </div>
-              </div>
+              )}
 
               {/* Price & Quantity & CTA */}
               <div className="pt-2 border-t border-[#D9821E]/15">
@@ -770,7 +1360,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                       Razem do zapłaty:
                     </span>
                     <div className="flex items-baseline gap-2 mt-0.5">
-                      <span className="font-serif text-3xl sm:text-4xl font-black text-[#1B4332] tracking-tight">
+                      <span className="font-sans text-3xl sm:text-4xl font-black text-[#1B4332] tracking-tight tabular-nums">
                         {(effectivePrice * quantity).toFixed(2)}
                       </span>
                       <span className="text-base font-bold text-[#8C7A6B]">zł</span>
@@ -781,14 +1371,26 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                       )}
                     </div>
                     <span className="text-[11px] text-[#1B4332] font-semibold block mt-0.5">
-                      ✓ Świeży rozlew z pasieki w szklanym słoiku
+                      {prodType === 'bee-colony'
+                        ? '✓ Odbiór w wentylowanym transporterze w pasiece Ciechów'
+                        : prodType === 'candle'
+                        ? '✓ Rękodzieło ze 100% czystego wosku z bawełnianym knotem'
+                        : prodType === 'apitherapy'
+                        ? '✓ Szczelne opakowanie chroniące przed wilgocią i światłem'
+                        : '✓ Świeży rozlew z pasieki w szklanym słoiku'}
                     </span>
                   </div>
 
                   {/* Refined Quantity Counter */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1 pt-1 sm:pt-0">
                     <span className="text-[10px] uppercase font-bold text-[#8C7A6B] tracking-wider">
-                      Liczba słoików:
+                      {prodType === 'bee-colony'
+                        ? 'Liczba rodzin (odkładów):'
+                        : prodType === 'candle'
+                        ? 'Liczba świec:'
+                        : prodType === 'apitherapy'
+                        ? 'Liczba opakowań:'
+                        : 'Liczba słoików:'}
                     </span>
                     <div className="flex items-center border border-[#D9821E]/30 rounded-xl bg-white overflow-hidden shadow-2xs">
                       <button
@@ -837,10 +1439,10 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                   <div className="flex items-center justify-between text-xs text-[#594D42] pt-2 px-1">
                     <span className="flex items-center gap-1.5 font-semibold text-[#1B4332]">
                       <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
-                      Świeża partia z pasieki (Dostępny)
+                      {prodType === 'bee-colony' ? 'Rezerwacja aktywna (Dostępny)' : 'Świeża partia z pasieki (Dostępny)'}
                     </span>
                     <span className="text-[#7A6A5A]">
-                      Darmowa dostawa od 199 zł
+                      {prodType === 'bee-colony' ? 'Odbiór osobisty' : 'Darmowa dostawa od 199 zł'}
                     </span>
                   </div>
                 </div>
@@ -850,22 +1452,22 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               <div className="pt-3 border-t border-[#D9821E]/15 grid grid-cols-3 gap-2 text-center text-[11px] text-[#594D42]">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#1B4332] shrink-0" />
-                  <span className="font-semibold">Wysyłka w 24h</span>
+                  <span className="font-semibold">{prodType === 'bee-colony' ? 'Odbiór osobisty' : 'Wysyłka w 24h'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#1B4332] shrink-0" />
-                  <span className="font-semibold">Zero stłuczek</span>
+                  <span className="font-semibold">{prodType === 'bee-colony' ? 'Transporter z wentylacją' : 'Zero stłuczek'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 p-2 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE]">
                   <Truck className="w-3.5 h-3.5 text-[#D9821E] shrink-0" />
-                  <span className="font-semibold">Paczkomat & DPD</span>
+                  <span className="font-semibold">{prodType === 'bee-colony' ? 'Szkolenie przy ulu' : 'Paczkomat & DPD'}</span>
                 </div>
               </div>
             </div>
 
-            {/* MOBILE ONLY: Tasting Notes, Sensory Card & Safe Shipping after Buy Box */}
+            {/* MOBILE ONLY: Specification Badges, Sensory Card & Safe Shipping after Buy Box */}
             <div className="lg:hidden space-y-4 pt-2">
-              {renderFlavorNotes()}
+              {renderSpecificationBadges()}
               {renderSensoryAndShipping()}
             </div>
           </div>
@@ -882,7 +1484,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
             <div className="flex items-center justify-between px-4 pt-3 pb-1.5 border-b border-[#D9821E]/15 sm:hidden">
               <span className="text-[11px] font-bold text-[#8C7A6B] uppercase tracking-wider flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-[#D9821E]" />
-                Karty wiedzy o miodzie:
+                {isTreasure ? 'Szczegóły i specyfikacja:' : 'Karty wiedzy o miodzie:'}
               </span>
               <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-[#D9821E] bg-[#D9821E]/10 px-2.5 py-0.5 rounded-full animate-pulse">
                 <span>Przesuń opcje</span>
@@ -892,13 +1494,31 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
             <div className="relative">
               <div className="flex items-center overflow-x-auto scrollbar-none px-3 sm:px-6 scroll-smooth pr-10 sm:pr-6">
-                {[
+                {(prodType === 'bee-colony' ? [
+                  { id: 'opis', label: 'Specyfikacja i Szkolenie', icon: FileText },
+                  { id: 'zdrowie', label: 'Zdrowotność & Genetyka', icon: ShieldCheck },
+                  { id: 'kulinaria', label: 'Odbiór i Hodowla', icon: Clock },
+                  { id: 'badania', label: 'Świadectwo Weterynaryjne', icon: CheckCircle2 },
+                  { id: 'opinie', label: `Opinie (${product.reviewsCount})`, icon: MessageSquare },
+                ] : prodType === 'candle' ? [
+                  { id: 'opis', label: 'Rękodzieło i Skład', icon: FileText },
+                  { id: 'zdrowie', label: 'Aromaterapia i Jonizacja', icon: Sparkles },
+                  { id: 'kulinaria', label: 'Instrukcja Palenia', icon: Leaf },
+                  { id: 'badania', label: 'Czystość Wosku 100%', icon: ShieldCheck },
+                  { id: 'opinie', label: `Opinie (${product.reviewsCount})`, icon: MessageSquare },
+                ] : prodType === 'apitherapy' ? [
+                  { id: 'opis', label: 'Opis i Pozyskiwanie', icon: FileText },
+                  { id: 'zdrowie', label: 'Działanie Lecznicze', icon: Heart },
+                  { id: 'kulinaria', label: 'Dawkowanie i Przepisy', icon: Leaf },
+                  { id: 'badania', label: 'Czystość i Badania', icon: Beaker },
+                  { id: 'opinie', label: `Opinie (${product.reviewsCount})`, icon: MessageSquare },
+                ] : [
                   { id: 'opis', label: 'Opis i Pochodzenie', icon: FileText },
                   { id: 'zdrowie', label: 'Właściwości Zdrowotne', icon: Heart },
                   { id: 'kulinaria', label: 'Jak Stosować & Pairing', icon: Leaf },
                   { id: 'badania', label: 'Badania Laboratoryjne', icon: Beaker },
                   { id: 'opinie', label: `Opinie (${product.reviewsCount})`, icon: MessageSquare },
-                ].map((tab) => {
+                ]).map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
 
@@ -929,133 +1549,480 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
           {/* Tab Content Panels */}
           <div className="p-6 sm:p-10">
             
-            {/* TAB 1: OPIS I POCHODZENIE */}
+            {/* TAB 1: OPIS I SPECYFIKACJA */}
             {activeTab === 'opis' && (
               <div className="space-y-6 max-w-4xl animate-in fade-in duration-200">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#241D17] mb-3">
-                    Historia zbioru i specyfika odmiany
+                    {prodType === 'bee-colony'
+                      ? 'Specyfikacja odkładu i program szkolenia'
+                      : prodType === 'candle'
+                      ? 'Rękodzieło ze 100% czystego wosku pszczelego'
+                      : prodType === 'apitherapy'
+                      ? 'Pozyskiwanie i czystość biologiczna superfood ula'
+                      : 'Historia zbioru i specyfika odmiany'}
                   </h3>
                   <p className="text-[#594D42] text-sm sm:text-base leading-relaxed mb-4">
                     {product.description}
                   </p>
                   <p className="text-[#594D42] text-sm sm:text-base leading-relaxed">
-                    Nasz miód nie jest poddawany szkodliwym procesom pasteryzacji, dekrystalizacji termicznej ani filtracji ciśnieniowej. 
-                    Trafia do słoika dokładnie w takiej postaci, w jakiej stworzyły go pszczoły w czystym ekosystemie Dolnego Śląska. 
-                    Zachowuje naturalne pyłki kwiatowe, drobiny wosku i propolisu oraz pełną bioaktywność enzymatyczną.
+                    {prodType === 'bee-colony' ? (
+                      'Odkład pszczeli to kompletna biologiczna jednostka produkcyjna gotowa do natychmiastowego rozwoju. Pszczoły obsiadają 5 ramek wielkopolskich, posiadają zapasy miodu i pierzgi oraz młodą, znakowaną matkę pszczelą z bieżącego sezonu. Wraz z odbiorem rodziny otrzymujesz profesjonalne szkolenie wstępne z mistrzem pszczelarskim w naszej pasiece w Ciechowie.'
+                    ) : prodType === 'candle' ? (
+                      'Nasze świece powstają ręcznie w małych partiach z dziewiczego wosku pszczelego pozyskiwanego z węzy i odsklepin naszej pasieki. Nie zawierają parafiny, stearyny ani sztucznych aromatów. Płomień świecy uwalnia ciepły, miodowy mikroklimat i emituje dobroczynne jony ujemne oczyszczające powietrze z kurzu i smogu.'
+                    ) : prodType === 'apitherapy' ? (
+                      'Surowce apiterapeutyczne pozyskujemy wyłącznie w szczycie pożytkowym na Warmii. Zbiór i selekcja odbywają się ręcznie z zachowaniem rygorystycznego reżimu temperaturowego (do 38°C), co pozwala zachować nienaruszone enzymy ulowe, witaminy i bioflawonoidy o potężnym działaniu prozdrowotnym.'
+                    ) : (
+                      'Nasz miód nie jest poddawany szkodliwym procesom pasteryzacji, dekrystalizacji termicznej ani filtracji ciśnieniowej. Trafia do słoika dokładnie w takiej postaci, w jakiej stworzyły go pszczoły w czystym ekosystemie Dolnego Śląska i Warmii. Zachowuje naturalne pyłki kwiatowe, drobiny wosku i propolisu oraz pełną bioaktywność enzymatyczną.'
+                    )}
                   </p>
                 </div>
 
-                {/* Apiary facts grid */}
+                {/* Facts grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[#D9821E]/15">
-                  <div className="bg-[#FAF6EE] p-5 rounded-2xl border border-[#D9821E]/15">
-                    <p className="text-xs text-[#7A6A5A] uppercase font-bold mb-1">Położenie Pasieki</p>
-                    <p className="font-serif font-bold text-[#241D17] text-base">{product.region}</p>
-                    <p className="text-xs text-[#594D42] mt-1.5">Dziewicze tereny leśne i łąkowe wolne od intensywnego przemysłu.</p>
+                  <div className="bg-white p-5 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-1.5">
+                    <p className="text-[11px] text-[#D9821E] uppercase font-bold tracking-wider mb-1">
+                      {prodType === 'bee-colony'
+                        ? 'Termin & Miejsce Odbioru'
+                        : prodType === 'candle'
+                        ? 'Czystość Surowca'
+                        : product.id === 'propolis-kit'
+                        ? 'Pochodzenie Żywic'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Forma Biologiczna'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Pochodzenie Obnóży'
+                        : 'Położenie Pasieki'}
+                    </p>
+                    <p className="font-bold text-[#1B4332] text-base">
+                      {prodType === 'bee-colony'
+                        ? 'Pasieka Ciechów • Czerwiec / Lipiec 2026'
+                        : prodType === 'candle'
+                        ? '100% Cera Flava'
+                        : product.id === 'propolis-kit'
+                        ? 'Lasy Warmii i Mazur'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Pszczeli Chleb Ulowy'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Kwitnące łąki Warmii'
+                        : product.region}
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#594D42] mt-1 leading-relaxed">
+                      {prodType === 'bee-colony'
+                        ? 'Odbiór osobisty w wentylowanym pudle transportowym. Możliwy przyjazd z własnym ulem.'
+                        : prodType === 'candle' 
+                        ? 'Wytopiony z odsklepin i dziewiczej węzy pasiecznej, bez dodatku parafiny i stearyny.'
+                        : product.id === 'propolis-kit'
+                        ? 'Żywice pąków drzew liściastych i iglastych (topola, olcha, sosna, brzoza).'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Pyłek kwiatowy naturalnie zakiszony kwasem mlekowym w komórkach plastra pszczelego.'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Wielobarwny pyłek z czystych, dzikich łąk, facelii, mniszka i zagajników Warmii.'
+                        : 'Dziewicze tereny leśne i łąkowe wolne od intensywnego przemysłu.'}
+                    </p>
                   </div>
-                  <div className="bg-[#FAF6EE] p-5 rounded-2xl border border-[#D9821E]/15">
-                    <p className="text-xs text-[#7A6A5A] uppercase font-bold mb-1">Metoda Pozyskiwania</p>
-                    <p className="font-serif font-bold text-[#241D17] text-base">Wirowanie na zimno</p>
-                    <p className="text-xs text-[#594D42] mt-1.5">Tradycyjna miodarka radialna, temperatura w pracowni poniżej 25°C.</p>
+                  <div className="bg-white p-5 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-1.5">
+                    <p className="text-[11px] text-[#D9821E] uppercase font-bold tracking-wider mb-1">
+                      {prodType === 'bee-colony' 
+                        ? 'Skład Biologiczny Rodziny' 
+                        : prodType === 'candle' 
+                        ? 'Knot Bawełniany' 
+                        : product.id === 'propolis-kit'
+                        ? 'Baza do Ekstrakcji'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Przyswajalność'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Reżim Termiczny'
+                        : 'Metoda Pozyskiwania'}
+                    </p>
+                    <p className="font-bold text-[#1B4332] text-base">
+                      {prodType === 'bee-colony' 
+                        ? '3 ramki czerwiu + 2 z pokarmem' 
+                        : prodType === 'candle' 
+                        ? 'Niebielona bawełna' 
+                        : product.id === 'propolis-kit'
+                        ? 'Nalewka 20% lub maść'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Ponad 3x wyższa niż pyłku'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Maksymalnie 38°C'
+                        : 'Wirowanie na zimno'}
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#594D42] mt-1 leading-relaxed">
+                      {prodType === 'bee-colony' 
+                        ? 'Czerw w każdym stadium (jaja, larwy, kryty) gwarantujący ciągłość pokoleniową rodziny.' 
+                        : prodType === 'candle' 
+                        ? 'Knot z surowej, niebielonej bawełny bez rdzenia ołowianego – stabilny płomień bez dymu.' 
+                        : product.id === 'propolis-kit'
+                        ? 'Czysty surowiec idealny do sporządzenia domowej nalewki spirytusowej (macerat 20%).'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Enzymatycznie rozpuszczone otoczki komórkowe ułatwiają natychmiastowe wchłanianie.'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Powolne suszenie mikronawiewem – żywe enzymy ulowe zachowują 100% aktywności.'
+                        : 'Tradycyjna miodarka radialna, temperatura poniżej 25°C.'}
+                    </p>
                   </div>
-                  <div className="bg-[#FAF6EE] p-5 rounded-2xl border border-[#D9821E]/15">
-                    <p className="text-xs text-[#7A6A5A] uppercase font-bold mb-1">Rok i Sezon</p>
-                    <p className="font-serif font-bold text-[#241D17] text-base">Zbiór {product.harvestYear}</p>
-                    <p className="text-xs text-[#594D42] mt-1.5">Miód z bieżącego sezonu pszczelarskiego ({product.harvestMonth}).</p>
+                  <div className="bg-white p-5 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-1.5">
+                    <p className="text-[11px] text-[#D9821E] uppercase font-bold tracking-wider mb-1">
+                      {prodType === 'bee-colony' 
+                        ? 'Program Szkolenia w Cenie' 
+                        : prodType === 'candle' 
+                        ? 'Czas Palenia' 
+                        : product.id === 'propolis-kit'
+                        ? 'Selekcja Partii'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Metoda Pozyskania'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Zasada Spożywania'
+                        : 'Sezon Pozyskania'}
+                    </p>
+                    <p className="font-bold text-[#1B4332] text-base">
+                      {prodType === 'bee-colony' 
+                        ? 'Przegląd gniazda i profilaktyka' 
+                        : prodType === 'candle' 
+                        ? 'Do 3x dłużej niż parafina' 
+                        : product.id === 'propolis-kit'
+                        ? '100% czysty kit ulowy'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Wydobycie z plastrów'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Wymaga namoczenia'
+                        : `Zbiór ${product.harvestYear}`}
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#594D42] mt-1 leading-relaxed">
+                      {prodType === 'bee-colony' 
+                        ? '1-godzinny instruktaż z mistrzem pszczelarskim: ocena matki, praca podkurzaczem, karmienie i leczenie.' 
+                        : prodType === 'candle' 
+                        ? 'Gęsty wosk pszczeli (temperatura topnienia 62–64°C) spala się czysto i bardzo powoli.' 
+                        : product.id === 'propolis-kit'
+                        ? 'Pozyskiwany za pomocą specjalnych poławiaczy kratowych bez mechanicznych zanieczyszczeń.'
+                        : product.id === 'pierzga-pszczela'
+                        ? 'Ręczne wyjmowanie poszczególnych komórek pierzgi z dojrzałych plastrów woskowych.'
+                        : product.id === 'pylek-pszczeli'
+                        ? 'Zalanie letnią wodą na min. 6-8h przed wypiciem powoduje pęknięcie ziaren i uwolnienie witamin.'
+                        : `Świeży surowiec z bieżącego sezonu (${product.harvestMonth}).`}
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* TAB 2: WŁAŚCIWOŚCI ZDROWOTNE & APITERAPIA */}
+            {/* TAB 2: WŁAŚCIWOŚCI ZDROWOTNE & APITERAPIA / GENETYKA */}
             {activeTab === 'zdrowie' && (
               <div className="space-y-6 max-w-4xl animate-in fade-in duration-200">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#241D17] mb-2">
-                    Właściwości prozdrowotne i apiterapia
+                    {prodType === 'bee-colony'
+                      ? 'Zdrowotność rodziny i genetyka pszczół'
+                      : prodType === 'candle'
+                      ? 'Aromaterapia i ujemna jonizacja powietrza'
+                      : 'Właściwości prozdrowotne i apiterapia'}
                   </h3>
-                  <p className="text-sm text-[#594D42]">
-                    Prawdziwy surowy miód to bioaktywny dar natury o udokumentowanym działaniu wspierającym organizm.
+                  <p className="text-sm sm:text-base text-[#594D42] leading-relaxed">
+                    {prodType === 'bee-colony'
+                      ? 'Gwarancja zdrowotności, czystości rasowej i łagodności matki pszczelej pod nadzorem PLW.'
+                      : prodType === 'candle'
+                      ? 'Czysty wosk pszczeli tworzy w pomieszczeniu uzdrawiający mikroklimat wolny od smogu i kurzu.'
+                      : 'Prawdziwy surowiec z ula to bioaktywny dar natury o udokumentowanym działaniu prozdrowotnym.'}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {product.healthBenefits.map((benefit, idx) => (
-                    <div 
-                      key={idx}
-                      className="p-4 sm:p-5 bg-[#FAF6EE] rounded-2xl border border-[#1B4332]/15 flex items-start gap-3.5"
-                    >
-                      <div className="w-7 h-7 rounded-full bg-[#1B4332]/10 text-[#1B4332] flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="w-4 h-4" />
+                  {product.healthBenefits.map((benefit, idx) => {
+                    const [title, desc] = benefit.includes('–')
+                      ? benefit.split('–').map(s => s.trim())
+                      : [benefit, ''];
+
+                    return (
+                      <div 
+                        key={idx}
+                        className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5"
+                      >
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <Check className="w-4 h-4 text-[#D9821E]" />
+                        </div>
+                        <div>
+                          <p className="text-sm sm:text-base font-bold text-[#1B4332]">{title}</p>
+                          {desc && (
+                            <p className="text-xs sm:text-sm text-[#594D42] mt-1 leading-relaxed">
+                              {desc}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-[#241D17]">{benefit}</p>
-                        <p className="text-xs text-[#7A6A5A] mt-1 leading-relaxed">
-                          Naturalne enzymy pszczele i flawonoidy wspierają odporność i procesy regeneracyjne.
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
-                {/* Important Beekeeper Warning & Safety */}
+                {/* Beekeeper Warning & Safety for the specific product */}
                 <div className="space-y-3">
-                  <div className="p-4 sm:p-5 bg-amber-50/90 rounded-2xl border border-amber-200 flex items-start gap-3.5 text-xs text-amber-900 leading-relaxed shadow-2xs">
-                    <AlertCircle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block font-bold text-sm mb-1">Ochrona enzymów pszczelich (Zasada 40°C):</strong>
-                      Nigdy nie rozpuszczaj miodu w płynach o temperaturze powyżej 40°C! W wyższych temperaturach cenne białka enzymatyczne (inhibina pszczela, lizozym, amylaza) ulegają bezpowrotnej denaturacji termicznej.
-                    </div>
-                  </div>
+                  {prodType === 'bee-colony' ? (
+                    <>
+                      <div className="p-5 bg-white rounded-2xl border border-emerald-200/80 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200 shrink-0 mt-0.5">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-emerald-950 mb-1">
+                            Świadectwo zdrowotności Powiatowego Lekarza Weterynarii:
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Pasieka znajduje się pod urzędowym nadzorem weterynaryjnym (WNI 28143502). Rodziny są badane pod kątem zgnilca amerykańskiego (AFB) i chorób zakaźnych czerwiu. Do każdego odkładu wydawane jest zaświadczenie weterynaryjne.
+                          </p>
+                        </div>
+                      </div>
 
-                  <div className="p-4 sm:p-5 bg-[#FAF6EE] rounded-2xl border border-[#D9821E]/20 flex items-start gap-3.5 text-xs text-[#594D42] leading-relaxed shadow-2xs">
-                    <ShieldAlert className="w-5 h-5 text-[#8C4609] shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block font-bold text-sm text-[#241D17] mb-1">Zalecenie dotyczące wieku dzieci (Standard GIS / WHO):</strong>
-                      Naturalny, surowy miód pszczeli podajemy dzieciom dopiero po ukończeniu 12. miesiąca życia. Jest to powszechny standard medyczny chroniący niemowlęta z niedojrzałym jeszcze układem pokarmowym przed naturalnymi przetrwalnikami flory środowiskowej.
-                    </div>
-                  </div>
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#8C4609] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <ShieldAlert className="w-5 h-5 text-[#8C4609]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Selekcja na wysoką łagodność (Carnica / Buckfast):
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Matka pszczela pochodzi z linii hodowlanej charakteryzującej się wyjątkowym spokojem na plastrach i niską skłonnością do żądlenia. Umożliwia to komfortową naukę i pracę przy ulu nawet początkującym pasjonatom.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : prodType === 'candle' ? (
+                    <>
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <Sparkles className="w-5 h-5 text-[#D9821E]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Ulga dla alergików i osób z astmą:
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            W przeciwieństwie do parafiny ropopochodnej (emitującej benzen i toluen), wosk pszczeli jonizuje ujemnie powietrze, neutralizując unoszące się drobinki smogu, kurzu, dymu i zarodników grzybów.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#8C4609] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <ShieldAlert className="w-5 h-5 text-[#8C4609]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Zasady bezpiecznego palenia:
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Nigdy nie pozostawiaj zapalonej świecy bez nadzoru dorosłych. Świecę należy stawiać na żaroodpornej podstawce z dala od firanek, materiałów łatwopalnych i przeciągów.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : prodType === 'apitherapy' ? (
+                    <>
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <AlertCircle className="w-5 h-5 text-[#D9821E]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Ochrona enzymów ulowych (Zasada 40°C):
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Nigdy nie rozpuszczaj produktów apiterapeutycznych (pierzgi, pyłku, propolisu) w płynach o temperaturze powyżej 40°C! W wyższych temperaturach białka enzymatyczne, cenne biopierwiastki i witaminy ulegają termicznej degradacji.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#8C4609] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <ShieldAlert className="w-5 h-5 text-[#8C4609]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Próba uczuleniowa (Bezpieczeństwo apiterapii):
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Czyste produkty ulowe charakteryzują się bardzo wysoką aktywnością biologiczną. Osoby z podejrzeniem alergii na pyłki lub produkty pszczele powinny rozpoczynać kurację od minimalnej ilości (np. 1 ziarenko pyłku/pierzgi pod język lub 1 kropla nalewki propolisowej na skórę) i obserwować reakcję organizmu.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <AlertCircle className="w-5 h-5 text-[#D9821E]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Ochrona enzymów miodu (Zasada 40°C):
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Prawdziwy miód na zimno zachowuje pełnię aktywnych enzymów pszczelich (inhibina, lizozym). Nigdy nie dodawaj miodu do wrzątku ani herbaty cieplejszej niż 40°C – wysoka temperatura niszczy enzymy, a miód traci swoje unikalne właściwości prozdrowotne.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-5 bg-white rounded-2xl border border-[#D9821E]/20 shadow-2xs flex items-start gap-3.5 leading-relaxed">
+                        <div className="w-8 h-8 rounded-xl bg-[#FAF3E5] text-[#8C4609] flex items-center justify-center border border-[#D9821E]/25 shrink-0 mt-0.5">
+                          <ShieldAlert className="w-5 h-5 text-[#8C4609]" />
+                        </div>
+                        <div>
+                          <strong className="block text-sm sm:text-base font-bold text-[#1B4332] mb-1">
+                            Próba uczuleniowa i bezpieczeństwo:
+                          </strong>
+                          <p className="text-xs sm:text-sm text-[#594D42] leading-relaxed">
+                            Surowy, niefiltrowany miód zawiera mikroskopijne cząstki naturalnego pyłku roślinnego. Osoby ze skłonnością do silnych alergii pyłkowych powinny zaczynać spożywanie nowej odmiany od niewielkiej ilości (np. 1/4 łyżeczki). Zgodnie z zaleceniami pediatrycznymi, miodu nie podajemy niemowlętom poniżej 1. roku życia.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* TAB 4: JAK STOSOWAĆ & PAIRING */}
+            {/* TAB 3: JAK STOSOWAĆ & ODBIÓR & HODOWLA */}
             {activeTab === 'kulinaria' && (
               <div className="space-y-6 max-w-4xl animate-in fade-in duration-200">
                 <div>
                   <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#241D17] mb-2">
-                    Inspiracje kulinarne i zalecenia spożywania
+                    {prodType === 'bee-colony'
+                      ? 'Wytyczne odbioru i zasiedlenia odkładu w ulu'
+                      : prodType === 'candle'
+                      ? 'Instrukcja prawidłowego palenia świecy'
+                      : prodType === 'apitherapy'
+                      ? 'Dawkowanie i sprawdzone przepisy kuracji'
+                      : 'Inspiracje kulinarne i zalecenia spożywania'}
                   </h3>
                   <p className="text-sm text-[#594D42]">
-                    Jak w pełni wykorzystać potencjał smakowy i odżywczy tego miodu w codziennej diecie.
+                    {prodType === 'bee-colony'
+                      ? 'Praktyczne kroki od odbioru w pasiece po udany rozwój rodziny w Twojej pasiece.'
+                      : prodType === 'candle'
+                      ? 'Jak cieszyć się optymalnym płomieniem, miodowym zapachem i maksymalnym czasem palenia.'
+                      : prodType === 'apitherapy'
+                      ? 'Jak optymalnie włączyć ten produkt do codziennej diety i profilaktyki zdrowotnej.'
+                      : 'Jak w pełni wykorzystać potencjał smakowy i odżywczy tego miodu w codziennej diecie.'}
                   </p>
                 </div>
 
-                {/* Recommended pairing */}
-                <div className="bg-[#FAF6EE] p-5 sm:p-6 rounded-2xl border border-[#D9821E]/20">
-                  <h4 className="text-xs font-bold text-[#1B4332] mb-1.5 uppercase tracking-wider">
-                    Rekomendowany food-pairing:
-                  </h4>
-                  <p className="text-base sm:text-lg text-[#241D17] font-serif leading-relaxed">
-                    „{product.pairing}”
-                  </p>
-                </div>
+                {/* Werdykt Doradcy • Kiedy wybrać ten produkt */}
+                {product.advisorVerdict && (
+                  <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-[#1B4332] text-[#E6C065] flex items-center justify-center shadow-xs shrink-0">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-bold text-[#D9821E] uppercase tracking-wider block">
+                          Werdykt Pszczelarza & Doradcy
+                        </span>
+                        <h4 className="text-base sm:text-lg font-bold text-[#1B4332]">
+                          Kiedy i dla kogo warto wybrać {product.name}?
+                        </h4>
+                      </div>
+                    </div>
 
-                {/* Usage points */}
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-bold text-[#241D17] mb-2">Zalecana kuracja codzienna:</h4>
-                    <p className="text-xs sm:text-sm text-[#594D42] bg-white p-4 rounded-xl border border-[#D9821E]/15">
-                      {product.detailedUsage.recommendedDose}
+                    <p className="text-sm sm:text-base text-[#3A332A] leading-relaxed font-normal sm:pl-12">
+                      {product.advisorVerdict}
                     </p>
+
+                    {product.masterTip && (
+                      <div className="sm:ml-12 pt-3 border-t border-[#D9821E]/15 flex items-start gap-2.5 text-xs sm:text-sm text-[#594D42] bg-[#FAF8F5] p-3.5 rounded-xl border border-[#D9821E]/15">
+                        <span className="px-2 py-0.5 rounded-md bg-[#1B4332] text-white font-bold text-[10px] uppercase tracking-wider shrink-0 mt-0.5">
+                          Wskazówka mistrza
+                        </span>
+                        <span className="leading-relaxed italic">{product.masterTip}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Highlighted box - Dawkowanie / transport / palenie */}
+                <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-3.5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold text-[#D9821E] uppercase tracking-wider block">
+                        {prodType === 'bee-colony' 
+                          ? 'Logistyka & Odbiór' 
+                          : prodType === 'candle' 
+                          ? 'Rytuał palenia' 
+                          : 'Zalecenia dzienne'}
+                      </span>
+                      <h4 className="text-base sm:text-lg font-bold text-[#1B4332]">
+                        {prodType === 'bee-colony' 
+                          ? 'Rekomendowane warunki transportu odkładu' 
+                          : prodType === 'candle' 
+                          ? 'Zalecany czas sesji palenia' 
+                          : 'Zalecana kuracja codzienna'}
+                      </h4>
+                    </div>
                   </div>
 
-                  <div>
-                    <h4 className="text-sm font-bold text-[#241D17] mb-2">Pomysły kulinarne pszczelarza:</h4>
-                    <ul className="space-y-2">
+                  <p className="text-sm sm:text-base text-[#3A332A] leading-relaxed font-normal sm:pl-12">
+                    {prodType === 'bee-colony' 
+                      ? product.pairing 
+                      : prodType === 'candle' 
+                      ? 'Pal świecę jednorazowo przez minimum 2-3 godziny, by roztopić wosk równomiernie do samych krawędzi słoika (zapobiega to tunelowaniu i gwarantuje najdłuższy czas palenia).' 
+                      : product.detailedUsage.recommendedDose}
+                  </p>
+                </div>
+
+                {/* Food pairing box for honeys */}
+                {prodType === 'honey' && product.pairing && (
+                  <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-3.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0">
+                        <Utensils className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <span className="text-[11px] font-bold text-[#D9821E] uppercase tracking-wider block">
+                          Kulinaria & Pairing
+                        </span>
+                        <h4 className="text-base sm:text-lg font-bold text-[#1B4332]">
+                          Rekomendowane połączenia smakowe (Food Pairing)
+                        </h4>
+                      </div>
+                    </div>
+
+                    <p className="text-sm sm:text-base text-[#3A332A] leading-relaxed font-normal sm:pl-12">
+                      {product.pairing}
+                    </p>
+                  </div>
+                )}
+
+                {/* Usage points */}
+                <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9821E]/20 shadow-2xs space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#FAF3E5] text-[#D9821E] flex items-center justify-center border border-[#D9821E]/25 shrink-0">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-bold text-[#D9821E] uppercase tracking-wider block">
+                        Inspiracje & Wskazówki
+                      </span>
+                      <h4 className="text-base sm:text-lg font-bold text-[#1B4332]">
+                        {prodType === 'bee-colony' 
+                          ? 'Procedura krok po kroku w pasiece' 
+                          : prodType === 'candle' 
+                          ? 'Wskazówki pasiecznej manufaktury' 
+                          : 'Praktyczne sposoby podania i inspiracje'}
+                      </h4>
+                    </div>
+                  </div>
+
+                  <div className="sm:pl-12">
+                    <ul className="grid grid-cols-1 gap-2.5">
                       {product.detailedUsage.culinaryIdeas.map((idea, i) => (
-                        <li key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-[#594D42] bg-white p-3.5 rounded-xl border border-[#D9821E]/10">
-                          <span className="w-2 h-2 rounded-full bg-[#D9821E] shrink-0" />
+                        <li 
+                          key={i} 
+                          className="flex items-start gap-3 text-sm text-[#3A332A] bg-[#FAF8F5] p-3.5 rounded-xl border border-[#D9821E]/15 leading-relaxed"
+                        >
+                          <span className="w-5 h-5 rounded-full bg-[#1B4332] text-white text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                            {i + 1}
+                          </span>
                           <span>{idea}</span>
                         </li>
                       ))}
@@ -1065,107 +2032,216 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
               </div>
             )}
 
-            {/* TAB 5: BADANIA LABORATORYJNE (CERTYFIKAT) */}
+            {/* TAB 4: BADANIA LABORATORYJNE & ŚWIADECTWO WETERYNARYJNE */}
             {activeTab === 'badania' && (
               <div className="space-y-6 max-w-4xl animate-in fade-in duration-200">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#241D17]">
-                      Parametry laboratoryjne partii
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#241D17] mb-2">
+                      {prodType === 'bee-colony'
+                        ? 'Świadectwo weterynaryjne i rejestr pasieki'
+                        : prodType === 'candle'
+                        ? 'Atest czystości wosku pszczelego'
+                        : 'Parametry laboratoryjne i mikrobiologiczne'}
                     </h3>
-                    <p className="text-xs sm:text-sm text-[#7A6A5A] mt-0.5">
-                      Każda partia miodu z naszej pasieki przechodzi rygorystyczne badania fizykochemiczne.
+                    <p className="text-sm sm:text-base text-[#594D42] leading-relaxed">
+                      {prodType === 'bee-colony'
+                        ? 'Legalna pasieka hodowlana pod stałą kontrolą Powiatowego Lekarza Weterynarii.'
+                        : prodType === 'candle'
+                        ? '100% czysty wosk pszczeli badany na brak zafałszowań parafiną i stearyną.'
+                        : 'Każda partia surowca ulowego przechodzi rygorystyczne badania czystości.'}
                     </p>
                   </div>
-                  <div className="px-3.5 py-1.5 rounded-xl bg-[#1B4332]/10 border border-[#1B4332]/20 text-xs font-bold text-[#1B4332] self-start">
-                    Certyfikat Weterynaryjny PIW
+                  <div className="px-3.5 py-1.5 rounded-xl bg-[#1B4332]/10 border border-[#1B4332]/20 text-xs font-bold text-[#1B4332] self-start sm:self-center shrink-0">
+                    {prodType === 'bee-colony' 
+                      ? 'Nadzór Weterynaryjny PIW' 
+                      : prodType === 'candle' 
+                      ? 'Czystość Cera Flava 100%' 
+                      : 'Certyfikat Weterynaryjny PIW'}
                   </div>
                 </div>
 
                 {/* Lab Table */}
-                <div className="overflow-x-auto border border-[#D9821E]/20 rounded-2xl">
+                <div className="overflow-x-auto border border-[#D9821E]/20 rounded-2xl shadow-2xs">
                   <table className="w-full text-left text-xs sm:text-sm border-collapse bg-white">
                     <thead>
-                      <tr className="border-b border-[#D9821E]/20 text-[#7A6A5A] uppercase text-[11px] tracking-wider bg-[#FAF6EE]/70">
-                        <th className="py-3 px-4">Badany parametr</th>
-                        <th className="py-3 px-4">Wynik partii</th>
-                        <th className="py-3 px-4">Norma Polska (PN)</th>
-                        <th className="py-3 px-4 text-right">Ocena</th>
+                      <tr className="border-b border-[#D9821E]/20 text-[#D9821E] uppercase text-[11px] font-bold tracking-wider bg-[#FAF8F5]">
+                        <th className="py-3.5 px-4">Badany parametr</th>
+                        <th className="py-3.5 px-4">Wynik partii</th>
+                        <th className="py-3.5 px-4">Wymóg formalny / Norma</th>
+                        <th className="py-3.5 px-4 text-right">Ocena</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#D9821E]/10">
-                      <tr>
-                        <td className="py-3.5 px-4 font-semibold text-[#241D17]">Numer partii rozlewu</td>
-                        <td className="py-3.5 px-4 font-mono font-bold text-[#D9821E]">{product.labAnalysis.lotNumber}</td>
-                        <td className="py-3.5 px-4 text-[#7A6A5A]">Identyfikowalność</td>
-                        <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość wody (wilgotność)</td>
-                        <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.waterContent}</td>
-                        <td className="py-3.5 px-4 text-[#7A6A5A]">Maksymalnie 20.0%</td>
-                        <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Doskonała gęstość</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3.5 px-4 font-semibold text-[#241D17]">Liczba diastazowa (aktywność enzymów)</td>
-                        <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.diastaseNumber}</td>
-                        <td className="py-3.5 px-4 text-[#7A6A5A]">Minimum 8.0 wg Schade</td>
-                        <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Bardzo wysoka</td>
-                      </tr>
-                      <tr>
-                        <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość HMF (hydroksymetylfurfural)</td>
-                        <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.hmf}</td>
-                        <td className="py-3.5 px-4 text-[#7A6A5A]">Maksymalnie 40.0 mg/kg</td>
-                        <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Świeży, niepodgrzewany</td>
-                      </tr>
-                      {product.labAnalysis.conductivity && (
-                        <tr>
-                          <td className="py-3.5 px-4 font-semibold text-[#241D17]">Przewodność właściwa</td>
-                          <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.conductivity}</td>
-                          <td className="py-3.5 px-4 text-[#7A6A5A]">Potwierdzenie czystości</td>
-                          <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Certyfikowany</td>
-                        </tr>
+                      {prodType === 'bee-colony' ? (
+                        <>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Identyfikator partii odkładów</td>
+                            <td className="py-3.5 px-4 font-mono font-bold text-[#D9821E]">{product.labAnalysis.lotNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Ewidencja pasieczna</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Rejestr Powiatowego Lekarza Weterynarii</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">WNI 28143502</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">PIW Ostróda / Morąg</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Rejestrowany</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Badanie w kierunku zgnilca amerykańskiego (AFB)</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">Wynik ujemny (brak przetrwalników)</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Urzędowa norma PLW</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Wolna od chorób</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Matka pszczela (Królowa)</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">Młoda 2026, znakowana opalitkiem</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Unasieniona, czerwiąca</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Pełna plenność</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Stan czerwiu i gniazda</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">3 ramki czerwiu + 2 ramki pokarmu</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Ramka wielkopolska</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Prawidłowy</td>
+                          </tr>
+                        </>
+                      ) : prodType === 'candle' ? (
+                        <>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Numer partii manufaktury</td>
+                            <td className="py-3.5 px-4 font-mono font-bold text-[#D9821E]">{product.labAnalysis.lotNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Identyfikowalność partii</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość czystego wosku pszczelego</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">100.0% (Cera flava)</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Brak domieszek</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ 100% Czysty wosk</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość parafiny / stearyny</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">0.0% (Całkowity brak)</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Maksymalnie 0.0%</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Czysty ekologicznie</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Temperatura topnienia wosku</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">62.8°C</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Norma 62.0 - 65.0°C</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny z normą PN</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Rodzaj knota</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">100% surowa bawełna (bez ołowiu)</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Bezpieczeństwo dróg oddechowych</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Czyste spalanie</td>
+                          </tr>
+                        </>
+                      ) : prodType === 'apitherapy' ? (
+                        <>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Numer partii rozlewu/konfekcji</td>
+                            <td className="py-3.5 px-4 font-mono font-bold text-[#D9821E]">{product.labAnalysis.lotNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Identyfikowalność</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Wilgotność surowca</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.waterContent}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Norma apiterapeutyczna</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Bezpieczna trwałość</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Aktywność biologiczna / Składniki czynne</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.diastaseNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Wysokie stężenie</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Pełna bioaktywność</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Czystość chemiczna i mikrobiologiczna</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">Zgodna z wymogami GIS</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Brak metali ciężkich i pestycydów</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Certyfikowany</td>
+                          </tr>
+                        </>
+                      ) : (
+                        <>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Numer partii rozlewu</td>
+                            <td className="py-3.5 px-4 font-mono font-bold text-[#D9821E]">{product.labAnalysis.lotNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Identyfikowalność</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Zgodny</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość wody (wilgotność)</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.waterContent}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Maksymalnie 20.0%</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Doskonała gęstość</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Liczba diastazowa (aktywność enzymów)</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.diastaseNumber}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Minimum 8.0 wg Schade</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Bardzo wysoka</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3.5 px-4 font-semibold text-[#241D17]">Zawartość HMF (hydroksymetylfurfural)</td>
+                            <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.hmf}</td>
+                            <td className="py-3.5 px-4 text-[#7A6A5A]">Maksymalnie 40.0 mg/kg</td>
+                            <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Świeży, niepodgrzewany</td>
+                          </tr>
+                          {product.labAnalysis.conductivity && (
+                            <tr>
+                              <td className="py-3.5 px-4 font-semibold text-[#241D17]">Przewodność właściwa</td>
+                              <td className="py-3.5 px-4 font-bold text-[#1B4332]">{product.labAnalysis.conductivity}</td>
+                              <td className="py-3.5 px-4 text-[#7A6A5A]">Potwierdzenie czystości</td>
+                              <td className="py-3.5 px-4 text-right text-[#1B4332] font-bold">✓ Certyfikowany</td>
+                            </tr>
+                          )}
+                        </>
                       )}
                     </tbody>
                   </table>
                 </div>
 
-                <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#D9821E]/15 text-xs text-[#594D42] flex items-center gap-3.5 shadow-2xs">
+                <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#D9821E]/20 text-sm text-[#594D42] flex items-center gap-3.5 shadow-2xs">
                   <ShieldCheck className="w-5 h-5 text-[#1B4332] shrink-0" />
                   <span>
                     Pasieka znajduje się pod stałym nadzorem Powiatowego Lekarza Weterynarii. 
-                    Rejestr RHD: <strong>WNI 28143502</strong>. Miód 100% naturalny, niefiltrowany.
+                    Rejestr RHD: <strong>WNI 28143502</strong>. Czyste produkty pszczele bez sztucznych dodatków.
                   </span>
                 </div>
               </div>
             )}
 
-            {/* TAB 6: OPINIE SMASZOSZY */}
+            {/* TAB 5: OPINIE */}
             {activeTab === 'opinie' && (
-              <ProductReviews productName={product.name} />
+              <ProductReviews productName={product.name} productId={product.id} productType={prodType} />
             )}
 
           </div>
         </div>
       </section>
 
-      {/* RELATED PRODUCTS SECTION: Odkryj inne typy miodów */}
+      {/* RELATED PRODUCTS SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <div className="border-t border-[#D9821E]/20 pt-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-[#D9821E]">
-                Poznaj bogactwo warmińskiej pasieki
+                {isTreasure ? 'Tradycja i pasja Pasieki Usza' : 'Poznaj zbiory Pasieki Usza'}
               </span>
               <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#241D17]">
-                Zobacz także inne odmiany miodów
+                {isTreasure ? 'Poznaj pozostałe Skarby Ula' : 'Zobacz także inne odmiany miodów'}
               </h3>
             </div>
             <Link
-              to="/"
+              to={isTreasure ? '/skarby-ula' : '/sklep'}
               className="text-xs font-bold text-[#1B4332] hover:text-[#D9821E] transition-colors flex items-center gap-1 cursor-pointer"
             >
-              <span>Wszystkie 15 miodów w ofercie</span>
+              <span>{isTreasure ? 'Wszystkie Skarby Ula w ofercie' : 'Wszystkie miody w ofercie'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -1195,7 +2271,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                         }}
                       />
                       {relProd.badge && (
-                        <span className="absolute top-3 left-3 bg-[#D9821E] text-white text-[10px] font-bold uppercase px-2.5 py-1 rounded-full shadow-xs">
+                        <span className={`absolute top-3 left-3 text-white text-[10px] font-bold uppercase px-2.5 py-1 rounded-full shadow-xs ${relProd.badgeClass || 'bg-[#D9821E]'}`}>
                           {relProd.badge}
                         </span>
                       )}
@@ -1206,7 +2282,7 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
 
                     <div className="p-5">
                       <p className="text-[11px] font-semibold text-[#D9821E] uppercase tracking-wider mb-1">
-                        {relProd.region}
+                        {CATEGORY_METADATA[relProd.category]?.label || (relProd.productType === 'apitherapy' ? 'Apiterapia' : 'Skarby Ula')}
                       </p>
                       <h4 className="text-base font-bold text-[#241D17] group-hover:text-[#D9821E] transition-colors line-clamp-1 mb-1.5 font-serif">
                         {relProd.name}
@@ -1242,8 +2318,14 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
       <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#D9821E]/25 p-3.5 shadow-lg lg:hidden flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold text-[#241D17] truncate">{product.name}</p>
-          <p className="text-xs text-[#1B4332] font-extrabold">
-            {((currentSize?.price || 0) * quantity).toFixed(2)} zł <span className="text-[10px] font-normal text-[#7A6A5A]">({currentSize?.gram})</span>
+          <p className="text-xs text-[#1B4332] font-extrabold flex items-center gap-1.5 flex-wrap">
+            <span>{((effectivePrice || 0) * quantity).toFixed(2)} zł</span>
+            <span className="text-[10px] font-normal text-[#7A6A5A]">({currentSize?.gram})</span>
+            {purchaseMode === 'subscription' && (
+              <span className="text-[10px] font-bold text-[#8C4609] bg-[#E5983A]/20 px-1.5 py-0.2 rounded-md">
+                co {subscriptionInterval} dni (-10%)
+              </span>
+            )}
           </p>
         </div>
 

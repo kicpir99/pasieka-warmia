@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CartItem, HoneyProduct } from '../types';
-import { X, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, Check, Sparkles, Plus, Snowflake, Scale, Package } from 'lucide-react';
+import { X, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, Check, Scale, Package } from 'lucide-react';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -14,110 +14,7 @@ interface CartDrawerProps {
   onNavigateToCatalog?: () => void;
 }
 
-const CART_UPSELL_ITEMS: {
-  product: HoneyProduct;
-  weightGrams: number;
-  pricePln: number;
-  subtitle: string;
-  icon: string;
-}[] = [
-  {
-    product: {
-      id: 'akcesorium-nabierak-drewniany',
-      name: 'Rzemieślniczy Nabierak Bukowy (10 cm)',
-      botanicalName: 'Fagus sylvatica',
-      subtitle: 'Drewniany nabierak do porcjowania patoki bez kapania.',
-      category: 'zestawy',
-      description: 'Tradycyjny nabierak miodu toczony z litego drewna bukowego. Ułatwia nabieranie płynnego miodu i rozprowadzanie go na pieczywie lub w herbacie.',
-      harvestYear: 2026,
-      harvestMonth: 'Całoroczny',
-      batchNumber: 'ACC-01',
-      apiaryLocation: 'Manufaktura Pasieki • Dolny Śląsk',
-      dominantPollenPercentage: 0,
-      dominantPlant: 'Drewno bukowe',
-      waterContentPercentage: 0,
-      consistency: 'patoka',
-      flavorIntensity: 'lagodny',
-      flavorNotes: ['Bukowe drewno'],
-      recommendedUse: ['Porcjowanie miodu'],
-      sensoryProfile: { sweetness: 0, acidity: 0, intensity: 0, crystallization: 0 },
-      colorHex: '#D4A373',
-      colorName: 'Naturalne drewno',
-      sizes: [{ weightGrams: 20, label: '10 cm', pricePln: 8, inStock: true }],
-      imageUrl: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?auto=format&fit=crop&w=400&q=80',
-      rating: 5.0,
-      reviewsCount: 84,
-    },
-    weightGrams: 20,
-    pricePln: 8,
-    subtitle: 'Wygodne porcjowanie patoki',
-    icon: '🪵',
-  },
-  {
-    product: {
-      id: 'akcesorium-swieca-woskowa',
-      name: 'Świeca z Wosku Pszczelego (Stożkowa)',
-      botanicalName: 'Cera flava 100%',
-      subtitle: 'Pachnąca miodem i propolisem, naturalnie jonizuje powietrze.',
-      category: 'zestawy',
-      description: 'Ręcznie odlewana świeca z czystego wosku pszczelego bez parafiny. Pali się czystym płomieniem, oczyszczając powietrze z kurzu i alergenów.',
-      harvestYear: 2026,
-      harvestMonth: 'Całoroczny',
-      batchNumber: 'WOSK-24',
-      apiaryLocation: 'Pracownia Pasieki Usza • Ciechów',
-      dominantPollenPercentage: 0,
-      dominantPlant: 'Wosk pszczeli 100%',
-      waterContentPercentage: 0,
-      consistency: 'krupiec',
-      flavorIntensity: 'wyrazisty',
-      flavorNotes: ['Czysty wosk', 'Propolis'],
-      recommendedUse: ['Aromaterapia i relaks'],
-      sensoryProfile: { sweetness: 0, acidity: 0, intensity: 5, crystallization: 5 },
-      colorHex: '#E5983A',
-      colorName: 'Miodowożółty',
-      sizes: [{ weightGrams: 80, label: '1 szt.', pricePln: 19, inStock: true }],
-      imageUrl: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=400&q=80',
-      rating: 4.9,
-      reviewsCount: 62,
-    },
-    weightGrams: 80,
-    pricePln: 19,
-    subtitle: '100% naturalny wosk pszczeli',
-    icon: '🕯️',
-  },
-  {
-    product: {
-      id: 'akcesorium-propolis-krople',
-      name: 'Krople Propolisowe 20% (Ekstrakt 20 ml)',
-      botanicalName: 'Propolis cera',
-      subtitle: 'Silny ulowy antybiotyk na gardło i układ immunologiczny.',
-      category: 'z-dodatkami',
-      description: 'Stężony ekstrakt z kitu pszczelego z pasieki wędrownej Usza. Niezastąpiony w sezonie jesienno-zimowym przy stanach zapalnych gardła i dziąseł.',
-      harvestYear: 2026,
-      harvestMonth: 'Sierpień',
-      batchNumber: 'PROP-24',
-      apiaryLocation: 'Pasieka Usza • Ciechów',
-      dominantPollenPercentage: 0,
-      dominantPlant: 'Kit pszczeli (propolis)',
-      waterContentPercentage: 0,
-      consistency: 'patoka',
-      flavorIntensity: 'wyrazisty',
-      flavorNotes: ['Żywica', 'Balsamiczny propolis'],
-      recommendedUse: ['Infekcje gardła', 'Odporność'],
-      sensoryProfile: { sweetness: 1, acidity: 2, intensity: 5, crystallization: 1 },
-      colorHex: '#5C2C16',
-      colorName: 'Ciemnobrązowy',
-      sizes: [{ weightGrams: 50, label: '20 ml', pricePln: 29, inStock: true }],
-      imageUrl: 'https://images.unsplash.com/photo-1613959325988-12c8230bcf76?auto=format&fit=crop&w=400&q=80',
-      rating: 5.0,
-      reviewsCount: 119,
-    },
-    weightGrams: 50,
-    pricePln: 29,
-    subtitle: 'Naturalny antybiotyk ulowy',
-    icon: '💧',
-  }
-];
+
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
   isOpen,
@@ -148,7 +45,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         catalogEl.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      navigate('/#katalog');
+      navigate('/sklep');
     }
   };
 
@@ -268,23 +165,43 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </button>
               </div>
             ) : items.length === 0 ? (
-              <div className="text-center py-16 space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#EFE4D2] text-[#945209] flex items-center justify-center mx-auto text-xl">
+              <div className="text-center py-12 px-2 space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-[#EFE4D2] text-[#945209] flex items-center justify-center mx-auto text-2xl shadow-2xs">
                   🍯
                 </div>
-                <p className="text-sm font-semibold text-[#2D2821]">Twój koszyk jest jeszcze pusty</p>
-                <p className="text-xs text-[#7B6E5C] max-w-xs mx-auto">
-                  Wybierz ulubiony zbiór z naszych pasiek i ciesz się smakiem prawdziwego surowego miodu.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleGoToCatalog}
-                  id="btn-pusty-koszyk-katalog"
-                  className="mt-2 px-6 py-2.5 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-2 shadow-xs hover:shadow-sm active:scale-95"
-                >
-                  <span>Przejdź do katalogu miodów</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#E6C065]" />
-                </button>
+                <div className="space-y-1">
+                  <p className="text-sm sm:text-base font-serif font-bold text-[#2D2821]">
+                    Twój koszyk jest jeszcze pusty
+                  </p>
+                  <p className="text-xs text-[#7B6E5C] max-w-xs mx-auto leading-relaxed">
+                    Wybierz surowy miód z naszych dolnośląskich pasiek lub sięgnij po naturalne skarby ula: propolis, pierzgę i świece z wosku.
+                  </p>
+                </div>
+
+                <div className="pt-2 space-y-2 max-w-xs mx-auto">
+                  <button
+                    type="button"
+                    onClick={handleGoToCatalog}
+                    id="btn-pusty-koszyk-katalog"
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs hover:shadow-sm active:scale-95"
+                  >
+                    <span>Przeglądaj miody w sklepie</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#E6C065]" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      navigate('/oferta');
+                    }}
+                    id="btn-pusty-koszyk-skarby"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-[#FAF4EB] text-[#8B5337] border border-[#DFCBB5] hover:border-[#8B5337] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-2xs hover:shadow-xs active:scale-95"
+                  >
+                    <span>Odkryj Skarby Ula (Apiterapia)</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#8B5337]" />
+                  </button>
+                </div>
               </div>
             ) : (
               items.map((item) => {
@@ -318,11 +235,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-2 text-[11px] text-[#716556]">
+                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-[#716556]">
                         <span className="bg-[#EFE3CF] px-2 py-0.5 rounded font-bold text-[#7C4007]">
                           {itemWeight} g
                         </span>
                         <span>{item.pricePln} zł / szt.</span>
+                        {item.subscriptionInterval && (
+                          <span className="bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                            🔄 Co {item.subscriptionInterval} dni (-10%)
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between pt-1">
@@ -361,75 +283,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               })
             )}
 
-            {/* Apiterapeutyczny In-Cart Cross-Selling (Dodatki Ulowe) */}
-            {!orderSubmitted && items.length > 0 && onAddToCart && (
-              <div className="pt-4 border-t border-[#E7DDCE] space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#3B3226] uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#D9821E]" />
-                    Polecane dodatki z pasieki:
-                  </span>
-                  <span className="text-[10px] text-[#8C7A6B]">Dobierz do koszyka</span>
-                </div>
 
-                <div className="space-y-2">
-                  {CART_UPSELL_ITEMS.map((upsell) => {
-                    const isAlreadyInCart = items.some(
-                      (item) => item.product.id === upsell.product.id
-                    );
-
-                    return (
-                      <div
-                        key={upsell.product.id}
-                        className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-[#E7DDCE] shadow-2xs hover:border-[#D9821E]/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                          <span className="text-xl shrink-0">{upsell.icon}</span>
-                          <div className="min-w-0">
-                            <h5 className="font-serif text-xs font-bold text-[#23201C] truncate">
-                              {upsell.product.name}
-                            </h5>
-                            <p className="text-[10px] text-[#7A6A5A] truncate">
-                              {upsell.subtitle}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="font-bold text-xs text-[#1B4332] whitespace-nowrap">
-                            +{upsell.pricePln} zł
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              onAddToCart(upsell.product, upsell.weightGrams, upsell.pricePln)
-                            }
-                            className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                              isAlreadyInCart
-                                ? 'bg-[#EDF5EC] text-[#225737] border border-[#BAD8C2]'
-                                : 'bg-[#1B4332] text-white hover:bg-[#143326] shadow-xs active:scale-95'
-                            }`}
-                            title={`Dodaj ${upsell.product.name}`}
-                          >
-                            {isAlreadyInCart ? (
-                              <>
-                                <Check className="w-3 h-3 text-[#225737]" />
-                                <span>W koszyku</span>
-                              </>
-                            ) : (
-                              <>
-                                <Plus className="w-3 h-3" />
-                                <span>Dodaj</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             {/* Opcje dostawy, waga, gwarancje i zestawienie kosztów wewnątrz przewijanego kontenera (aby nie zabierały 80% ekranu na telefonie) */}
             {!orderSubmitted && items.length > 0 && (
@@ -437,7 +291,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 {/* Delivery selector */}
                 <div className="space-y-1.5 text-xs">
                   <span className="text-[11px] font-semibold text-[#736655] uppercase tracking-wider block">
-                    Metoda wysyłki słoików:
+                    Metoda dostawy:
                   </span>
                   <div className="grid grid-cols-3 gap-1.5">
                     <button
@@ -509,37 +363,25 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     )}
                   </div>
                   <p className="text-[10px] text-[#7A6C5B] leading-tight">
-                    Zawiera {totalJarsCount} {totalJarsCount === 1 ? 'produkt' : totalJarsCount < 5 ? 'produkty' : 'produktów'} (miód netto + grube szkło apteczne + tuby ochronne).
+                    Zawiera {totalJarsCount} {totalJarsCount === 1 ? 'produkt' : totalJarsCount < 5 ? 'produkty' : 'produktów'} (zawartość netto + bezpieczne tuby i opakowania ochronne).
                   </p>
                 </div>
 
-                {/* Zero Stłuczek & Reżim Letni - Podwójne Bezpieczeństwo Dostawy */}
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#EFE7D8] border border-[#DFCDB7] text-[11px] text-[#554736] leading-relaxed shadow-2xs">
-                    <ShieldCheck className="w-5 h-5 text-[#1B4332] shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block text-[#1B4332] font-bold text-xs mb-0.5">
-                        Gwarancja Zero Stłuczek (100% Bezpieczeństwa):
-                      </strong>
-                      Słoiki wysyłamy w amortyzujących ekotubach z tektury plaster miodu. W razie jakiegokolwiek uszkodzenia w transporcie wysyłamy nowy słoik w 24h na nasz koszt – bez czekania na protokoły kuriera.
-                    </div>
+                {/* Bezpieczna dostawa z Pasieki Usza (Zero Stłuczek & Termoizolacja) */}
+                <div className="p-3 rounded-xl bg-[#EFE7D8] border border-[#DFCDB7] text-[11px] text-[#554736] leading-relaxed shadow-2xs space-y-1">
+                  <div className="flex items-center gap-1.5 text-[#1B4332] font-bold text-xs">
+                    <ShieldCheck className="w-4 h-4 text-[#1B4332] shrink-0" />
+                    <span>Bezpieczna dostawa (Zero Stłuczek & Termoizolacja)</span>
                   </div>
-
-                  <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-[#F4EFE6] border border-[#DFCDB7] text-[11px] text-[#554736] leading-relaxed shadow-2xs">
-                    <Snowflake className="w-4 h-4 text-[#2B6E4E] shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="block text-[#1B4332] font-bold text-xs mb-0.5">
-                        Reżim Letni & Termoizolacja ula:
-                      </strong>
-                      W ciepłe dni paczki zabezpieczamy termicznie, aby chronić żywe enzymy ula (diastazę) przed przegrzaniem powyżej 36°C w podróży.
-                    </div>
-                  </div>
+                  <p className="text-[11px] text-[#554736] leading-relaxed">
+                    Paczki wysyłamy w amortyzujących ekotubach plaster miodu z osłoną termiczną chroniącą biokomponenty ula przed upałem. W razie jakiejkolwiek szkody w transporcie wysyłamy nową paczkę w 24h na nasz koszt.
+                  </p>
                 </div>
 
                 {/* Subtotal & Details */}
                 <div className="space-y-1 pt-2 border-t border-[#EAE0D1] text-xs">
                   <div className="flex justify-between text-[#6D604E]">
-                    <span>Wartość miodów:</span>
+                    <span>Wartość produktów:</span>
                     <span className="font-semibold">{subtotal} zł</span>
                   </div>
                   <div className="flex justify-between text-[#6D604E]">
