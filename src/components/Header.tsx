@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Sparkles, Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface HeaderProps {
   cartItemCount: number;
@@ -71,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Pasieka wędrowna Usza - Strona Główna"
           >
             <img 
-              src="/assets/logo-usza.png" 
+              src={getAssetUrl('assets/logo-usza.png')} 
               alt="Pasieka Wędrowna Usza" 
               className="h-14 sm:h-18 md:h-20 lg:h-[82px] w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />

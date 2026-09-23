@@ -1,7 +1,7 @@
 /**
  * Utility for resolving static asset URLs from the /public directory.
  * Ensures assets resolve properly both in local development and when deployed
- * under a repository subpath (such as GitHub Pages /pasieka-warmia/).
+ * under a repository subpath on GitHub Pages (e.g. /pasieka-wedrowna-usza/).
  */
 export function getAssetUrl(path: string): string {
   if (!path) return '';
@@ -10,10 +10,14 @@ export function getAssetUrl(path: string): string {
   }
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
 
-  // On GitHub Pages domain (or if running under /pasieka-warmia), always guarantee /pasieka-warmia/ prefix
   if (typeof window !== 'undefined') {
-    if (window.location.hostname.includes('github.io') || window.location.pathname.includes('/pasieka-warmia')) {
-      return `/pasieka-warmia/${cleanPath}`;
+    // Dynamic repository subpath detection for GitHub Pages (*.github.io/<repo>/)
+    if (window.location.hostname.includes('github.io')) {
+      const segments = window.location.pathname.split('/').filter(Boolean);
+      // The first segment of path on github.io is the repository name
+      if (segments.length > 0 && !segments[0].includes('.')) {
+        return `/${segments[0]}/${cleanPath}`;
+      }
     }
   }
 

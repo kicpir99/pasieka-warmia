@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { getAssetUrl } from '../utils/assets';
 
 interface FooterProps {
   containerClass?: string;
@@ -17,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ containerClass }) => {
             <Link to="/" className="flex items-center gap-4 group cursor-pointer">
               <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-[#FAF5EE] flex items-center justify-center p-2 shadow-md border border-[#E7DCCE] group-hover:border-[#E5983A] group-hover:scale-105 transition-all shrink-0">
                 <img 
-                  src="/assets/footer-pasieka-usza.png" 
+                  src={getAssetUrl('assets/footer-pasieka-usza.png')} 
                   alt="Pasieka Usza - Logo" 
                   className="w-full h-full object-contain"
                 />
