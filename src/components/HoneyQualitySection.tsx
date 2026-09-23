@@ -1,16 +1,9 @@
 import React from 'react';
 import { 
   ShieldCheck, 
-  Droplets, 
-  Coffee, 
-  Award, 
   CheckCircle2, 
-  Heart, 
-  Sparkles, 
-  Layers,
-  ThermometerSnowflake,
-  PackageCheck,
-  Leaf
+  Leaf,
+  PackageCheck
 } from 'lucide-react';
 
 interface HoneyQualitySectionProps {
@@ -19,7 +12,7 @@ interface HoneyQualitySectionProps {
 
 export const HoneyQualitySection: React.FC<HoneyQualitySectionProps> = ({ containerClass }) => {
   return (
-    <section id="jakosc-i-herbata" className="py-16 bg-[#F4EFE6] border-b border-[#E3D7C5] text-[#241E17]">
+    <section id="jakosc" className="py-16 bg-[#F4EFE6] border-b border-[#E3D7C5] text-[#241E17]">
       <div className={`adaptive-container ${containerClass || ''} px-4 sm:px-6 lg:px-8 2xl:px-10 space-y-12`}>
         
         {/* Header Sekcji */}
@@ -32,14 +25,14 @@ export const HoneyQualitySection: React.FC<HoneyQualitySectionProps> = ({ contai
             Prosto od pszczelarza
           </h2>
           <p className="text-[15px] text-[#665543] leading-relaxed">
-            Nie poprawiamy natury. Poniżej zebraliśmy nasze najważniejsze zasady, małą podpowiedź jak słodzić herbatę by nie zabić witamin, oraz krótki przewodnik po wielkościach słoików.
+            Nie poprawiamy natury. Poniżej zebraliśmy nasze żelazne zasady pozyskiwania miodu oraz krótki przewodnik po wielkościach słoików.
           </p>
         </div>
 
-        {/* 3 Bloki: Gwarancja / Herbata / Wybór słoika */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 2 Bloki: Gwarancja Jakości / Wybór słoika */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           
-          {/* KARTA 1: Gwarancja Prawdziwego Miodu (zamiast badań laboratoryjnych) */}
+          {/* KARTA 1: Gwarancja Prawdziwego Miodu */}
           <div className="p-6 rounded-3xl bg-[#FAF7F2] border border-[#E3D7C5] shadow-sm flex flex-col justify-between space-y-5">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -74,49 +67,7 @@ export const HoneyQualitySection: React.FC<HoneyQualitySectionProps> = ({ contai
             </div>
           </div>
 
-          {/* KARTA 2: Sekret Gorącej Herbaty */}
-          <div className="p-6 rounded-3xl bg-[#FAF7F2] border border-[#E3D7C5] shadow-sm flex flex-col justify-between space-y-5">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#C97B1A]/15 border border-[#C97B1A]/30 flex items-center justify-center text-[#9E5A12]">
-                  <Coffee className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-serif text-lg font-bold text-[#241E17]">Rada do Gorącej Herbaty</h3>
-                  <p className="text-xs text-[#7A6B5B]">Jak słodzić i nie stracić witamin</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 text-xs text-[#524434] leading-relaxed">
-                <div className="p-3.5 rounded-2xl bg-[#EBE3D3] border border-[#DDD0BC] space-y-1.5">
-                  <span className="font-bold text-[#8C5819] flex items-center gap-1.5 text-xs">
-                    <Sparkles className="w-3.5 h-3.5" /> Złota zasada 40°C
-                  </span>
-                  <p className="text-[#594B3C]">
-                    Nigdy nie wrzucaj miodu do świeżo zaparzonego wrzątku. Odczekaj 2–3 minuty, aż kubek będzie przyjemnie ciepły w dłoniach.
-                  </p>
-                </div>
-
-                <ul className="space-y-2 text-xs">
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#C97B1A] font-bold">•</span>
-                    <span><strong>Z cytryną i imbirem:</strong> Miód lipowy wspaniale łagodzi ostrość imbiru i rozgrzewa w jesienne wieczory.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#C97B1A] font-bold">•</span>
-                    <span><strong>Zioła i lipa:</strong> Aksamitny smak miodu nie dominuje aromatu suszonych ziół, a tworzy przytulną całość.</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-[#F0EAE1] border border-[#DDD3C2] text-xs text-[#635341] flex items-center gap-2">
-              <Heart className="w-4 h-4 text-[#C97B1A] shrink-0" />
-              <span>Ciepły kubek herbaty z prawdziwym miodem to najlepszy domowy relaks.</span>
-            </div>
-          </div>
-
-          {/* KARTA 3: Wybór Pojemności Słoika */}
+          {/* KARTA 2: Wybór Pojemności Słoika */}
           <div className="p-6 rounded-3xl bg-[#FAF7F2] border border-[#E3D7C5] shadow-sm flex flex-col justify-between space-y-5">
             <div className="space-y-4">
               <div className="flex items-center gap-3">

@@ -53,7 +53,7 @@ interface HoneyFAQSectionProps {
 }
 
 export const HoneyFAQSection: React.FC<HoneyFAQSectionProps> = ({ containerClass }) => {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   const toggleItem = (idx: number) => {
     setOpenIdx(openIdx === idx ? null : idx);
