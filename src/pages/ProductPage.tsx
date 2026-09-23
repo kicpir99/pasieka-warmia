@@ -677,179 +677,183 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
           </div>
         </button>
 
-        {/* 3 Prominent Sensory Metric Badges: always clearly visible with bold scores & mini visual dot meters */}
-        <div 
-          onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
-          className="pt-1.5 pb-1 cursor-pointer select-none"
-        >
-          <div className="grid grid-cols-3 gap-2 sm:gap-3">
-            {/* Pigułka 1: Słodycz */}
-            <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFF8EB] border border-[#E8CBA3] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
-              <span className="text-[10px] sm:text-[11px] font-bold text-[#8C4609] uppercase tracking-wider block">
-                Słodycz
-              </span>
-              <div className="flex items-baseline justify-between mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-[#7A3600]">
-                  {product.tasteProfile.sweetness}<span className="text-[10px] sm:text-[11px] font-normal text-[#A37346]">/5</span>
+        {/* 3 Prominent Sensory Metric Badges: visible ONLY when collapsed to prevent duplicate scales */}
+        {!isSensoryExpandedMobile && (
+          <div 
+            onClick={() => setIsSensoryExpandedMobile(true)}
+            className="pt-1.5 pb-1 cursor-pointer select-none animate-in fade-in duration-200"
+          >
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {/* Pigułka 1: Słodycz */}
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFF8EB] border border-[#E8CBA3] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#8C4609] uppercase tracking-wider block">
+                  Słodycz
                 </span>
-                <div className="flex gap-0.5" title={`${product.tasteProfile.sweetness} na 5`}>
-                  {[1, 2, 3, 4, 5].map((dot) => (
-                    <span 
-                      key={dot}
-                      className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'}`}
+                <div className="flex items-baseline justify-between mt-1">
+                  <span className="text-sm sm:text-base font-extrabold text-[#7A3600]">
+                    {product.tasteProfile.sweetness}<span className="text-[10px] sm:text-[11px] font-normal text-[#A37346]">/5</span>
+                  </span>
+                  <div className="flex gap-0.5" title={`${product.tasteProfile.sweetness} na 5`}>
+                    {[1, 2, 3, 4, 5].map((dot) => (
+                      <span 
+                        key={dot}
+                        className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Pigułka 2: Rześkość */}
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-[#F4F9F4] border border-[#BBDCBF] flex flex-col justify-between shadow-2xs hover:border-[#1B4332] transition-colors">
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider block">
+                  Rześkość
+                </span>
+                <div className="flex items-baseline justify-between mt-1">
+                  <span className="text-sm sm:text-base font-extrabold text-[#143727]">
+                    {product.tasteProfile.acidity}<span className="text-[10px] sm:text-[11px] font-normal text-[#628573]">/5</span>
+                  </span>
+                  <div className="flex gap-0.5" title={`${product.tasteProfile.acidity} na 5`}>
+                    {[1, 2, 3, 4, 5].map((dot) => (
+                      <span 
+                        key={dot}
+                        className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#D0E2D2]'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Pigułka 3: Aromat */}
+              <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FCF6ED] border border-[#E8D6B7] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                <span className="text-[10px] sm:text-[11px] font-bold text-[#8F5917] uppercase tracking-wider block">
+                  Aromat
+                </span>
+                <div className="flex items-baseline justify-between mt-1">
+                  <span className="text-sm sm:text-base font-extrabold text-[#784407]">
+                    {product.tasteProfile.aroma}<span className="text-[10px] sm:text-[11px] font-normal text-[#9C7D54]">/5</span>
+                  </span>
+                  <div className="flex gap-0.5" title={`${product.tasteProfile.aroma} na 5`}>
+                    {[1, 2, 3, 4, 5].map((dot) => (
+                      <span 
+                        key={dot}
+                        className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Content: Visible when expanded */}
+        {isSensoryExpandedMobile && (
+          <div className="pt-3 border-t border-[#D9821E]/15 space-y-3 sm:space-y-4 block animate-in fade-in duration-200">
+            {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
+            <div className="space-y-3 pt-1">
+              {/* Poziom słodyczy */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-[#594D42]">Poziom słodyczy</span>
+                  <span className="font-bold text-[#8C4609]">{product.tasteProfile.sweetness} / 5</span>
+                </div>
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4, 5].map((lvl) => (
+                    <div
+                      key={lvl}
+                      className={`h-2 flex-1 rounded-full transition-all ${
+                        lvl <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
+                      }`}
                     />
                   ))}
+                </div>
+                <p className="text-[10px] text-[#7A6A5A]">
+                  {product.tasteProfile.sweetness <= 2 ? 'Wytrawny, mało słodki' : product.tasteProfile.sweetness <= 4 ? 'Umiarkowanie zbalansowany' : 'Głęboka, aksamitna słodycz'}
+                </p>
+              </div>
+
+              {/* Kwasowość / Rześkość */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-[#594D42]">Kwasowość / Rześkość</span>
+                  <span className="font-bold text-[#1B4332]">{product.tasteProfile.acidity} / 5</span>
+                </div>
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4, 5].map((lvl) => (
+                    <div
+                      key={lvl}
+                      className={`h-2 flex-1 rounded-full transition-all ${
+                        lvl <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#D0E2D2]'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-[10px] text-[#7A6A5A]">
+                  {product.tasteProfile.acidity <= 2 ? 'Łagodny, maślany finisz' : 'Rześka, świeża nuta cytrusowo-kwiatowa'}
+                </p>
+              </div>
+
+              {/* Intensywność aromatu */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-[#594D42]">Intensywność aromatu</span>
+                  <span className="font-bold text-[#D9821E]">{product.tasteProfile.aroma} / 5</span>
+                </div>
+                <div className="flex gap-1.5">
+                  {[1, 2, 3, 4, 5].map((lvl) => (
+                    <div
+                      key={lvl}
+                      className={`h-2 flex-1 rounded-full transition-all ${
+                        lvl <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <p className="text-[10px] text-[#7A6A5A]">
+                  Wyraźny bukiet wyczuwalny natychmiast po odkręceniu słoika.
+                </p>
+              </div>
+            </div>
+
+            {/* Barwa & Krystalizacja - 2 kompaktowe boksy */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
+                <span className="font-bold text-[#8C4609] text-[11px] flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#D9821E]" />
+                  Krystalizacja
+                </span>
+                <p className="text-[11px] text-[#594D42] leading-tight">{product.tasteProfile.crystallization}</p>
+              </div>
+
+              <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
+                <span className="font-bold text-[#1B4332] text-[11px] flex items-center gap-1">
+                  <Droplet className="w-3.5 h-3.5 text-[#1B4332]" />
+                  Barwa miodu
+                </span>
+                <div className="flex items-center gap-1.5 pt-0.5">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
+                    style={{ backgroundColor: product.colorHex }}
+                  />
+                  <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
                 </div>
               </div>
             </div>
 
-            {/* Pigułka 2: Rześkość */}
-            <div className="p-2 sm:p-2.5 rounded-2xl bg-[#F4F9F4] border border-[#BBDCBF] flex flex-col justify-between shadow-2xs hover:border-[#1B4332] transition-colors">
-              <span className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider block">
-                Rześkość
-              </span>
-              <div className="flex items-baseline justify-between mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-[#143727]">
-                  {product.tasteProfile.acidity}<span className="text-[10px] sm:text-[11px] font-normal text-[#628573]">/5</span>
-                </span>
-                <div className="flex gap-0.5" title={`${product.tasteProfile.acidity} na 5`}>
-                  {[1, 2, 3, 4, 5].map((dot) => (
-                    <span 
-                      key={dot}
-                      className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#D0E2D2]'}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Pigułka 3: Aromat */}
-            <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FCF6ED] border border-[#E8D6B7] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
-              <span className="text-[10px] sm:text-[11px] font-bold text-[#8F5917] uppercase tracking-wider block">
-                Aromat
-              </span>
-              <div className="flex items-baseline justify-between mt-1">
-                <span className="text-sm sm:text-base font-extrabold text-[#784407]">
-                  {product.tasteProfile.aroma}<span className="text-[10px] sm:text-[11px] font-normal text-[#9C7D54]">/5</span>
-                </span>
-                <div className="flex gap-0.5" title={`${product.tasteProfile.aroma} na 5`}>
-                  {[1, 2, 3, 4, 5].map((dot) => (
-                    <span 
-                      key={dot}
-                      className={`w-1.5 h-1.5 rounded-full ${dot <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'}`}
-                    />
-                  ))}
-                </div>
-              </div>
+            {/* Bottom close trigger button */}
+            <div className="pt-2 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setIsSensoryExpandedMobile(false)}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs transition-colors"
+              >
+                <span>Zwiń wykres sensoryczny</span>
+                <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#D9821E]" />
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Content: Always visible on desktop (sm:block), toggleable on mobile */}
-        <div className={`pt-3 border-t border-[#D9821E]/15 space-y-3 sm:space-y-4 ${isSensoryExpandedMobile ? 'block animate-in fade-in duration-200' : 'hidden sm:block'}`}>
-          {/* Paski sensoryczne: Słodycz, Kwasowość, Aromat */}
-          <div className="space-y-3 pt-1">
-            {/* Poziom słodyczy */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-[#594D42]">Poziom słodyczy</span>
-                <span className="font-bold text-[#8C4609]">{product.tasteProfile.sweetness} / 5</span>
-              </div>
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4, 5].map((lvl) => (
-                  <div
-                    key={lvl}
-                    className={`h-2 flex-1 rounded-full transition-all ${
-                      lvl <= product.tasteProfile.sweetness ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-[10px] text-[#7A6A5A]">
-                {product.tasteProfile.sweetness <= 2 ? 'Wytrawny, mało słodki' : product.tasteProfile.sweetness <= 4 ? 'Umiarkowanie zbalansowany' : 'Głęboka, aksamitna słodycz'}
-              </p>
-            </div>
-
-            {/* Kwasowość / Rześkość */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-[#594D42]">Kwasowość / Rześkość</span>
-                <span className="font-bold text-[#1B4332]">{product.tasteProfile.acidity} / 5</span>
-              </div>
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4, 5].map((lvl) => (
-                  <div
-                    key={lvl}
-                    className={`h-2 flex-1 rounded-full transition-all ${
-                      lvl <= product.tasteProfile.acidity ? 'bg-[#1B4332]' : 'bg-[#EADDC7]'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-[10px] text-[#7A6A5A]">
-                {product.tasteProfile.acidity <= 2 ? 'Łagodny, maślany finisz' : 'Rześka, świeża nuta cytrusowo-kwiatowa'}
-              </p>
-            </div>
-
-            {/* Intensywność aromatu */}
-            <div className="space-y-1">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-[#594D42]">Intensywność aromatu</span>
-                <span className="font-bold text-[#D9821E]">{product.tasteProfile.aroma} / 5</span>
-              </div>
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4, 5].map((lvl) => (
-                  <div
-                    key={lvl}
-                    className={`h-2 flex-1 rounded-full transition-all ${
-                      lvl <= product.tasteProfile.aroma ? 'bg-[#D9821E]' : 'bg-[#EADDC7]'
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-[10px] text-[#7A6A5A]">
-                Wyraźny bukiet wyczuwalny natychmiast po odkręceniu słoika.
-              </p>
-            </div>
-          </div>
-
-          {/* Barwa & Krystalizacja - 2 kompaktowe boksy */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
-              <span className="font-bold text-[#8C4609] text-[11px] flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#D9821E]" />
-                Krystalizacja
-              </span>
-              <p className="text-[11px] text-[#594D42] leading-tight">{product.tasteProfile.crystallization}</p>
-            </div>
-
-            <div className="p-3 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] text-xs space-y-1">
-              <span className="font-bold text-[#1B4332] text-[11px] flex items-center gap-1">
-                <Droplet className="w-3.5 h-3.5 text-[#1B4332]" />
-                Barwa miodu
-              </span>
-              <div className="flex items-center gap-1.5 pt-0.5">
-                <span
-                  className="w-2.5 h-2.5 rounded-full border border-black/25 shrink-0 shadow-2xs"
-                  style={{ backgroundColor: product.colorHex }}
-                />
-                <p className="text-[11px] text-[#594D42] leading-tight font-medium">{product.tasteProfile.color}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile bottom close trigger button */}
-          <div className="pt-2 flex justify-center sm:hidden">
-            <button
-              type="button"
-              onClick={() => setIsSensoryExpandedMobile(false)}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs"
-            >
-              <span>Zwiń profil sensoryczny</span>
-              <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#D9821E]" />
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     );
   };
