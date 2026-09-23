@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { HONEY_PRODUCTS, HONEY_VARIETIES, HIVE_TREASURES } from '../data/honeyProducts';
@@ -21,6 +21,7 @@ import {
   Clock, 
   Truck, 
   ChevronRight, 
+  ChevronLeft,
   CheckCircle2, 
   Droplet,
   Beaker,
@@ -102,6 +103,37 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
   const [purchaseMode, setPurchaseMode] = useState<'one-time' | 'subscription'>('one-time');
   const [subscriptionInterval, setSubscriptionInterval] = useState<30 | 60 | 90>(60);
   const [isSensoryExpandedMobile, setIsSensoryExpandedMobile] = useState(false);
+  
+  // Knowledge card tabs horizontal scroll state & affordance
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollTabsLeft, setCanScrollTabsLeft] = useState(false);
+  const [canScrollTabsRight, setCanScrollTabsRight] = useState(true);
+
+  const checkTabsScroll = () => {
+    if (!tabsContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = tabsContainerRef.current;
+    setCanScrollTabsLeft(scrollLeft > 10);
+    setCanScrollTabsRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  useEffect(() => {
+    checkTabsScroll();
+    const el = tabsContainerRef.current;
+    if (el) {
+      el.addEventListener('scroll', checkTabsScroll, { passive: true });
+      window.addEventListener('resize', checkTabsScroll);
+      return () => {
+        el.removeEventListener('scroll', checkTabsScroll);
+        window.removeEventListener('resize', checkTabsScroll);
+      };
+    }
+  }, []);
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (!tabsContainerRef.current) return;
+    const amount = direction === 'left' ? -200 : 200;
+    tabsContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   const currentSize = product.sizesList[selectedSizeIdx] || product.sizesList[0];
   const images = product.images && product.images.length > 0 ? product.images : [product.imageUrl];
@@ -1632,16 +1664,46 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                 </div>
               </div>
 
-              {/* Verified badge */}
+              {/* Verified badge - Desktop */}
               <div className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-[#1B4332] bg-[#FAF8F5] px-3 py-1.5 rounded-full border border-[#D9821E]/20 self-start sm:self-center">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#D9821E]" />
                 <span>100% Czyste Pszczelarstwo Wędrowne</span>
               </div>
+
+              {/* Mobile indicator informing about horizontal swipe */}
+              <div className="flex sm:hidden items-center gap-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] px-2.5 py-1 rounded-full border border-[#E7DCCE] self-start">
+                <span>5 sekcji</span>
+                <span className="text-[#D9821E]">•</span>
+                <span className="text-[#D9821E] flex items-center gap-0.5 font-medium">
+                  przesuń w bok <ChevronRight className="w-3 h-3 inline" />
+                </span>
+              </div>
             </div>
 
             {/* Segmented Pill Navigation Bar */}
-            <div className="relative">
-              <div className="bg-[#FAF7F2] p-1.5 rounded-2xl border border-[#EADBCC] flex items-center gap-1.5 overflow-x-auto scrollbar-none scroll-smooth">
+            <div className="relative group">
+              {/* Left scroll arrow button on mobile when scrolled */}
+              {canScrollTabsLeft && (
+                <button
+                  type="button"
+                  onClick={() => scrollTabs('left')}
+                  className="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/95 text-[#8C5815] hover:text-[#1B4332] border border-[#EADBCC] shadow-sm flex items-center justify-center sm:hidden active:scale-90 transition-all z-10 cursor-pointer"
+                  aria-label="Przewiń zakładki w lewo"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Left edge fade */}
+              {canScrollTabsLeft && (
+                <div className="pointer-events-none absolute left-1 top-1.5 bottom-1.5 w-8 bg-gradient-to-r from-[#FAF7F2] to-transparent rounded-l-xl sm:hidden z-5" />
+              )}
+
+              <div 
+                ref={tabsContainerRef}
+                onScroll={checkTabsScroll}
+                className="bg-[#FAF7F2] p-1.5 rounded-2xl border border-[#EADBCC] flex items-center gap-1.5 overflow-x-auto scrollbar-none scroll-smooth pr-8 sm:pr-1.5"
+              >
                 {(prodType === 'bee-colony' ? [
                   { id: 'opis', label: 'Specyfikacja i Szkolenie', icon: FileText },
                   { id: 'zdrowie', label: 'Zdrowotność & Genetyka', icon: ShieldCheck },
@@ -1687,8 +1749,22 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
                 })}
               </div>
 
-              {/* Subtle edge fade indicator for mobile scroll */}
-              <div className="pointer-events-none absolute right-1 top-1.5 bottom-1.5 w-6 bg-gradient-to-l from-[#FAF7F2] to-transparent rounded-r-xl sm:hidden" />
+              {/* Right edge fade */}
+              {canScrollTabsRight && (
+                <div className="pointer-events-none absolute right-1 top-1.5 bottom-1.5 w-10 bg-gradient-to-l from-[#FAF7F2] via-[#FAF7F2]/80 to-transparent rounded-r-xl sm:hidden z-5" />
+              )}
+
+              {/* Right scroll arrow button on mobile when more tabs can be reached */}
+              {canScrollTabsRight && (
+                <button
+                  type="button"
+                  onClick={() => scrollTabs('right')}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/95 text-[#D9821E] hover:text-[#8C4609] border border-[#EADBCC] shadow-sm flex items-center justify-center sm:hidden active:scale-90 transition-all z-10 cursor-pointer"
+                  aria-label="Przewiń zakładki w prawo"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
 
