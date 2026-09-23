@@ -420,137 +420,287 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
   const renderSensoryAndShipping = () => {
     if (prodType === 'bee-colony') {
       return (
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#1B4332]/25 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#1B4332]/15 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center text-sm shadow-2xs font-bold">
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#1B4332]/25 shadow-sm overflow-hidden space-y-2">
+          {/* Header */}
+          <button
+            type="button"
+            onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
+            className="w-full text-left flex items-center justify-between gap-3 cursor-pointer select-none pb-1"
+            aria-expanded={isSensoryExpandedMobile}
+          >
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-50 text-emerald-800 border border-[#1B4332]/20 flex items-center justify-center text-sm sm:text-base shrink-0 shadow-2xs font-bold">
                 🐝
               </div>
-              <div>
-                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
-                  Karta Specyfikacji Odkładu Pszczelego
-                </h3>
-                <p className="text-[11px] text-[#7A6A5A]">Pasieka Zarodowo-Produkcyjna Ciechów</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-bold text-[#241D17] text-sm sm:text-base leading-tight">
+                    Karta Specyfikacji Odkładu Pszczelego
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider hidden xs:inline">
+                    Nadzór PLW
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[#7A6A5A] truncate mt-0.5">
+                  Pasieka Zarodowo-Produkcyjna Ciechów
+                </p>
               </div>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
-              Nadzór Weterynaryjny PLW
-            </span>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
-                <span>Format gniazda i ramki</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[11px] font-bold text-[#1B4332] hidden sm:inline">
+                {isSensoryExpandedMobile ? 'Zwiń specyfikację' : 'Rozwiń specyfikację'}
+              </span>
+              <div className={`w-8 h-8 rounded-full bg-[#FAF5ED] hover:bg-[#F3E7D3] border border-[#E7DCCE] flex items-center justify-center text-[#8C5815] transition-all duration-300 shadow-2xs ${isSensoryExpandedMobile ? 'bg-[#F2E4CF] border-[#1B4332]' : ''}`}>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isSensoryExpandedMobile ? 'rotate-180 text-[#1B4332]' : ''}`} />
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                <strong>5 ramek wielkopolskich</strong> (3 ramki z czerwiem krytym i odkrytym w różnym wieku, 2 ramki osłonowe z miodem i pierzgą).
-              </p>
             </div>
+          </button>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#D9821E]" />
-                <span>Matka pszczela (Królowa)</span>
+          {/* 3 Prominent Metric Badges when collapsed */}
+          {!isSensoryExpandedMobile && (
+            <div 
+              onClick={() => setIsSensoryExpandedMobile(true)}
+              className="pt-1.5 pb-1 cursor-pointer select-none animate-in fade-in duration-200"
+            >
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFF8EB] border border-[#E8CBA3] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8C4609] uppercase tracking-wider block">
+                    Gniazdo
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#7A3600] block truncate">5 ramek</span>
+                    <span className="text-[10px] text-[#A37346] block truncate">Wielkopolskie</span>
+                  </div>
+                </div>
+
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#F4F9F4] border border-[#BBDCBF] flex flex-col justify-between shadow-2xs hover:border-[#1B4332] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider block">
+                    Królowa
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#143727] block truncate">Matka 2026</span>
+                    <span className="text-[10px] text-[#628573] block truncate">Znakowana</span>
+                  </div>
+                </div>
+
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FCF6ED] border border-[#E8D6B7] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8F5917] uppercase tracking-wider block">
+                    Szkolenie
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#784407] block truncate">1h w pasiece</span>
+                    <span className="text-[10px] text-[#9C7D54] block truncate">W cenie</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Młoda, znakowana opalitkiem rocznika 2026, <strong>unasieniona naturalnie</strong>, po teście plenności (zwarty, równomierny czerw).
-              </p>
             </div>
+          )}
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
-                <span>Cechy linii pszczół</span>
+          {/* Full content when expanded */}
+          {isSensoryExpandedMobile && (
+            <div className="pt-3 border-t border-[#1B4332]/15 space-y-3 sm:space-y-4 block animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
+                    <span>Format gniazda i ramki</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    <strong>5 ramek wielkopolskich</strong> (3 ramki z czerwiem krytym i odkrytym w różnym wieku, 2 ramki osłonowe z miodem i pierzgą).
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#D9821E]" />
+                    <span>Matka pszczela (Królowa)</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Młoda, znakowana opalitkiem rocznika 2026, <strong>unasieniona naturalnie</strong>, po teście plenności (zwarty, równomierny czerw).
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
+                    <span>Cechy linii pszczół</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Linia Krainka / Buckfast selekcjonowana na <strong>wyjątkową łagodność</strong>, nierojliwość oraz dynamiczny rozwój i wysoką miodność.
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-[#8C4609]" />
+                    <span>Instruktaż w pasiece</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    W cenie odkładu: <strong>1-godzinne szkolenie praktyczne</strong> przy otwartym ulu podczas odbioru. Pomoc i doradztwo dla początkujących.
+                  </p>
+                </div>
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Linia Krainka / Buckfast selekcjonowana na <strong>wyjątkową łagodność</strong>, nierojliwość oraz dynamiczny rozwój i wysoką miodność.
-              </p>
-            </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-[#8C4609]" />
-                <span>Instruktaż w pasiece</span>
+              <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2">
+                <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="text-[11px] leading-relaxed">
+                  <strong>Termin i warunki odbioru:</strong> Czerwiec – Lipiec 2026. Odbiór osobisty w pasiece Ciechów w bezpiecznym, wentylowanym kartonie transportowym.
+                </div>
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                W cenie odkładu: <strong>1-godzinne szkolenie praktyczne</strong> przy otwartym ulu podczas odbioru. Pomoc i doradztwo dla początkujących.
-              </p>
-            </div>
-          </div>
 
-          <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2">
-            <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-            <div className="text-[11px] leading-relaxed">
-              <strong>Termin i warunki odbioru:</strong> Czerwiec – Lipiec 2026. Odbiór osobisty w pasiece Ciechów w bezpiecznym, wentylowanym kartonie transportowym.
+              <div className="pt-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setIsSensoryExpandedMobile(false)}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#1B4332] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs transition-colors"
+                >
+                  <span>Zwiń specyfikację odkładu</span>
+                  <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#1B4332]" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       );
     }
 
     if (prodType === 'candle') {
       return (
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center text-sm shadow-2xs font-bold">
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D9821E]/25 shadow-sm overflow-hidden space-y-2">
+          {/* Header */}
+          <button
+            type="button"
+            onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
+            className="w-full text-left flex items-center justify-between gap-3 cursor-pointer select-none pb-1"
+            aria-expanded={isSensoryExpandedMobile}
+          >
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 text-amber-800 border border-[#D9821E]/20 flex items-center justify-center text-sm sm:text-base shrink-0 shadow-2xs font-bold">
                 🕯️
               </div>
-              <div>
-                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
-                  Karta Manufaktury Świec Woskowych
-                </h3>
-                <p className="text-[11px] text-[#7A6A5A]">100% Czysty Wosk Pszczeli z Pasieki</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-bold text-[#241D17] text-sm sm:text-base leading-tight">
+                    Karta Manufaktury Świec Woskowych
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#D9821E]/15 text-[#8C4609] border border-[#D9821E]/25 uppercase tracking-wider hidden xs:inline">
+                    Zero Parafiny
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[#7A6A5A] truncate mt-0.5">
+                  100% Czysty Wosk Pszczeli z Pasieki
+                </p>
               </div>
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#D9821E]/15 text-[#8C4609] border border-[#D9821E]/25 uppercase tracking-wider">
-              Zero Parafiny
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#1B4332]" />
-                <span>Ujemna jonizacja powietrza</span>
-              </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Płomień wosku pszczelego emituje jony ujemne, które oczyszczają powietrze z kurzu, smogu elektromagnetycznego i alergenów.
-              </p>
             </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#D9821E]" />
-                <span>Wydłużony czas palenia</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[11px] font-bold text-[#D9821E] hidden sm:inline">
+                {isSensoryExpandedMobile ? 'Zwiń właściwości' : 'Rozwiń właściwości'}
+              </span>
+              <div className={`w-8 h-8 rounded-full bg-[#FAF5ED] hover:bg-[#F3E7D3] border border-[#E7DCCE] flex items-center justify-center text-[#8C5815] transition-all duration-300 shadow-2xs ${isSensoryExpandedMobile ? 'bg-[#F2E4CF] border-[#D9821E]' : ''}`}>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isSensoryExpandedMobile ? 'rotate-180 text-[#D9821E]' : ''}`} />
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Wosk pszczeli pali się do 3x dłużej niż syntetyczna parafina. Płomień jest jasny, ciepły i nie wydziela szkodliwego dymu.
-              </p>
             </div>
+          </button>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
-                <Droplet className="w-4 h-4 text-[#8C4609]" />
-                <span>100% Naturalny surowiec</span>
-              </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Pochodzi z dziewiczej węzy i odsklepin naszej pasieki. Brak sztucznych barwników, substancji ropopochodnych i ołowianych knotów.
-              </p>
-            </div>
+          {/* 3 Prominent Metric Badges when collapsed */}
+          {!isSensoryExpandedMobile && (
+            <div 
+              onClick={() => setIsSensoryExpandedMobile(true)}
+              className="pt-1.5 pb-1 cursor-pointer select-none animate-in fade-in duration-200"
+            >
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFF8EB] border border-[#E8CBA3] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8C4609] uppercase tracking-wider block">
+                    Surowiec
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#7A3600] block truncate">100% Cera</span>
+                    <span className="text-[10px] text-[#A37346] block truncate">Wosk pszczeli</span>
+                  </div>
+                </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
-                <Heart className="w-4 h-4 text-[#C1382B]" />
-                <span>Naturalny zapach ula</span>
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#F4F9F4] border border-[#BBDCBF] flex flex-col justify-between shadow-2xs hover:border-[#1B4332] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider block">
+                    Jonizacja
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#143727] block truncate">Jony ujemne</span>
+                    <span className="text-[10px] text-[#628573] block truncate">Oczyszcza</span>
+                  </div>
+                </div>
+
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FCF6ED] border border-[#E8D6B7] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8F5917] uppercase tracking-wider block">
+                    Płomień
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#784407] block truncate">Do 3x dłużej</span>
+                    <span className="text-[10px] text-[#9C7D54] block truncate">Bez sadzy</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                Podczas palenia w pokoju unosi się kojący, delikatny zapach naturalnego miodu i propolisu, ułatwiający relaks i sen.
-              </p>
             </div>
-          </div>
+          )}
+
+          {/* Full content when expanded */}
+          {isSensoryExpandedMobile && (
+            <div className="pt-3 border-t border-[#D9821E]/15 space-y-3 sm:space-y-4 block animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#1B4332]" />
+                    <span>Ujemna jonizacja powietrza</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Płomień wosku pszczelego emituje jony ujemne, które oczyszczają powietrze z kurzu, smogu elektromagnetycznego i alergenów.
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-[#D9821E]" />
+                    <span>Wydłużony czas palenia</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Wosk pszczeli pali się do 3x dłużej niż syntetyczna parafina. Płomień jest jasny, ciepły i nie wydziela szkodliwego dymu.
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                    <Droplet className="w-4 h-4 text-[#8C4609]" />
+                    <span>100% Naturalny surowiec</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Pochodzi z dziewiczej węzy i odsklepin naszej pasieki. Brak sztucznych barwników, substancji ropopochodnych i ołowianych knotów.
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                    <Heart className="w-4 h-4 text-[#C1382B]" />
+                    <span>Naturalny zapach ula</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    Podczas palenia w pokoju unosi się kojący, delikatny zapach naturalnego miodu i propolisu, ułatwiający relaks i sen.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setIsSensoryExpandedMobile(false)}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs transition-colors"
+                >
+                  <span>Zwiń właściwości świecy</span>
+                  <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#D9821E]" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
@@ -576,6 +726,18 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
         : isPierzga
         ? 'Najwyższa Biodostępność'
         : 'Bogactwo Biopierwiastków';
+
+      const pill1Title = isPropolis ? 'Flawonoidy' : isPierzga ? 'Fermentacja' : '22% Białka';
+      const pill1Value = isPropolis ? '300+ związków' : isPierzga ? 'Kwas mlekowy' : 'Aminokwasy';
+      const pill1Sub = isPropolis ? 'CAPE i polifenole' : isPierzga ? 'Ciepło ula' : 'Pełen aminogram';
+
+      const pill2Title = isPropolis ? 'Nalewka 20%' : isPierzga ? 'Wchłanianie' : 'Żywe enzymy';
+      const pill2Value = isPropolis ? 'Baza spirytusowa' : isPierzga ? 'Przyswajalność >85%' : 'Suszenie <38°C';
+      const pill2Sub = isPropolis ? 'Ekstrakt leczniczy' : isPierzga ? '3x szybciej' : '100% aktywności';
+
+      const pill3Title = isPropolis ? 'Bioaktywność' : isPierzga ? 'Witalność' : 'Aktywacja';
+      const pill3Value = isPropolis ? 'Tarcza ula' : isPierzga ? 'Odbudowa' : 'Namaczanie';
+      const pill3Sub = isPropolis ? 'Naturalny antybiotyk' : isPierzga ? 'Żelazo i enzymy' : 'Min. 6 godzin';
 
       const box1Title = isPropolis ? 'Flawonoidy i CAPE' : isPierzga ? 'Fermentacja mlekowa' : '22% Białka roślinnego';
       const box1Text = isPropolis
@@ -606,65 +768,138 @@ export const ProductPage: React.FC<ProductPageProps> = ({ onAddToCart, onOpenCom
         : '1-2 łyżeczki dziennie w cyklach 30-dniowych, szczególnie w okresach przesilenia.';
 
       return (
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#D9821E]/25 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#D9821E]/15 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-900 flex items-center justify-center text-sm shadow-2xs font-bold">
+        <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#D9821E]/25 shadow-sm overflow-hidden space-y-2">
+          {/* Header */}
+          <button
+            type="button"
+            onClick={() => setIsSensoryExpandedMobile(prev => !prev)}
+            className="w-full text-left flex items-center justify-between gap-3 cursor-pointer select-none pb-1"
+            aria-expanded={isSensoryExpandedMobile}
+          >
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 text-amber-900 border border-[#D9821E]/20 flex items-center justify-center text-sm sm:text-base shrink-0 shadow-2xs font-bold">
                 {isPropolis ? '🛡️' : isPierzga ? '👑' : '🌸'}
               </div>
-              <div>
-                <h3 className="font-serif font-bold text-[#241D17] text-base leading-tight">
-                  {cardTitle}
-                </h3>
-                <p className="text-[11px] text-[#7A6A5A]">{cardSubtitle}</p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-bold text-[#241D17] text-sm sm:text-base leading-tight">
+                    {cardTitle}
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider hidden xs:inline">
+                    {cardBadge}
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-[#7A6A5A] truncate mt-0.5">{cardSubtitle}</p>
               </div>
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#1B4332]/10 text-[#1B4332] border border-[#1B4332]/20 uppercase tracking-wider">
-              {cardBadge}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
-                <span>{box1Title}</span>
-              </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                {box1Text}
-              </p>
             </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#D9821E]" />
-                <span>{box2Title}</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[11px] font-bold text-[#D9821E] hidden sm:inline">
+                {isSensoryExpandedMobile ? 'Zwiń właściwości' : 'Rozwiń właściwości'}
+              </span>
+              <div className={`w-8 h-8 rounded-full bg-[#FAF5ED] hover:bg-[#F3E7D3] border border-[#E7DCCE] flex items-center justify-center text-[#8C5815] transition-all duration-300 shadow-2xs ${isSensoryExpandedMobile ? 'bg-[#F2E4CF] border-[#D9821E]' : ''}`}>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isSensoryExpandedMobile ? 'rotate-180 text-[#D9821E]' : ''}`} />
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                {box2Text}
-              </p>
             </div>
+          </button>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#8C4609]" />
-                <span>{box3Title}</span>
-              </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                {box3Text}
-              </p>
-            </div>
+          {/* 3 Prominent Metric Badges when collapsed */}
+          {!isSensoryExpandedMobile && (
+            <div 
+              onClick={() => setIsSensoryExpandedMobile(true)}
+              className="pt-1.5 pb-1 cursor-pointer select-none animate-in fade-in duration-200"
+            >
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FFF8EB] border border-[#E8CBA3] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8C4609] uppercase tracking-wider block">
+                    {pill1Title}
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#7A3600] block truncate">{pill1Value}</span>
+                    <span className="text-[10px] text-[#A37346] block truncate">{pill1Sub}</span>
+                  </div>
+                </div>
 
-            <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
-              <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
-                <span>{box4Title}</span>
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#F4F9F4] border border-[#BBDCBF] flex flex-col justify-between shadow-2xs hover:border-[#1B4332] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#1B4332] uppercase tracking-wider block">
+                    {pill2Title}
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#143727] block truncate">{pill2Value}</span>
+                    <span className="text-[10px] text-[#628573] block truncate">{pill2Sub}</span>
+                  </div>
+                </div>
+
+                <div className="p-2 sm:p-2.5 rounded-2xl bg-[#FCF6ED] border border-[#E8D6B7] flex flex-col justify-between shadow-2xs hover:border-[#D9821E] transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-bold text-[#8F5917] uppercase tracking-wider block">
+                    {pill3Title}
+                  </span>
+                  <div className="mt-1">
+                    <span className="text-xs sm:text-sm font-extrabold text-[#784407] block truncate">{pill3Value}</span>
+                    <span className="text-[10px] text-[#9C7D54] block truncate">{pill3Sub}</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-[11px] text-[#594D42] leading-relaxed">
-                {box4Text}
-              </p>
             </div>
-          </div>
+          )}
+
+          {/* Full content when expanded */}
+          {isSensoryExpandedMobile && (
+            <div className="pt-3 border-t border-[#D9821E]/15 space-y-3 sm:space-y-4 block animate-in fade-in duration-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#1B4332] text-xs flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[#1B4332]" />
+                    <span>{box1Title}</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    {box1Text}
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#D9821E] text-xs flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-[#D9821E]" />
+                    <span>{box2Title}</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    {box2Text}
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#8C4609] text-xs flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-[#8C4609]" />
+                    <span>{box3Title}</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    {box3Text}
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-[#FAF8F5] rounded-xl border border-[#E7DDCE] space-y-1">
+                  <div className="font-bold text-[#594D42] text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#1B4332]" />
+                    <span>{box4Title}</span>
+                  </div>
+                  <p className="text-[11px] text-[#594D42] leading-relaxed">
+                    {box4Text}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setIsSensoryExpandedMobile(false)}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 text-[11px] font-bold text-[#8C5815] bg-[#FAF5ED] hover:bg-[#F3E7D3] rounded-full border border-[#E7DCCE] cursor-pointer shadow-2xs transition-colors"
+                >
+                  <span>Zwiń właściwości biologiczne</span>
+                  <ChevronDown className="w-3.5 h-3.5 rotate-180 text-[#D9821E]" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       );
     }
