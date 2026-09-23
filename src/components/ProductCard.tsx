@@ -8,7 +8,8 @@ import { getProductBadges } from '../utils/honeyHelpers';
 interface ProductCardProps {
   product: HoneyProduct;
   onAddToCart: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
-  onOpenDetails: (product: HoneyProduct) => void;
+  onOpenDetails?: (product: HoneyProduct) => void;
+  onOpenDetail?: (product: HoneyProduct) => void;
   onToggleCompare?: (product: HoneyProduct) => void;
   isCompared?: boolean;
   onSelectFlavorNote?: (note: string) => void;
@@ -19,6 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onAddToCart,
   onOpenDetails,
+  onOpenDetail,
   onToggleCompare,
   isCompared = false,
   onSelectFlavorNote,
@@ -127,7 +129,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               className="inline-flex items-center gap-1 text-[#8C531B] hover:text-[#1B4332] hover:underline transition-colors uppercase"
               title={`Filtruj zbiory: ${product.category}`}
             >
-              <span>{product.category === 'wiosenne' ? '🌸 Wiosenny' : product.category === 'letnie' ? '☀️ Letni' : product.category === 'lesne-spadz' ? '🌲 Leśny / Spadź' : '🍓 Z dodatkami'}</span>
+              <span>
+                {product.category === 'wiosenne' ? '🌸 Wiosenny' :
+                 product.category === 'letnie' ? '☀️ Letni' :
+                 product.category === 'lesne-spadz' ? '🌲 Leśny / Spadź' :
+                 product.category === 'z-dodatkami' ? '🐝 Skarby Ula' :
+                 product.category === 'zestawy' ? '🕯️ Manufaktura' : '🍯 Pasieka'}
+              </span>
             </Link>
             <div className="flex items-center gap-1 text-[#554C3F]">
               <Star className="w-3.5 h-3.5 fill-[#F3C06B] text-[#F3C06B]" />
@@ -197,12 +205,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        {/* Weight Selector - Czysty, elegancki selektor bez powtarzalnej plakietki 15 razy */}
+        {/* Weight Selector */}
         <div className="space-y-1.5 pt-1">
           <div className="flex items-center justify-between text-[11px] text-[#7A6A5A]">
-            <span className="font-medium">Wybierz słoik:</span>
+            <span className="font-medium">
+              {HIVE_TREASURE_IDS.includes(product.id) ? 'Wybierz wariant:' : 'Wybierz słoik:'}
+            </span>
             <span className="text-[10px] font-mono text-[#8C7A6B]">
-              {Math.round((currentSize.pricePln / currentSize.weightGrams) * 1000)} zł/kg
+              {currentSize.weightGrams >= 50
+                ? `${Math.round((currentSize.pricePln / currentSize.weightGrams) * 1000)} zł/kg`
+                : ''}
             </span>
           </div>
 
@@ -251,13 +263,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <div className="flex items-center gap-1.5 shrink-0">
             <button
-              onClick={() => onOpenDetails(product)}
+              type="button"
+              onClick={() => (onOpenDetails || onOpenDetail)?.(product)}
               className="px-2.5 py-2 rounded-xl border border-[#D9D0C3] text-[#4A4033] hover:bg-[#F4EFE6] hover:border-[#C2B7A7] text-xs font-bold transition-all cursor-pointer"
               title="Szybki podgląd i opis miodu"
             >
               Podgląd
             </button>
             <button
+              type="button"
               onClick={() => onAddToCart(product, currentSize.weightGrams, currentSize.pricePln)}
               className="px-3.5 py-2 rounded-xl bg-[#1B4332] hover:bg-[#143326] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer"
               id={`add-to-cart-${product.id}`}

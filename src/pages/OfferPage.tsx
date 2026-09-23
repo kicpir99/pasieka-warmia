@@ -1,13 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ShieldCheck, Heart, Droplets, Flame, BookOpen, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { HONEY_PRODUCTS, HONEY_VARIETIES } from '../data/honeyProducts';
+import { HoneyProduct } from '../types';
+
+const ProductDetailModal = React.lazy(() => import('../components/ProductDetailModal').then(m => ({ default: m.ProductDetailModal })));
 
 interface OfferPageProps {
   displayResolution: { width: number; height: number; deviceType: string; containerClass: string };
+  onAddToCart?: (product: HoneyProduct, weightGrams: number, pricePln: number) => void;
 }
 
-export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
+export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution, onAddToCart }) => {
+  const [detailProduct, setDetailProduct] = useState<HoneyProduct | null>(null);
   // Automatyczne, dynamiczne wyszukiwanie najniższych cen z bazy produktów
   const minHoneyPrice = useMemo(() => {
     const allPrices = HONEY_VARIETIES.flatMap(h => h.sizes.map(s => s.pricePln));
@@ -60,6 +65,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ],
       ctaText: 'Wybierz gramaturę i kup',
       ctaLink: '/produkt/pierzga-pszczela',
+      productId: 'pierzga-pszczela',
     },
     {
       id: 'propolis',
@@ -77,6 +83,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ],
       ctaText: 'Kup naturalny propolis',
       ctaLink: '/produkt/propolis-kit',
+      productId: 'propolis-kit',
     },
     {
       id: 'pylek',
@@ -94,6 +101,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ],
       ctaText: 'Wybierz gramaturę i kup',
       ctaLink: '/produkt/pylek-pszczeli',
+      productId: 'pylek-pszczeli',
     },
     {
       id: 'wosk',
@@ -111,6 +119,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ],
       ctaText: 'Zobacz świece z wosku',
       ctaLink: '/produkt/swieca-wosk-pszczeli',
+      productId: 'swieca-wosk-pszczeli',
     },
     {
       id: 'szkolenia',
@@ -128,6 +137,7 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
       ],
       ctaText: 'Szczegóły i rezerwacja',
       ctaLink: '/produkt/odklad-szkolenie-pszczele',
+      productId: 'odklad-szkolenie-pszczele',
     },
   ], [minHoneyPrice, minPierzgaPrice, minPropolisPrice, minPylekPrice, minWoskPrice, minOdkladPrice]);
 
@@ -215,10 +225,23 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-2 flex items-center gap-2">
+                    {item.productId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const matched = HONEY_PRODUCTS.find(p => p.id === item.productId);
+                          if (matched) setDetailProduct(matched);
+                        }}
+                        className="px-3 py-2.5 rounded-xl border border-[#D9D0C3] text-[#4A4033] hover:bg-[#F4EFE6] hover:border-[#C2B7A7] text-xs font-bold transition-all cursor-pointer whitespace-nowrap shadow-2xs"
+                        title={`Szybki podgląd: ${item.title}`}
+                      >
+                        Podgląd
+                      </button>
+                    )}
                     <Link
                       to={item.ctaLink}
-                      className="w-full py-2.5 px-4 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white border border-[#8B5337] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-md"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-[#8B5337] hover:bg-[#6D3F28] text-white border border-[#8B5337] text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-md"
                     >
                       <span>{item.ctaText}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -255,6 +278,15 @@ export const OfferPage: React.FC<OfferPageProps> = ({ displayResolution }) => {
           </div>
         </div>
       </section>
+
+      {/* Modal szczegółów produktu */}
+      <React.Suspense fallback={null}>
+        <ProductDetailModal
+          product={detailProduct}
+          onClose={() => setDetailProduct(null)}
+          onAddToCart={onAddToCart || (() => {})}
+        />
+      </React.Suspense>
     </main>
   );
 };

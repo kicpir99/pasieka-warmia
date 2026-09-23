@@ -45,7 +45,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   const urlFlavorNote = searchParams.get('nuta');
   const urlCategory = searchParams.get('kategoria') as HoneyCategory | null;
   const urlHealthIntent = searchParams.get('intencja') as HealthIntentFilter | null;
-  const validCategories: HoneyCategory[] = ['wszystkie', 'wiosenne', 'letnie', 'lesne-spadz'];
+  const validCategories: HoneyCategory[] = ['wszystkie', 'wiosenne', 'letnie', 'lesne-spadz', 'z-dodatkami', 'zestawy'];
   const validIntents: HealthIntentFilter[] = ['wszystkie', 'odpornosc', 'lagodne', 'koneser', 'prezent'];
   const initialCategory = urlCategory && validCategories.includes(urlCategory) ? urlCategory : 'wszystkie';
   const initialIntent = urlHealthIntent && validIntents.includes(urlHealthIntent) ? urlHealthIntent : 'wszystkie';
@@ -109,7 +109,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   };
 
   const filteredProducts = useMemo(() => {
-    let result = [...HONEY_VARIETIES];
+    let result = [...HONEY_PRODUCTS];
 
     if (filters.searchQuery.trim()) {
       const q = filters.searchQuery.toLowerCase();
@@ -135,9 +135,9 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
         switch (filters.healthIntent) {
           case 'odpornosc':
-            return combined.includes('odporn') || combined.includes('przezięb') || combined.includes('gryp') || combined.includes('infekc');
+            return combined.includes('odporn') || combined.includes('przezięb') || combined.includes('gryp') || combined.includes('infekc') || p.id.includes('propolis') || p.id.includes('pierzga');
           case 'lagodne':
-            return p.flavorIntensity === 'lagodny' || p.category === 'wiosenne' || combined.includes('dzieci') || p.id.includes('rzepak') || p.id.includes('akacj');
+            return p.flavorIntensity === 'lagodny' || p.category === 'wiosenne' || combined.includes('dzieci') || p.id.includes('rzepak') || p.id.includes('akacj') || p.id.includes('pylek');
           case 'koneser':
             return p.flavorIntensity === 'wyrazisty' || p.category === 'lesne-spadz' || p.id.includes('grycz') || p.id.includes('spadz') || p.id.includes('wrzos');
           case 'prezent':
@@ -326,6 +326,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                   <ProductCard
                     product={product}
                     onAddToCart={onAddToCart}
+                    onOpenDetails={setDetailProduct}
                     onOpenDetail={setDetailProduct}
                     onToggleCompare={toggleCompare}
                     isCompared={compareList.some(p => p.id === product.id)}
@@ -340,7 +341,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
           <div className="text-center py-16 bg-[#FAF8F5] rounded-3xl border border-[#E7DCCE] space-y-3">
             <span className="text-3xl">🔍</span>
             <h3 className="font-serif text-lg font-bold text-[#23201C]">
-              Nie znaleźliśmy miodu o takich parametrach
+              Nie znaleźliśmy produktu o takich parametrach
             </h3>
             <p className="text-xs text-[#716556] max-w-sm mx-auto">
               Spróbuj zmienić filtry lub wyczyścić pole wyszukiwania, by zobaczyć pełną ofertę pasieki.

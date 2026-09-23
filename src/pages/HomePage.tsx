@@ -101,7 +101,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* Hero z interaktywną karuzelą 3D i obrotowym słoikiem 360° */}
         <Hero
           onAddToCart={onAddToCart}
-          containerClass={displayResolution.containerClass}
+          onOpenProductDetail={setDetailProduct}
+          onScrollToProducts={scrollToProducts}
           scrollToProducts={scrollToProducts}
           onOpenQuiz={handleOpenQuiz}
           onToggleCompare={toggleCompare}
@@ -215,6 +216,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   key={product.id}
                   product={product}
                   onAddToCart={onAddToCart}
+                  onOpenDetails={setDetailProduct}
                   onOpenDetail={setDetailProduct}
                   onToggleCompare={toggleCompare}
                   isCompared={compareList.some(p => p.id === product.id)}

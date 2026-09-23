@@ -66,7 +66,9 @@ const ProductDetailModalContent: React.FC<ProductDetailModalContentProps> = ({
 
   const handleAdd = () => {
     if (!currentSize) return;
-    onAddToCart(rawProduct, currentSize.weightGrams, currentSize.price);
+    for (let i = 0; i < quantity; i++) {
+      onAddToCart(rawProduct, currentSize.weightGrams, currentSize.price);
+    }
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 1500);
   };

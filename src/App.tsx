@@ -338,6 +338,7 @@ function App() {
             element={
               <OfferPage 
                 displayResolution={displayResolution}
+                onAddToCart={handleAddToCart}
               />
             } 
           />
@@ -346,6 +347,7 @@ function App() {
             element={
               <OfferPage 
                 displayResolution={displayResolution}
+                onAddToCart={handleAddToCart}
               />
             } 
           />
